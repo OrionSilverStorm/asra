@@ -1,0 +1,5 @@
+GAPDH mus_musculus
+ACTB mus_musculus
+CLDN18 macaca_mulatta
+KRAS mus_musculus
+GPR15 mus_musculus
