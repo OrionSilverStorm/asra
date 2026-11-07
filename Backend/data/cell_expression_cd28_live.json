@@ -1,0 +1,108 @@
+{
+  "gene": "CD28",
+  "species": "macaca_mulatta",
+  "layer": "cell_expression",
+  "status": "incomplete",
+  "observations": [
+    {
+      "field": "census_release",
+      "value": "CELLxGENE Census release 2025-11-08 (schema 2.4.0; 1845 total datasets)",
+      "sourceRecordId": "cellxgene-census-2025-11-08"
+    },
+    {
+      "field": "human_gene_identifier",
+      "value": "CD28 (ENSG00000178562; soma_joinid=1995; measured in 1067 Homo sapiens Census datasets)",
+      "sourceRecordId": "ensembl-ENSG00000178562"
+    },
+    {
+      "field": "human_dataset_provenance",
+      "value": "dataset_id=ed5d841d-6346-47d4-ab2f-7119ad7e3a35; title='nygc multimodal pbmc'; DOI=10.1016/j.cell.2021.04.048; tissue=blood (UBERON:0000178); assay=10x 3' v3 (EFO:0009922); suspension_type=cell",
+      "sourceRecordId": "cellxgene-dataset-ed5d841d-6346-47d4-ab2f-7119ad7e3a35"
+    },
+    {
+      "field": "human_gene_measurement_status",
+      "value": "measured in dataset ed5d841d-6346-47d4-ab2f-7119ad7e3a35 (feature_dataset_presence_matrix=1 for ENSG00000178562); 1429 cells detected (X['raw'] > 0) and 2853 cells undetected (X['raw'] == 0)",
+      "sourceRecordId": "cellxgene-dataset-ed5d841d-6346-47d4-ab2f-7119ad7e3a35"
+    },
+    {
+      "field": "human_cd4_effector_memory_population",
+      "value": "effector memory CD4-positive, alpha-beta T cell (CL:0000905); primary_cells=4282; unique_donors=8; disease_status=normal; median_raw_umi_per_cell=6213.0; median_detected_genes_per_cell=1785.5",
+      "sourceRecordId": "cellxgene-dataset-ed5d841d-6346-47d4-ab2f-7119ad7e3a35"
+    },
+    {
+      "field": "human_cd28_detection_fraction",
+      "value": "0.3337 (33.37%; 1429 / 4282 primary cells with X['raw'] > 0 across 8 donors; mean_raw_umi_all_cells=0.4507; mean_raw_umi_detected_cells=1.3506; max_raw_umi=7.0)",
+      "sourceRecordId": "cellxgene-dataset-ed5d841d-6346-47d4-ab2f-7119ad7e3a35"
+    },
+    {
+      "field": "animal_gene_identifier",
+      "value": "CD28 (ENSMMUG00000057214; soma_joinid=23595; measured in 18 macaca_mulatta Census datasets)",
+      "sourceRecordId": "ensembl-ENSMMUG00000057214"
+    },
+    {
+      "field": "animal_cd4_effector_memory_availability",
+      "value": "0 CD4+ effector-memory T cells (CL:0000905, CL:0001087), 0 total CD4-annotated T cells, and 0 blood/lymphoid cells across 19 macaca_mulatta datasets (2929014 primary / 7010229 total cells; available general tissues: brain, lung) in CELLxGENE Census 2025-11-08",
+      "sourceRecordId": "cellxgene-census-2025-11-08"
+    },
+    {
+      "field": "animal_noncomparable_t_cell_dataset_2e877cd3",
+      "value": "dataset_id=2e877cd3-5587-4fc1-8667-a48fe9e2a695 (lung (UBERON:0002048); late embryonic stage; 10x 3' v3 (EFO:0009922); suspension_type=cell; donors=13; T cell (CL:0000084): 4058, mucosal invariant T cell (CL:0000940): 1881): CD28 (ENSMMUG00000057214) is UNMEASURED (feature_dataset_presence_matrix=0; absent from dataset feature space, NOT detected-as-zero or biologically absent)",
+      "sourceRecordId": "cellxgene-dataset-2e877cd3-5587-4fc1-8667-a48fe9e2a695"
+    },
+    {
+      "field": "animal_noncomparable_t_cell_dataset_fc6ef080",
+      "value": "dataset_id=fc6ef080-9e5f-4aea-b9c4-a45a208bd288 (dorsolateral prefrontal cortex (UBERON:0009834); prime adult stage; 10x 3' v3 (EFO:0009922); suspension_type=nucleus; donors=4; T cell (CL:0000084): 185): CD28 (ENSMMUG00000057214) is MEASURED (feature_dataset_presence_matrix=1), with 17 / 185 generic T-cell (CL:0000084) nucleus records detected (0.0919 / 9.19%) and 168 / 185 undetected (mean_raw_umi=0.0919; max_raw_umi=1.0); not comparable to human blood whole-cell CD4+ effector-memory T cells",
+      "sourceRecordId": "cellxgene-dataset-fc6ef080-9e5f-4aea-b9c4-a45a208bd288"
+    },
+    {
+      "field": "measurement_state_distinction",
+      "value": "Explicit 3-state classification enforced: (1) unmeasured = feature absent from dataset feature_dataset_presence_matrix (e.g. CD28 in macaque fetal lung dataset 2e877cd3-5587-4fc1-8667-a48fe9e2a695); (2) undetected = 0 captured UMI counts (X['raw'] == 0) in a dataset where feature_dataset_presence_matrix == 1 (2853 / 4282 human blood CD4+ TEM cells reflecting 3' droplet scRNA-seq capture dropout / low transcript copy number); (3) biologically absent = true absence of functional gene/protein expression in the population, which cannot be inferred from sparse scRNA-seq zero counts or from missing atlas cell types/tissues",
+      "sourceRecordId": "cellxgene-census-2025-11-08"
+    },
+    {
+      "field": "cross_species_comparison",
+      "value": "inconclusive: Homo sapiens blood CD4+ effector-memory T cells (CL:0000905) in dataset ed5d841d-6346-47d4-ab2f-7119ad7e3a35 show CD28 (ENSG00000178562) detection fraction 0.3337 (1429 / 4282 cells across 8 donors), whereas macaca_mulatta has 0 comparable CD4+ effector-memory T-cell (CL:0000905 / CL:0001087) or blood/lymphoid datasets in CELLxGENE Census 2025-11-08; no cross-species biological equivalence or divergence can be claimed from this source",
+      "sourceRecordId": "cellxgene-census-2025-11-08"
+    }
+  ],
+  "source_records": [
+    {
+      "id": "cellxgene-census-2025-11-08",
+      "source": "CZ CELLxGENE Census release 2025-11-08 (census_schema_version=2.4.0)",
+      "url": "https://chanzuckerberg.github.io/cellxgene-census/"
+    },
+    {
+      "id": "cellxgene-dataset-ed5d841d-6346-47d4-ab2f-7119ad7e3a35",
+      "source": "CELLxGENE Census dataset 'nygc multimodal pbmc' (Integrated analysis of multimodal single-cell data) DOI: 10.1016/j.cell.2021.04.048",
+      "url": "https://doi.org/10.1016/j.cell.2021.04.048"
+    },
+    {
+      "id": "ensembl-ENSG00000178562",
+      "source": "Ensembl Homo_sapiens gene CD28 (ENSG00000178562)",
+      "url": "https://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000178562"
+    },
+    {
+      "id": "ensembl-ENSMMUG00000057214",
+      "source": "Ensembl Macaca_mulatta gene CD28 (ENSMMUG00000057214)",
+      "url": "https://www.ensembl.org/Macaca_mulatta/Gene/Summary?g=ENSMMUG00000057214"
+    },
+    {
+      "id": "cellxgene-dataset-2e877cd3-5587-4fc1-8667-a48fe9e2a695",
+      "source": "CELLxGENE Census dataset 'Inflammatory blockade in premature Rhesus macaques exposed to intra-uterine inflammation' (Inflammatory blockade prevents injury to the developing pulmonary gas exchange surface in preterm primates) DOI: 10.1126/scitranslmed.abl8574",
+      "url": "https://doi.org/10.1126/scitranslmed.abl8574"
+    },
+    {
+      "id": "cellxgene-dataset-fc6ef080-9e5f-4aea-b9c4-a45a208bd288",
+      "source": "CELLxGENE Census dataset 'Single-nucleus transcriptome data from the dlPFC: Rhesus' (Molecular and cellular evolution of the primate dorsolateral prefrontal cortex) DOI: 10.1126/science.abo7257",
+      "url": "https://doi.org/10.1126/science.abo7257"
+    }
+  ],
+  "limitations": [
+    "Missing comparable animal population in CELLxGENE Census 2025-11-08: macaca_mulatta contains 0 blood or lymphoid-tissue datasets and 0 cells annotated as CD4+ effector-memory T cells (CL:0000905 / CL:0001087) or CD4+ T cells (CL:0000624), rendering the cross-species comparison inconclusive.",
+    "Explicit distinction between unmeasured, undetected, and biologically absent: features absent from a dataset's feature_dataset_presence_matrix are unmeasured (e.g. CD28 in macaque dataset 2e877cd3-5587-4fc1-8667-a48fe9e2a695); zero UMI counts (X['raw'] == 0) in a measured dataset are undetected due to sparse 3' droplet capture efficiency (~5-15% mRNA capture); neither establishes that the protein is biologically absent.",
+    "RNA transcript detection versus cell-surface protein abundance: CELLxGENE Census stores single-cell/single-nucleus RNA UMI counts (X['raw']) and does not expose paired CITE-seq ADT surface-protein abundance or post-translational surface density, which govern functional receptor engagement (such as CD28 superagonist binding in CD4+ effector-memory T cells).",
+    "Cell-type annotation and suspension-type non-equivalence: generic 'T cell' (CL:0000084) annotations in non-lymphoid parenchyma or single-nucleus RNA-seq (fc6ef080-9e5f-4aea-b9c4-a45a208bd288) pool CD4+, CD8+, gamma-delta, and regulatory T cells and sample only nuclear pre-mRNA/mRNA, making them biologically and technically incomparable to whole-cell peripheral blood CD4+ effector-memory T cells.",
+    "Cross-dataset normalisation and batch effects: CELLxGENE Census release 2025-11-08 provides raw UMI counts (X['raw']) without a cross-species batch-corrected expression layer; direct numerical comparison across independent studies, chemistries, and reference genome builds (GRCh38 vs Mmul_10) is confounded without matched experimental design."
+  ],
+  "data_version": "CELLxGENE Census 2025-11-08 (schema 2.4.0)"
+}
