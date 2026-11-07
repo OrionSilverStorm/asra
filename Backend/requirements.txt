@@ -15,3 +15,5 @@ python-dotenv
 # Testing: pytest runs tests/, httpx powers FastAPI's TestClient
 pytest
 httpx
+
+biopython==1.88
