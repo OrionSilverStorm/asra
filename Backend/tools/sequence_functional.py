@@ -120,6 +120,9 @@ def verify_entry(protein, entry, provenance):
         "organism": deepcopy(entry["organism"]), "cross_references": deepcopy(matches),
         "sequence_sha256": sha256(seq.encode("ascii")).hexdigest(),
         "entry_audit": deepcopy(entry.get("entryAudit", {})),
+        # Exact sequence verification is distinct from curation/experimental support.
+        "entry_type": entry.get("entryType"),
+        "protein_existence": entry.get("proteinExistence"),
         "source_record_id": f"uniprot:{accession}",
         **{key: deepcopy(provenance[key]) for key in
            ("url", "retrieved_at", "release", "release_date", "search", "rejected_candidates")

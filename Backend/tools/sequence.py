@@ -193,7 +193,7 @@ def run_sequence(gene: str | ResolvedQuery, species: str | None = None, *, funct
     result = align_proteins(resolved["source"]["sequence"], resolved["target"]["sequence"])
     output = {
         "gene": resolved["gene"], "species": resolved["species"],
-        "layer": "sequence", "status": "ok",
+        "layer": "sequence", "status": ("incomplete" if result["parameters"]["alternative_optimal_alignment_exists"] else "ok"),
         "human": resolved["source"], "animal": resolved["target"],
         "orthology": resolved["orthology"],
         "source_records": [{"id": "ensembl_orthology", "source": "Ensembl REST homology",
