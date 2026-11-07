@@ -18,6 +18,7 @@ from typing import Optional
 from pydantic import BaseModel
 
 from agents import llm
+from agents.evidence import compact_for_prompt
 from contract import Concern, Finding, LayerResult
 
 log = logging.getLogger("asra.agents")
@@ -53,7 +54,8 @@ def _build_prompt(evidence: list[LayerResult], feedback: Optional[list[str]]) ->
     notes = "\nThe Sceptic rejected parts of your previous answer:\n- " + "\n- ".join(feedback) if feedback else ""
     return PROMPT.format(
         species=evidence[0].species,
-        evidence=json.dumps([e.model_dump(mode="json") for e in evidence], indent=2),
+        # Condensed copy: residue maps and raw features would swamp the prompt.
+        evidence=json.dumps(compact_for_prompt(evidence)),
         feedback=notes,
     )
 

@@ -21,6 +21,7 @@ from typing import Literal
 from pydantic import BaseModel
 
 from agents import llm
+from agents.evidence import compact_for_prompt
 from contract import Finding, LayerResult
 
 log = logging.getLogger("asra.agents")
@@ -72,7 +73,8 @@ def _challenge(findings: list[Finding], layers: list[LayerResult]) -> tuple[list
     if not findings or not llm.available():
         return findings, []
     prompt = PROMPT.format(
-        evidence=json.dumps([l.model_dump(mode="json") for l in layers], indent=2),
+        # Condensed copy for the model; _check above used the full layers.
+        evidence=json.dumps(compact_for_prompt(layers)),
         findings=json.dumps([f.model_dump(mode="json") for f in findings], indent=2),
     )
     try:
