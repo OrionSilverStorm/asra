@@ -15,8 +15,35 @@
 
 import { CAVEAT_TEXT } from "./caveat";
 import { LAYER_META } from "./layers";
+import { parseSequenceEvidence, pct, type SequenceEvidence } from "./sequenceEvidence";
 import { getSpecies } from "./species";
 import type { Concern, LayerStatus, Report } from "./types";
+
+/**
+ * Readable Markdown for the gene-based sequence layer, in place of its raw
+ * JSON observations (the JSON export keeps those in full).
+ */
+function sequenceMarkdown(e: SequenceEvidence, species: string): string[] {
+  const m = e.measurements;
+  const annotated = e.substitutions.filter((s) => s.annotated);
+  const lines = [
+    `- **Identity:** ${pct(m.identity_percent)} (${m.exact_matches ?? "?"}/${m.alignment_columns ?? "?"} columns) · paired identity ${pct(m.paired_identity_percent)}`,
+    `- **Coverage:** human ${pct(m.human_coverage_percent)} · ${species} ${pct(m.animal_coverage_percent)}`,
+    `- **Lengths:** human ${m.human_length ?? "?"} aa · ${species} ${m.animal_length ?? "?"} aa`,
+    `- **Gaps:** ${m.insertion_events ?? 0} insertion (${m.inserted_residues ?? 0} aa), ${m.deletion_events ?? 0} deletion (${m.deleted_residues ?? 0} aa)`,
+    `- **Proteins:** human ${e.human.isoform ?? e.human.accession ?? "?"} / ${e.human.proteinId ?? "?"} · ${species} ${e.animal.isoform ?? e.animal.accession ?? "?"} / ${e.animal.proteinId ?? "?"}`,
+  ];
+  if (e.tied) lines.push("- **Tied optimal alignments:** residue mappings may shift between equally good alignments.");
+  if (e.functionalStatus) lines.push(`- **UniProt annotation:** ${e.functionalStatus}`);
+  if (e.motif) {
+    lines.push(`- **Motif check:** human ${e.motif.humanWindow} vs ${species} ${e.motif.animalWindow ?? "not contiguous"}${e.motif.pattern ? ` (published pattern ${e.motif.pattern})` : ""}`);
+  }
+  lines.push(
+    `- **Substitutions (${e.substitutions.length}, ${annotated.length} overlap annotated features):** ${e.substitutions.map((s) => (s.annotated ? `**${s.label}**` : s.label)).join(", ") || "none"}`,
+    "",
+  );
+  return lines;
+}
 
 /** Supported export formats and their file details. */
 export const EXPORT_FORMATS = {
@@ -102,7 +129,11 @@ export function reportToMarkdown(report: Report): string {
   for (const layer of report.layers) {
     const meta = LAYER_META[layer.layer];
     push(`### ${meta.title} — ${STATUS_LABEL[layer.status]}`, "", `Source: ${meta.source}`, "");
-    if (layer.observations.length) {
+    // Gene-based sequence evidence gets a readable summary instead of JSON rows.
+    const evidence = parseSequenceEvidence(layer);
+    if (evidence) {
+      push(...sequenceMarkdown(evidence, species.commonName.toLowerCase()));
+    } else if (layer.observations.length) {
       push("| Field | Value |", "|---|---|");
       for (const o of layer.observations) push(`| ${o.field} | ${o.value} |`);
       push("");
