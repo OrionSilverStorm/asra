@@ -44,7 +44,13 @@ export function SequenceInput({ value, onChange, error, disabled }: SequenceInpu
         // Sequences aren't words: turn off spellcheck squiggles and autofill.
         spellCheck={false}
         autoComplete="off"
-        placeholder={">sp|ACCESSION|NAME_SPECIES\nMSEQ..."}
+        // Plain-language instruction, then a real FASTA record (human insulin)
+        // so the expected shape is obvious without reading the hint.
+        placeholder={
+          "Paste a protein sequence, with or without a FASTA header. For example:\n\n" +
+          ">sp|P01308|INS_HUMAN Insulin\n" +
+          "MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKTRREAEDLQVGQVELGGGPGAGSLQPLALEGSLQKRGIVEQCCTSICSLYQLENYCN"
+        }
         aria-describedby={error ? `${id}-error` : `${id}-hint`}
         // Monospace so residues line up; break-all so long lines wrap.
         className="resize-y font-mono text-[13px] leading-relaxed break-all"
