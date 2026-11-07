@@ -9,7 +9,7 @@ from urllib.request import Request
 
 import pytest
 
-from Backend.tools import localisation
+from tools import localisation
 
 
 HUMAN_ACCESSION = "Q99808"
@@ -101,7 +101,7 @@ def api(monkeypatch):
 
 
 def compare():
-    return localisation.run_localisation("SLC29A1", "mus_musculus")
+    return localisation.compare_localisation("SLC29A1", "mus_musculus")
 
 
 def location_ids(locations):
@@ -374,7 +374,7 @@ def test_no_records_is_unavailable_not_annotation_difference(api):
     ("SLC29A1", "human"),
 ])
 def test_invalid_inputs_fail_before_http(api, gene, species):
-    result = localisation.run_localisation(gene, species)
+    result = localisation.compare_localisation(gene, species)
 
     assert set(result) == CONTRACT_KEYS
     assert result["status"] == "error"

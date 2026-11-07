@@ -9,7 +9,7 @@ from tools.base import LayerFn
 from tools.cell_expression import run_cell_expression
 from tools.localisation import run_localisation
 from tools.sequence_layer import run_sequence_layer
-from tools.tissue import run_tissue_expression
+from tools.tissue_expression import run_tissue_expression
 
 LAYERS: dict[LayerName, LayerFn] = {
     # Gene-based comparison when a gene is known, legacy fallback otherwise.

@@ -98,10 +98,18 @@ If you change a field, update both files and this section.
 - Error responses follow FastAPI: `{"detail": "text"}` or, for 422, `{"detail": [{"msg": "...", "loc": [...]}]}`.
 
 ## Pipeline order
-`AssessmentRequest` → `tools/resolver.py` (ResolvedQuery) → 4 layers via `run_isolated` → `agents/` (Investigator → Interpreter ⇄ Sceptic, one revision) → `report/builder.py` → `Report`.
+`AssessmentRequest` → `tools/resolver.py` (ResolvedQuery) → 4 layers via `run_isolated` (in parallel threads, LayerName order kept) → `agents/` (Investigator → Interpreter ⇄ Sceptic, one revision) → `report/builder.py` → `Report`.
 
 Gene resolution (`resolver.gene_from_label`): the gene comes only from a human UniProt header's `GN=` or a label that is exactly an uppercase symbol; never a first-token guess (`sp|Q99808|…` is not gene `SP`). No gene → `gene=None`.
 
 Sequence layer (`tools/sequence_layer.py`): with a gene it runs Ensembl orthologue + alignment + UniProt features (`run_sequence(gene, species, functional=True)` → `to_layer_result`); its observation values are **JSON strings**. Without a gene it falls back to the submitted-length-only `incomplete` result. Orthologue errors become `unavailable` with the reason (ambiguous candidates kept as evidence).
+
+Localisation (`tools/localisation.py`): `compare_localisation(gene, species)` returns the detailed UniProt comparison dict; `to_layer_result` maps it (`complete`→`ok`, `partial`→`incomplete`, `error`/`unavailable`→`unavailable`) to `human_/animal_compartments`, `human_/animal_evidence`, `shared_compartments`, `human_/animal_only_compartments`.
+
+Cell expression (`tools/cell_expression.py`): mouse uses the CELLxGENE Discover API for both species (exact UBERON+CL matches, `detection_<tissue>_<cell>` fields, always `incomplete` because aggregates lack dataset provenance); other species use the Census audit (`tools/cell_census.py`) live when `cellxgene_census` is installed (not on Windows), else its recorded run in `Backend/data/benchmarks/census_<GENE>_<species>.json`, else human-only `incomplete`.
+
+Tissue expression (`tools/tissue_expression.py`): GTEx v8 median TPM beside Bgee calls for the animal orthologue, matched on UBERON (exact, else the explicit organ-level `ORGAN` map; each match says which). Nothing is ever divided across GTEx and Bgee.
+
+Shared: `resolver.orthologue_gene_id(gene, species)` → `(ensembl_gene_id, note)`, cached in `Backend/data/cache/orthologue_gene_ids.json`; among several Ensembl orthologues it accepts only the candidate that also has the same gene symbol, and the note becomes a limitation. `tools/literature.py` holds curated publications appended as separate `literature_*` observations (species-scoped). `tools/fixtures.py` is an offline demo mode only (`ASRA_FIXTURES=1`).
 
 In the agent stage: the Investigator splits layers into citable evidence and excluded ones (its `gaps` become report limitations and "obtain this data" experiments); the Interpreter drafts findings, each with a suggested `experiment`; the Sceptic runs a deterministic pass (citation must match an observation; `incomplete` evidence is forced to `flagged`) and then a Gemini pass whose verdicts can only weaken a finding (`accept | downgrade | reject`), never promote one. An experiment is kept only while its finding survives. Each run is appended to `Backend/data/logs/runs.jsonl`.

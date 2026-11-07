@@ -1,13 +1,13 @@
 # Localisation integration handoff
 
-[localisation.py](./localisation.py) exposes `run_localisation(gene: str, species: str) -> dict` independently of FastAPI. It uses only the Python standard library and is tested with Python 3.11. No routes, frontend code, other biological modules, or dependency manifests were changed.
+[localisation.py](./localisation.py) exposes `compare_localisation(gene: str, species: str) -> dict` (the detailed comparison below) and the pipeline layer `run_localisation(query: ResolvedQuery) -> LayerResult`, which maps it onto the universal contract and appends curated literature (see CLAUDE.md). It uses only the Python standard library and is tested with Python 3.11. No routes, frontend code, other biological modules, or dependency manifests were changed.
 
 The checkout's [Agents.md](./Agents.md) was empty. This implementation follows the six-field contract supplied by the workstream owner, without adding top-level fields:
 
 ```python
-from Backend.tools.localisation import run_localisation
+from tools.localisation import compare_localisation  # run from Backend/
 
-result = run_localisation("SLC29A1", "mus_musculus")
+result = compare_localisation("SLC29A1", "mus_musculus")
 # layer, status, observations, measurements, sources, limitations
 ```
 
@@ -16,8 +16,8 @@ Integration note: the existing [frontend layer type](../../Frontend/lib/types.ts
 Run these commands from the repository root:
 
 ```bash
-python3.11 -m Backend.tools.localisation SLC29A1 mouse
-python3.11 -m pytest Backend/tests/test_localisation.py -q
+python -m tools.localisation SLC29A1 mouse      # from Backend/
+python -m pytest tests/test_localisation.py -q
 ```
 
 The commands used in this checkout, whose existing virtual environment was not executable in the session, are:

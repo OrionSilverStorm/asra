@@ -11,14 +11,16 @@ Three guards keep a fixture from passing as a live fetch:
 - the first limitation says, in words, that the layer was not queried;
 - `data_version` is "fixture (hand-entered)".
 
-Switched on with ASRA_FIXTURES=1 in Backend/.env. Delete a layer's entry here
-as soon as the real tool replaces it.
+Switched on with ASRA_FIXTURES=1 in Backend/.env. All four layers now query
+live sources, so this is an offline demo mode only (e.g. no network at a
+venue); leave it off for real runs.
 """
 
 import os
 from typing import Optional
 
 from contract import LayerName, LayerResult, Observation, SourceRecord, SpeciesId
+from tools.literature import EASTWOOD_2010, LAI_2004, LEE_2006  # shared with the live layers
 from tools.resolver import ResolvedQuery
 
 # data_version stamped on every fixture layer. report/builder.py uses it to
@@ -37,24 +39,11 @@ HUMAN_ENT1 = SourceRecord(id="uniprot:Q99808", source="UniProt Q99808 (S29A1_HUM
                           url="https://www.uniprot.org/uniprotkb/Q99808")
 MOUSE_ENT1 = SourceRecord(id="uniprot:Q9JIM1", source="UniProt Q9JIM1 (S29A1_MOUSE)",
                           url="https://www.uniprot.org/uniprotkb/Q9JIM1")
-LAI_2004 = SourceRecord(
-    id="doi:10.1074/jbc.M307938200",
-    source="Lai Y, Tse CM, Unadkat JD. J Biol Chem 2004;279(6):4490-7",
-    url="https://doi.org/10.1074/jbc.M307938200")
-LEE_2006 = SourceRecord(
-    id="doi:10.1074/jbc.M513825200",
-    source="Lee EW, Lai Y, Zhang H, Unadkat JD. J Biol Chem 2006 (mitochondrial targeting signal of hENT1)",
-    url="https://doi.org/10.1074/jbc.M513825200")
 
 HUMAN_CD28 = SourceRecord(id="uniprot:P10747", source="UniProt P10747 (CD28_HUMAN)",
                           url="https://www.uniprot.org/uniprotkb/P10747")
 MACAQUE_CD28 = SourceRecord(id="uniprot:Q0PDN4", source="UniProt Q0PDN4 (CD28, Macaca mulatta, unreviewed)",
                             url="https://www.uniprot.org/uniprotkb/Q0PDN4")
-# No DOI is recorded for Eastwood 2010 in tests/test_cases.md, so none is given
-# here rather than guessed. The citation itself is the record.
-EASTWOOD_2010 = SourceRecord(
-    id="pub:eastwood2010",
-    source="Eastwood D, Findlay L, Poole S, et al. Br J Pharmacol 2010;161(3):512-26")
 
 HUMAN_GAPDH = SourceRecord(id="uniprot:P04406", source="UniProt P04406 (G3P_HUMAN)",
                            url="https://www.uniprot.org/uniprotkb/P04406")

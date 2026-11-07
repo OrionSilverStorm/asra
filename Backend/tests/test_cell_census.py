@@ -10,12 +10,12 @@ from typing import Any
 import unittest
 from unittest.mock import patch
 
-from Backend.tools.cell_expression import (
+from tools.cell_census import (
     DEFAULT_CENSUS_VERSION,
     DEFAULT_HUMAN_DATASET_ID,
     LayerResult,
     ResolvedQuery,
-    run_cell_expression,
+    run_census_expression,
 )
 
 
@@ -348,7 +348,7 @@ class TestCellExpressionModule(unittest.TestCase):
             sequence_label=None,
             gene=None,
         )
-        result = run_cell_expression(query)
+        result = run_census_expression(query)
         self.assertIsInstance(result, LayerResult)
         self.assertEqual(result.layer, "cell_expression")
         self.assertEqual(result.status, "unavailable")
@@ -379,8 +379,8 @@ class TestCellExpressionModule(unittest.TestCase):
             gene="CD28",
         )
         with patch.dict("sys.modules", {"cellxgene_census": fake_module}):
-            result = run_cell_expression(query)
-            direct_result = run_cell_expression("CD28", "macaca_mulatta")
+            result = run_census_expression(query)
+            direct_result = run_census_expression("CD28", "macaca_mulatta")
 
         self.assertEqual(opened_versions, [DEFAULT_CENSUS_VERSION, DEFAULT_CENSUS_VERSION])
         self.assertEqual(result.status, "incomplete")
@@ -459,7 +459,7 @@ class TestCellExpressionModule(unittest.TestCase):
 
         fake_module = SimpleNamespace(open_soma=_fake_open_soma)
         with patch.dict("sys.modules", {"cellxgene_census": fake_module}):
-            result = run_cell_expression("CD28", "macaca_mulatta")
+            result = run_census_expression("CD28", "macaca_mulatta")
 
         self.assertEqual(result.status, "unavailable")
         # X['raw'] must NOT have been read when feature_dataset_presence_matrix is 0
@@ -480,7 +480,7 @@ class TestCellExpressionModule(unittest.TestCase):
 
         fake_module = SimpleNamespace(open_soma=_fake_open_soma)
         with patch.dict("sys.modules", {"cellxgene_census": fake_module}):
-            result = run_cell_expression("CD28", "macaca_fascicularis")
+            result = run_census_expression("CD28", "macaca_fascicularis")
 
         self.assertEqual(result.status, "incomplete")
         self.assertEqual(result.species, "macaca_fascicularis")
@@ -500,7 +500,7 @@ class TestCellExpressionModule(unittest.TestCase):
 
         fake_module = SimpleNamespace(open_soma=_failing_open_soma)
         with patch.dict("sys.modules", {"cellxgene_census": fake_module}):
-            result = run_cell_expression("CD28", "macaca_mulatta")
+            result = run_census_expression("CD28", "macaca_mulatta")
 
         self.assertEqual(result.status, "unavailable")
         self.assertTrue(
@@ -511,7 +511,8 @@ class TestCellExpressionModule(unittest.TestCase):
         live_path = (
             Path(__file__).resolve().parent.parent
             / "data"
-            / "cell_expression_cd28_live.json"
+            / "benchmarks"
+            / "census_CD28_macaca_mulatta.json"
         )
         self.assertTrue(live_path.exists(), f"Expected live smoke output at {live_path}")
         raw = json.loads(live_path.read_text(encoding="utf-8"))

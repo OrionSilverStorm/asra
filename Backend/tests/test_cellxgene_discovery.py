@@ -7,7 +7,7 @@ import sys
 from types import SimpleNamespace
 import unittest
 
-from Backend.tools import cellxgene_discovery
+from tools import cellxgene_discovery
 
 
 class _FakeTable:

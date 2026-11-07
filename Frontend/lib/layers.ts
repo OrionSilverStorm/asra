@@ -39,7 +39,8 @@ export const LAYER_META: Record<LayerName, { title: string; short: string; sourc
   cell_expression: {
     title: "Cell-type expression",
     short: "Cell type",
-    source: "CELLxGENE Census",
+    // Discover gene-expression API for human/mouse; Census audit for other species.
+    source: "CELLxGENE Discover · Census",
     description: "Detection fractions per cell population.",
   },
   tissue_expression: {

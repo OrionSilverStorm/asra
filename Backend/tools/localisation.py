@@ -1,9 +1,15 @@
-"""Compare human and animal UniProt subcellular-location annotations.
+"""Layer 2, subcellular localisation: human vs animal UniProt annotations.
 
-Run from the repository root: python3 -m Backend.tools.localisation SLC29A1 mouse
+Run from Backend/: python -m tools.localisation SLC29A1 mouse
 
-The shared contract is exactly: layer, status, observations, measurements,
-sources, limitations. Protein records and comparison details live in measurements.
+Two levels:
+- ``compare_localisation(gene, species) -> dict`` is the detailed comparison
+  (layer, status, observations, measurements, sources, limitations). Protein
+  records and comparison details live in measurements.
+- ``run_localisation(query) -> LayerResult`` is the pipeline layer: it maps
+  that dict onto the universal contract (``to_layer_result``) and appends the
+  curated literature evidence from tools/literature.py.
+
 ``complete`` means both reviewed records have cited experimental location evidence;
 ``partial`` means records/evidence are incomplete; ``unavailable`` means no record
 can be resolved; ``error`` means invalid input or API failure prevents analysis.
@@ -24,6 +30,12 @@ import re
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+
+from contract import LayerResult, Observation, SourceRecord
+from tools.base import unavailable
+from tools.fixtures import fixture
+from tools.literature import literature
+from tools.resolver import ResolvedQuery
 
 
 API_ROOT = "https://rest.uniprot.org/uniprotkb"
@@ -282,7 +294,7 @@ def _compare(proteins: dict) -> dict:
     return comparison
 
 
-def run_localisation(gene: str, species: str) -> dict:
+def compare_localisation(gene: str, species: str) -> dict:
     """Return the six-field shared contract for a human-versus-animal comparison.
 
     Invalid input and expected remote failures are returned as structured errors.
@@ -378,13 +390,93 @@ def run_localisation(gene: str, species: str) -> dict:
     return result
 
 
+# ── Contract adapter (pipeline layer) ──────────────────────────────────────
+
+# Detailed status -> universal LayerStatus. "error" and "unavailable" both mean
+# the layer could not produce usable evidence.
+_STATUS = {"complete": "ok", "partial": "incomplete"}
+
+
+def _record_id(protein: dict) -> str:
+    """Source-record id for one UniProt entry, e.g. 'uniprot:Q99808'."""
+    return f"uniprot:{protein['accession']}"
+
+
+def _names(items: list[dict]) -> str:
+    """'Cell membrane (SL-0039); ...' or 'None' for an empty list."""
+    return "; ".join(f"{i['name']} ({i['id']})" if i.get("id") else i["name"] for i in items) or "None"
+
+
+def _evidence_summary(protein: dict) -> str:
+    """Per-location evidence strength plus any similarity-transfer source."""
+    parts = [f"{loc['name']}: {loc['evidence_support']}" for loc in protein["locations"]]
+    # ECO:0000250 items name the UniProt entry the annotation was copied from.
+    copied = sorted({ev["id"] for loc in protein["locations"] for ev in loc["evidence"]
+                     if ev.get("evidenceCode") == "ECO:0000250" and ev.get("source") == "UniProtKB"})
+    if copied:
+        parts.append("transferred by similarity from " + ", ".join(copied))
+    return "; ".join(parts) or "No structured SUBCELLULAR LOCATION annotation"
+
+
+def to_layer_result(detail: dict, query: ResolvedQuery) -> LayerResult:
+    """Map the detailed comparison onto the universal LayerResult."""
+    proteins = detail["measurements"]["proteins"]
+    comparison = detail["measurements"].get("comparison", {})
+    observations, sources = [], []
+    for side in ("human", "animal"):
+        protein = proteins.get(side)
+        if protein is None:
+            continue  # a failed side is reported in limitations, never as empty data
+        rid = _record_id(protein)
+        review = "reviewed" if protein["reviewed"] else "unreviewed"
+        sources.append(SourceRecord(id=rid, url=protein["source_url"],
+                                    source=f"UniProt {protein['accession']} ({protein['scientific_name']}, "
+                                           f"{review}, entry v{protein['entry_version']})"))
+        observations += [
+            Observation(field=f"{side}_compartments", value=_names(protein["locations"]), source_record_id=rid),
+            Observation(field=f"{side}_evidence", value=_evidence_summary(protein), source_record_id=rid),
+        ]
+    # Overlap/difference lists exist only when both sides were comparable.
+    if comparison.get("status") in {"overlap_only", "annotation_differences"}:
+        first = sources[0].id  # shared terms are cited to the human entry
+        observations.append(Observation(field="shared_compartments",
+                                        value=_names(comparison["overlapping_locations"]), source_record_id=first))
+        for side in ("human", "animal"):
+            rid = _record_id(proteins[side])
+            only = _names(comparison[f"{side}_only_annotations"])
+            note = "" if only == "None" else " (annotated in this record only; not evidence of absence in the other)"
+            observations.append(Observation(field=f"{side}_only_compartments", value=only + note, source_record_id=rid))
+    lit_obs, lit_sources = literature("localisation", query.gene, query.species)
+    releases = sorted({p["release"] for p in proteins.values() if p and p.get("release")})
+    return LayerResult(
+        gene=query.gene, species=query.species, layer="localisation",
+        status=_STATUS.get(detail["status"], "unavailable"),
+        observations=observations + lit_obs if observations else [],
+        source_records=sources + lit_sources if observations else [],
+        # dict.fromkeys drops repeated caveats while keeping their order.
+        limitations=list(dict.fromkeys(detail["limitations"])),
+        data_version=("UniProt " + ", ".join(releases)) if releases else None,
+    )
+
+
+def run_localisation(query: ResolvedQuery) -> LayerResult:
+    """Pipeline layer: (ResolvedQuery) -> LayerResult."""
+    # Offline demo evidence first, only when ASRA_FIXTURES is on (tools/fixtures.py).
+    demo = fixture("localisation", query)
+    if demo:
+        return demo
+    if query.gene is None:
+        return unavailable("localisation", query, "Needs a resolved gene identifier; none was supplied.")
+    return to_layer_result(compare_localisation(query.gene, query.species), query)
+
+
 def _main() -> int:
     """Manual live-API smoke test; JSON is printed even when an API call fails."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("gene", help="Gene symbol, for example SLC29A1")
     parser.add_argument("species", help="Animal species, for example mouse or mus_musculus")
     args = parser.parse_args()
-    result = run_localisation(args.gene, args.species)
+    result = compare_localisation(args.gene, args.species)
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 1 if result["status"] in {"error", "unavailable"} else 0
 

@@ -101,13 +101,16 @@ export function LayerPanel({ layer, speciesName }: LayerPanelProps) {
         </table>
       )}
 
-      {/* Remaining observations as a zebra-striped field/value list. */}
+      {/* Remaining observations as a zebra-striped field/value list. The field
+          sits above its value: expression layers carry long field names and
+          sentences, which a side-by-side row squeezed and clipped. */}
       {rest.length > 0 && (
         <dl className="overflow-hidden rounded-sm border border-rule text-sm">
           {rest.map((o) => (
-            <div key={o.field} className="flex justify-between gap-4 bg-surface px-2.5 py-1.5 odd:bg-sunken">
-              <dt className="font-mono text-xs leading-5 text-muted">{o.field}</dt>
-              <dd className="text-right">{o.value}</dd>
+            <div key={o.field} className="flex flex-col gap-0.5 bg-surface px-2.5 py-1.5 odd:bg-sunken">
+              <dt className="break-all font-mono text-xs leading-5 text-muted">{o.field}</dt>
+              {/* min-w-0 + break-words: long IDs wrap instead of overflowing the panel. */}
+              <dd className="min-w-0 break-words leading-5">{o.value}</dd>
             </div>
           ))}
         </dl>

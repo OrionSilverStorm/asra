@@ -5,6 +5,10 @@ sequence alone does not identify a gene. No alignment is performed here.
 """
 
 from dataclasses import dataclass
+import json
+from pathlib import Path
+from threading import Lock
+import time
 import re
 from typing import Optional
 from urllib.parse import quote
@@ -232,3 +236,69 @@ def resolve_orthologue(gene: str, species: str) -> dict:
                       if key not in {"source", "target"}},
         "source_url": str(response.url),
     }
+
+
+# Successful orthologue lookups, cached on first fetch (design doc: data/cache/)
+# so the expression layers survive an Ensembl outage for genes seen before.
+_GENE_ID_CACHE = Path(__file__).resolve().parents[1] / "data" / "cache" / "orthologue_gene_ids.json"
+_cache_lock = Lock()  # layers run in parallel threads and may write together
+
+
+def _with_retry(fn, *args):
+    """Call fn once more after a short pause if Ensembl fails transiently (5xx/timeouts)."""
+    try:
+        return fn(*args)
+    except EnsemblAPIError:
+        time.sleep(2)
+        return fn(*args)
+
+
+def _symbol_gene_id(gene: str, species: str) -> str | None:
+    """Ensembl gene ID for the same symbol in the animal (e.g. GAPDH -> mouse Gapdh), or None."""
+    response = httpx.get(f"{ENSEMBL_URL}/lookup/symbol/{species}/{quote(gene, safe='')}",
+                         headers={"Accept": "application/json"}, timeout=REQUEST_TIMEOUT)
+    if response.status_code == 400:  # Ensembl's "symbol not found"
+        return None
+    if response.status_code >= 500:
+        raise EnsemblAPIError(f"Ensembl HTTP {response.status_code} looking up {gene} in {species}.")
+    response.raise_for_status()
+    return response.json().get("id")
+
+
+def _resolve_gene_id(gene: str, species: str) -> dict:
+    """{'gene_id', 'note'}: the one-to-one orthologue, or a justified pick among candidates.
+
+    When Ensembl lists several orthologues, a candidate is accepted only if it
+    is also the animal gene with the identical symbol, so orthology and
+    nomenclature agree; otherwise the ambiguity is raised unchanged.
+    """
+    try:
+        return {"gene_id": _with_retry(resolve_orthologue, gene, species)["target"]["gene_id"], "note": None}
+    except AmbiguousOrthologueError as exc:
+        candidates = {c.get("target", {}).get("id") for c in exc.candidates}
+        same = _with_retry(_symbol_gene_id, gene, species)
+        if same not in candidates:
+            raise
+        kinds = ", ".join(sorted({str(c.get("type")) for c in exc.candidates}))
+        return {"gene_id": same, "note": f"Ensembl lists {len(candidates)} {species} orthologues of {gene} ({kinds}); "
+                                         f"{same} was used because it also carries the same gene symbol."}
+
+
+def orthologue_gene_id(gene: str, species: str) -> tuple[str, str | None]:
+    """(Ensembl gene ID, selection note or None) of a human symbol's animal orthologue.
+
+    Shared by the expression layers, which need the animal gene rather than its
+    protein. Hits come from the on-disk cache; misses query Ensembl and are then
+    cached. Failures raise OrthologueResolutionError and are never cached.
+    """
+    key = f"{gene.upper()}|{species}"
+    with _cache_lock:
+        cache = json.loads(_GENE_ID_CACHE.read_text(encoding="utf-8")) if _GENE_ID_CACHE.exists() else {}
+    if key not in cache:
+        entry = _resolve_gene_id(gene, species)
+        with _cache_lock:
+            cache = json.loads(_GENE_ID_CACHE.read_text(encoding="utf-8")) if _GENE_ID_CACHE.exists() else {}
+            cache[key] = entry
+            _GENE_ID_CACHE.parent.mkdir(parents=True, exist_ok=True)
+            _GENE_ID_CACHE.write_text(json.dumps(cache, indent=1, sort_keys=True), encoding="utf-8")
+    return cache[key]["gene_id"], cache[key]["note"]
