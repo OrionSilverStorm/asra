@@ -24,9 +24,17 @@ class ResolvedQuery:
 
 
 def resolve(request: AssessmentRequest) -> ResolvedQuery:
-    """Build the shared query. Gene resolution is a TODO (see module docstring)."""
+    """Build the shared query, extracting a candidate gene symbol from sequence_label if present."""
+    gene: Optional[str] = None
+    if request.sequence_label:
+        candidate = request.sequence_label.strip().lstrip(">").strip()
+        if candidate:
+            # Extract first token, removing common FASTA delimiters like pipe or space
+            gene = candidate.split()[0].split("|")[0].strip().upper()
+
     return ResolvedQuery(
         species=request.species,
         sequence=request.sequence,
         sequence_label=request.sequence_label,
+        gene=gene,
     )

@@ -16,7 +16,7 @@ from pydantic import BaseModel
 load_dotenv()
 
 # Override in .env if Google renames or you want a different model.
-MODEL = os.getenv("GEMINI_MODEL", "gemini-2.5-flash")
+MODEL = os.getenv("GEMINI_MODEL", "gemini-flash-latest")
 
 T = TypeVar("T", bound=BaseModel)
 
