@@ -1,0 +1,82 @@
+{
+  "gene": "CD28",
+  "species": "macaca_mulatta",
+  "layer": "tissue_expression",
+  "status": "incomplete",
+  "observations": [
+    {
+      "field": "human_gene_identifier",
+      "value": "CD28 (gencodeId=ENSG00000178562.17; ensemblId=ENSG00000178562; entrezGeneId=940; gencodeVersion=v26; genomeBuild=GRCh38/hg38)",
+      "sourceRecordId": "ensembl-ENSG00000178562"
+    },
+    {
+      "field": "human_gtex_tissue_summary",
+      "value": "dataset=gtex_v8; total_tissues=54; tissues_with_median_ge_1_tpm=11; unit=TPM (bulk RNA-Seq median); top_tissues: Spleen (UBERON:0002106)=6.06 TPM; Cells_EBV-transformed_lymphocytes (EFO:0000572)=4.82 TPM; Whole_Blood (UBERON:0013756)=3.41 TPM; Adipose_Subcutaneous (UBERON:0002190)=2.81 TPM; Adipose_Visceral_Omentum (UBERON:0010414)=2.77 TPM",
+      "sourceRecordId": "gtex-gtex_v8-ENSG00000178562"
+    },
+    {
+      "field": "animal_gene_identifier",
+      "value": "CD28 (geneId=ENSMMUG00000057214; species=macaca_mulatta; taxId=NCBITaxon:9544; genomeVersion=Mmul_10; resolution=bgee_ortholog)",
+      "sourceRecordId": "bgee-9544-ENSMMUG00000057214"
+    },
+    {
+      "field": "animal_bgee_expression_summary",
+      "value": "total_calls=7; tissue_level_uberon_calls=7 (gold=4, silver=3); cell_type_qualified_calls=0; unit=Bgee non-parametric expressionScore (0-100) + FDR-controlled present call; top_tissues: spleen (UBERON:0002106): state=expressed, score=72.96 (high), quality=gold, fdr=1.83e-6, assays=RNA-Seq; intestine (UBERON:0000160): state=expressed, score=54.11 (high), quality=gold, fdr=9.41e-4, assays=RNA-Seq; colon (UBERON:0001155): state=expressed, score=53.69 (high), quality=gold, fdr=7.06e-4, assays=RNA-Seq; liver (UBERON:0002107): state=expressed, score=53.30 (high), quality=gold, fdr=9.80e-4, assays=RNA-Seq; lung (UBERON:0002048): state=expressed, score=44.97 (high), quality=silver, fdr=0.013, assays=RNA-Seq",
+      "sourceRecordId": "bgee-9544-ENSMMUG00000057214"
+    },
+    {
+      "field": "exact_uberon_tissue_matches",
+      "value": "2 tissues matched by identical UBERON ID between human GTEx (gtex_v8) and macaca_mulatta Bgee: UBERON:0002106 (spleen): GTEx Spleen=6.06 TPM (human rank 1/54) vs Bgee macaca_mulatta expressed score=72.96 (quality=gold, fdr=1.83e-6, assays=RNA-Seq, animal rank 1/7); UBERON:0009834 (dorsolateral prefrontal cortex): GTEx Brain_Frontal_Cortex_BA9=0.03 TPM (human rank 49/54) vs Bgee macaca_mulatta expressed score=38.75 (quality=silver, fdr=0.044, assays=RNA-Seq, animal rank 6/7)",
+      "sourceRecordId": "bgee-9544-ENSMMUG00000057214"
+    },
+    {
+      "field": "matched_tissue_uberon_0002106",
+      "value": "UBERON:0002106 (spleen): human GTEx Spleen median=6.06 TPM (rank 1/54) | macaca_mulatta Bgee state=expressed, expressionScore=72.96/100 (high confidence, gold quality, fdr=1.83e-6, assays=RNA-Seq, rank 1/7); scales (TPM vs 0-100 rank score) are not directly comparable for fold-change calculation",
+      "sourceRecordId": "bgee-9544-ENSMMUG00000057214"
+    },
+    {
+      "field": "matched_tissue_uberon_0009834",
+      "value": "UBERON:0009834 (dorsolateral prefrontal cortex): human GTEx Brain_Frontal_Cortex_BA9 median=0.03 TPM (rank 49/54) | macaca_mulatta Bgee state=expressed, expressionScore=38.75/100 (high confidence, silver quality, fdr=0.044, assays=RNA-Seq, rank 6/7); scales (TPM vs 0-100 rank score) are not directly comparable for fold-change calculation",
+      "sourceRecordId": "bgee-9544-ENSMMUG00000057214"
+    },
+    {
+      "field": "granularity_mapped_organ_correspondences",
+      "value": "4 organs aligned via biopsy sub-structure (GTEx) to whole-organ (Bgee) UBERON relationships: liver [GTEx biopsy sub-structure (right lobe of liver, UBERON:0001114) <-> Bgee whole organ (liver, UBERON:0002107)]: human GTEx [Liver (UBERON:0001114)=0.31 TPM] <-> macaca_mulatta Bgee [liver (UBERON:0002107) state=expressed, score=53.30, quality=gold, fdr=9.80e-4]; lung [GTEx biopsy sub-structure (lower lobe of left lung, UBERON:0008952) <-> Bgee whole organ (lung, UBERON:0002048)]: human GTEx [Lung (UBERON:0008952)=2.30 TPM] <-> macaca_mulatta Bgee [lung (UBERON:0002048) state=expressed, score=44.97, quality=silver, fdr=0.013]; colon [GTEx biopsy sub-regions (sigmoid/transverse colon, UBERON:0001159/UBERON:0001157) <-> Bgee whole organ (colon, UBERON:0001155)]: human GTEx [Colon_Sigmoid (UBERON:0001159)=0.32 TPM, Colon_Transverse (UBERON:0001157)=0.74 TPM] <-> macaca_mulatta Bgee [colon (UBERON:0001155) state=expressed, score=53.69, quality=gold, fdr=7.06e-4]; small intestine [GTEx biopsy sub-region (terminal ileum, UBERON:0001211) <-> Bgee organ (small intestine/intestine, UBERON:0002108/UBERON:0000160)]: human GTEx [Small_Intestine_Terminal_Ileum (UBERON:0001211)=2.48 TPM] <-> macaca_mulatta Bgee [intestine (UBERON:0000160) state=expressed, score=54.11, quality=gold, fdr=9.41e-4]",
+      "sourceRecordId": "gtex-gtex_v8-ENSG00000178562"
+    },
+    {
+      "field": "missing_animal_tissue_coverage",
+      "value": "Top human GTEx tissues without a matched macaca_mulatta Bgee call: Cells_EBV-transformed_lymphocytes (EFO:0000572=4.82 TPM), Whole_Blood (UBERON:0013756=3.41 TPM), Adipose_Subcutaneous (UBERON:0002190=2.81 TPM), Adipose_Visceral_Omentum (UBERON:0010414=2.77 TPM), Artery_Aorta (UBERON:0001496=2.09 TPM); absence from Bgee's returned expression calls reflects unannotated or unsampled anatomical structures in the animal dataset, NOT biological absence of expression",
+      "sourceRecordId": "bgee-9544-ENSMMUG00000057214"
+    },
+    {
+      "field": "scale_and_comparability_assessment",
+      "value": "incomplete animal tissue coverage: 2 exact UBERON matches and 4 sub-structure-to-organ UBERON correspondences between human GTEx (54 tissues, bulk RNA-Seq median TPM) and macaca_mulatta Bgee (7 tissue-level UBERON calls, non-parametric 0-100 expressionScore across heterogeneous assays). Cross-species fold changes are NOT computed because GTEx TPM and Bgee expressionScore use incompatible units, normalisation, and assay modalities",
+      "sourceRecordId": "gtex-gtex_v8-ENSG00000178562"
+    }
+  ],
+  "source_records": [
+    {
+      "id": "gtex-gtex_v8-ENSG00000178562",
+      "source": "GTEx Portal API v2 (gtex_v8, GENCODE v26, GRCh38/hg38) median gene expression for CD28 (ENSG00000178562.17)",
+      "url": "https://gtexportal.org/home/gene/ENSG00000178562"
+    },
+    {
+      "id": "ensembl-ENSG00000178562",
+      "source": "Ensembl Homo_sapiens gene CD28 (ENSG00000178562)",
+      "url": "https://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000178562"
+    },
+    {
+      "id": "bgee-9544-ENSMMUG00000057214",
+      "source": "Bgee REST API v15 (macaca_mulatta, NCBITaxon:9544, genome Mmul_10) expression calls for CD28 (ENSMMUG00000057214)",
+      "url": "https://www.bgee.org/gene/ENSMMUG00000057214"
+    }
+  ],
+  "limitations": [
+    "Incompatible quantitative scales (no cross-species fold changes): human GTEx (gtex_v8) reports bulk RNA-Seq median Transcripts Per Million (TPM), whereas Bgee reports a non-parametric rank-normalised expressionScore (0-100) and FDR-controlled present calls integrated across RNA-Seq, Affymetrix microarrays, in situ hybridization, and ESTs. Ratios or fold changes between GTEx TPM and Bgee expressionScore are mathematically invalid and are never computed.",
+    "Missing animal tissue annotations do not establish biological absence: Bgee returned 7 tissue-level UBERON expression calls for CD28 in macaca_mulatta (2 exact UBERON matches with GTEx). Human tissues lacking a corresponding Bgee call represent unsampled or unannotated anatomical entities in Bgee for that species, not absence of expression.",
+    "Anatomical ontology granularity differences: GTEx frequently annotates surgical biopsy sub-structures (e.g. right lobe of liver UBERON:0001114, lower lobe of left lung UBERON:0008952, venous blood UBERON:0013756, sigmoid/transverse colon UBERON:0001159/UBERON:0001157), whereas Bgee often aggregates calls at the parent organ level (liver UBERON:0002107, lung UBERON:0002048, blood UBERON:0000178, colon UBERON:0001155); sub-structure and whole-organ terms are reported separately.",
+    "Bulk tissue homogenate confounding and mRNA-versus-protein gap: whole-tissue RNA measurements average across parenchymal, stromal, endothelial, and infiltrating immune cells (e.g. T-cell transcripts in bulk spleen, blood, lung, or gut) and do not measure translated protein abundance, cell-surface receptor density, or isoform-specific subcellular targeting (such as ENT1/SLC29A1 mitochondrial localisation)."
+  ],
+  "data_version": "GTEx API v2 (gtex_v8, GENCODE v26, GRCh38/hg38) + Bgee REST API v15 (macaca_mulatta Mmul_10)"
+}

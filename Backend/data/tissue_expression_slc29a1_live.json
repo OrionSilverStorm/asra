@@ -1,0 +1,97 @@
+{
+  "gene": "SLC29A1",
+  "species": "mus_musculus",
+  "layer": "tissue_expression",
+  "status": "ok",
+  "observations": [
+    {
+      "field": "human_gene_identifier",
+      "value": "SLC29A1 (gencodeId=ENSG00000112759.16; ensemblId=ENSG00000112759; entrezGeneId=2030; gencodeVersion=v26; genomeBuild=GRCh38/hg38)",
+      "sourceRecordId": "ensembl-ENSG00000112759"
+    },
+    {
+      "field": "human_gtex_tissue_summary",
+      "value": "dataset=gtex_v8; total_tissues=54; tissues_with_median_ge_1_tpm=54; unit=TPM (bulk RNA-Seq median); top_tissues: Esophagus_Gastroesophageal_Junction (UBERON:0004550)=196.36 TPM; Artery_Aorta (UBERON:0001496)=190.26 TPM; Colon_Sigmoid (UBERON:0001159)=163.11 TPM; Adipose_Subcutaneous (UBERON:0002190)=162.93 TPM; Esophagus_Muscularis (UBERON:0004648)=154.95 TPM",
+      "sourceRecordId": "gtex-gtex_v8-ENSG00000112759"
+    },
+    {
+      "field": "animal_gene_identifier",
+      "value": "Slc29a1 (geneId=ENSMUSG00000023942; species=mus_musculus; taxId=NCBITaxon:10090; genomeVersion=GRCm38.p6; resolution=bgee_ortholog)",
+      "sourceRecordId": "bgee-10090-ENSMUSG00000023942"
+    },
+    {
+      "field": "animal_bgee_expression_summary",
+      "value": "total_calls=215; tissue_level_uberon_calls=204 (gold=158, silver=46); cell_type_qualified_calls=11; unit=Bgee non-parametric expressionScore (0-100) + FDR-controlled present call; top_tissues: gastrula (UBERON:0004734): state=expressed, score=97.39 (high), quality=gold, fdr=0.01, assays=Affymetrix; stroma of bone marrow (UBERON:0007195): state=expressed, score=95.63 (high), quality=gold, fdr=0.002, assays=Affymetrix; ankle joint (UBERON:0001488): state=expressed, score=95.38 (high), quality=gold, fdr=1.55e-4, assays=Affymetrix; lip (UBERON:0001833): state=expressed, score=95.11 (high), quality=gold, fdr=7.31e-11, assays=RNA-Seq; thymus (UBERON:0002370): state=expressed, score=95.03 (high), quality=gold, fdr=<= 1.00e-14, assays=Affymetrix+RNA-Seq",
+      "sourceRecordId": "bgee-10090-ENSMUSG00000023942"
+    },
+    {
+      "field": "exact_uberon_tissue_matches",
+      "value": "14 tissues matched by identical UBERON ID between human GTEx (gtex_v8) and mus_musculus Bgee: UBERON:0001496 (ascending aorta): GTEx Artery_Aorta=190.26 TPM (human rank 2/54) vs Bgee mus_musculus expressed score=41.08 (quality=gold, fdr=0.008, assays=Affymetrix, animal rank 202/204); UBERON:0002190 (subcutaneous adipose tissue): GTEx Adipose_Subcutaneous=162.93 TPM (human rank 4/54) vs Bgee mus_musculus expressed score=68.79 (quality=gold, fdr=0.005, assays=Affymetrix, animal rank 122/204); UBERON:0002369 (adrenal gland): GTEx Adrenal_Gland=117.56 TPM (human rank 9/54) vs Bgee mus_musculus expressed score=91.51 (quality=gold, fdr=7.72e-10, assays=Affymetrix+RNA-Seq, animal rank 13/204); UBERON:0000995 (uterus): GTEx Uterus=94.16 TPM (human rank 11/54) vs Bgee mus_musculus expressed score=82.83 (quality=gold, fdr=5.05e-8, assays=Affymetrix+RNA-Seq, animal rank 60/204); UBERON:0000945 (stomach): GTEx Stomach=89.06 TPM (human rank 13/54) vs Bgee mus_musculus expressed score=76.99 (quality=gold, fdr=3.93e-10, assays=Affymetrix+RNA-Seq, animal rank 87/204); UBERON:0000007 (pituitary gland): GTEx Pituitary=70.06 TPM (human rank 21/54) vs Bgee mus_musculus expressed score=70.11 (quality=silver, fdr=0.01, assays=Affymetrix, animal rank 114/204); UBERON:0011907 (gastrocnemius medialis): GTEx Muscle_Skeletal=54.68 TPM (human rank 28/54) vs Bgee mus_musculus expressed score=78.93 (quality=gold, fdr=0.005, assays=Affymetrix, animal rank 78/204); UBERON:0000992 (ovary): GTEx Ovary=33.37 TPM (human rank 35/54) vs Bgee mus_musculus expressed score=74.60 (quality=gold, fdr=6.74e-7, assays=Affymetrix+RNA-Seq, animal rank 96/204)",
+      "sourceRecordId": "bgee-10090-ENSMUSG00000023942"
+    },
+    {
+      "field": "matched_tissue_uberon_0001496",
+      "value": "UBERON:0001496 (ascending aorta): human GTEx Artery_Aorta median=190.26 TPM (rank 2/54) | mus_musculus Bgee state=expressed, expressionScore=41.08/100 (high confidence, gold quality, fdr=0.008, assays=Affymetrix, rank 202/204); scales (TPM vs 0-100 rank score) are not directly comparable for fold-change calculation",
+      "sourceRecordId": "bgee-10090-ENSMUSG00000023942"
+    },
+    {
+      "field": "matched_tissue_uberon_0002190",
+      "value": "UBERON:0002190 (subcutaneous adipose tissue): human GTEx Adipose_Subcutaneous median=162.93 TPM (rank 4/54) | mus_musculus Bgee state=expressed, expressionScore=68.79/100 (high confidence, gold quality, fdr=0.005, assays=Affymetrix, rank 122/204); scales (TPM vs 0-100 rank score) are not directly comparable for fold-change calculation",
+      "sourceRecordId": "bgee-10090-ENSMUSG00000023942"
+    },
+    {
+      "field": "matched_tissue_uberon_0002369",
+      "value": "UBERON:0002369 (adrenal gland): human GTEx Adrenal_Gland median=117.56 TPM (rank 9/54) | mus_musculus Bgee state=expressed, expressionScore=91.51/100 (high confidence, gold quality, fdr=7.72e-10, assays=Affymetrix+RNA-Seq, rank 13/204); scales (TPM vs 0-100 rank score) are not directly comparable for fold-change calculation",
+      "sourceRecordId": "bgee-10090-ENSMUSG00000023942"
+    },
+    {
+      "field": "matched_tissue_uberon_0000995",
+      "value": "UBERON:0000995 (uterus): human GTEx Uterus median=94.16 TPM (rank 11/54) | mus_musculus Bgee state=expressed, expressionScore=82.83/100 (high confidence, gold quality, fdr=5.05e-8, assays=Affymetrix+RNA-Seq, rank 60/204); scales (TPM vs 0-100 rank score) are not directly comparable for fold-change calculation",
+      "sourceRecordId": "bgee-10090-ENSMUSG00000023942"
+    },
+    {
+      "field": "matched_tissue_uberon_0000945",
+      "value": "UBERON:0000945 (stomach): human GTEx Stomach median=89.06 TPM (rank 13/54) | mus_musculus Bgee state=expressed, expressionScore=76.99/100 (high confidence, gold quality, fdr=3.93e-10, assays=Affymetrix+RNA-Seq, rank 87/204); scales (TPM vs 0-100 rank score) are not directly comparable for fold-change calculation",
+      "sourceRecordId": "bgee-10090-ENSMUSG00000023942"
+    },
+    {
+      "field": "granularity_mapped_organ_correspondences",
+      "value": "4 organs aligned via biopsy sub-structure (GTEx) to whole-organ (Bgee) UBERON relationships: liver [GTEx biopsy sub-structure (right lobe of liver, UBERON:0001114) <-> Bgee whole organ (liver, UBERON:0002107)]: human GTEx [Liver (UBERON:0001114)=25.30 TPM] <-> mus_musculus Bgee [liver (UBERON:0002107) state=expressed, score=93.09, quality=gold, fdr=<= 1.00e-14]; colon [GTEx biopsy sub-regions (sigmoid/transverse colon, UBERON:0001159/UBERON:0001157) <-> Bgee whole organ (colon, UBERON:0001155)]: human GTEx [Colon_Sigmoid (UBERON:0001159)=163.11 TPM, Colon_Transverse (UBERON:0001157)=69.44 TPM] <-> mus_musculus Bgee [colon (UBERON:0001155) state=expressed, score=73.71, quality=gold, fdr=1.36e-7]; small intestine [GTEx biopsy sub-region (terminal ileum, UBERON:0001211) <-> Bgee organ (small intestine/intestine, UBERON:0002108/UBERON:0000160)]: human GTEx [Small_Intestine_Terminal_Ileum (UBERON:0001211)=27.92 TPM] <-> mus_musculus Bgee [ileum (UBERON:0002116) state=expressed, score=69.98, quality=gold, fdr=1.60e-7]; heart [GTEx cardiac sub-chambers (UBERON:0006566/UBERON:0006631) <-> Bgee organ (heart/left ventricle, UBERON:0000948/UBERON:0002084)]: human GTEx [Heart_Left_Ventricle (UBERON:0006566)=61.18 TPM, Heart_Atrial_Appendage (UBERON:0006631)=77.56 TPM] <-> mus_musculus Bgee [heart left ventricle (UBERON:0002084) state=expressed, score=65.37, quality=silver, fdr=0.012]",
+      "sourceRecordId": "gtex-gtex_v8-ENSG00000112759"
+    },
+    {
+      "field": "missing_animal_tissue_coverage",
+      "value": "Top human GTEx tissues without a matched mus_musculus Bgee call: Esophagus_Gastroesophageal_Junction (UBERON:0004550=196.36 TPM), Esophagus_Muscularis (UBERON:0004648=154.95 TPM), Artery_Coronary (UBERON:0001621=146.11 TPM), Artery_Tibial (UBERON:0007610=145.55 TPM), Breast_Mammary_Tissue (UBERON:0008367=136.57 TPM); absence from Bgee's returned expression calls reflects unannotated or unsampled anatomical structures in the animal dataset, NOT biological absence of expression",
+      "sourceRecordId": "bgee-10090-ENSMUSG00000023942"
+    },
+    {
+      "field": "scale_and_comparability_assessment",
+      "value": "sufficient qualitative tissue overlap: 14 exact UBERON matches and 4 sub-structure-to-organ UBERON correspondences between human GTEx (54 tissues, bulk RNA-Seq median TPM) and mus_musculus Bgee (204 tissue-level UBERON calls, non-parametric 0-100 expressionScore across heterogeneous assays). Cross-species fold changes are NOT computed because GTEx TPM and Bgee expressionScore use incompatible units, normalisation, and assay modalities",
+      "sourceRecordId": "gtex-gtex_v8-ENSG00000112759"
+    }
+  ],
+  "source_records": [
+    {
+      "id": "gtex-gtex_v8-ENSG00000112759",
+      "source": "GTEx Portal API v2 (gtex_v8, GENCODE v26, GRCh38/hg38) median gene expression for SLC29A1 (ENSG00000112759.16)",
+      "url": "https://gtexportal.org/home/gene/ENSG00000112759"
+    },
+    {
+      "id": "ensembl-ENSG00000112759",
+      "source": "Ensembl Homo_sapiens gene SLC29A1 (ENSG00000112759)",
+      "url": "https://www.ensembl.org/Homo_sapiens/Gene/Summary?g=ENSG00000112759"
+    },
+    {
+      "id": "bgee-10090-ENSMUSG00000023942",
+      "source": "Bgee REST API v15 (mus_musculus, NCBITaxon:10090, genome GRCm38.p6) expression calls for Slc29a1 (ENSMUSG00000023942)",
+      "url": "https://www.bgee.org/gene/ENSMUSG00000023942"
+    }
+  ],
+  "limitations": [
+    "Incompatible quantitative scales (no cross-species fold changes): human GTEx (gtex_v8) reports bulk RNA-Seq median Transcripts Per Million (TPM), whereas Bgee reports a non-parametric rank-normalised expressionScore (0-100) and FDR-controlled present calls integrated across RNA-Seq, Affymetrix microarrays, in situ hybridization, and ESTs. Ratios or fold changes between GTEx TPM and Bgee expressionScore are mathematically invalid and are never computed.",
+    "Missing animal tissue annotations do not establish biological absence: Bgee returned 204 tissue-level UBERON expression calls for SLC29A1 in mus_musculus (14 exact UBERON matches with GTEx). Human tissues lacking a corresponding Bgee call represent unsampled or unannotated anatomical entities in Bgee for that species, not absence of expression.",
+    "Anatomical ontology granularity differences: GTEx frequently annotates surgical biopsy sub-structures (e.g. right lobe of liver UBERON:0001114, lower lobe of left lung UBERON:0008952, venous blood UBERON:0013756, sigmoid/transverse colon UBERON:0001159/UBERON:0001157), whereas Bgee often aggregates calls at the parent organ level (liver UBERON:0002107, lung UBERON:0002048, blood UBERON:0000178, colon UBERON:0001155); sub-structure and whole-organ terms are reported separately.",
+    "Bulk tissue homogenate confounding and mRNA-versus-protein gap: whole-tissue RNA measurements average across parenchymal, stromal, endothelial, and infiltrating immune cells (e.g. T-cell transcripts in bulk spleen, blood, lung, or gut) and do not measure translated protein abundance, cell-surface receptor density, or isoform-specific subcellular targeting (such as ENT1/SLC29A1 mitochondrial localisation)."
+  ],
+  "data_version": "GTEx API v2 (gtex_v8, GENCODE v26, GRCh38/hg38) + Bgee REST API v15 (mus_musculus GRCm38.p6)"
+}
