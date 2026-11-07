@@ -6,3 +6,7 @@
 fastapi
 # ASGI server that runs the FastAPI app (`uvicorn main:app`)
 uvicorn[standard]
+# Load environment variables from .env files
+python-dotenv
+# Google Gemini API client
+google-genai

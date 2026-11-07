@@ -1,0 +1,121 @@
+{
+  "run_timestamp": "2026-11-07T18:34:33.563401+00:00",
+  "query": "Investigate SLC29A1 translational risks in mouse for fialuridine",
+  "evidence_input": [
+    {
+      "gene": "SLC29A1",
+      "species": "mus_musculus",
+      "layer": "sequence",
+      "status": "ok",
+      "observations": [
+        {
+          "metric": "global_identity",
+          "value": "78.4%"
+        },
+        {
+          "metric": "mitochondrial_targeting_motif",
+          "human": "Present (residues 1-24)",
+          "mouse": "Absent"
+        }
+      ],
+      "source_records": [
+        "Ensembl:ENSG00000112759",
+        "Biopython:PairwiseAligner"
+      ],
+      "limitations": [
+        "Isoform choice pinned to canonical NP_001071661.1"
+      ],
+      "data_version": "v1.0"
+    },
+    {
+      "gene": "SLC29A1",
+      "species": "mus_musculus",
+      "layer": "localisation",
+      "status": "incomplete",
+      "observations": [],
+      "source_records": [],
+      "limitations": [
+        "UniProt annotation incomplete for mouse subcellular compartment"
+      ],
+      "data_version": null
+    }
+  ],
+  "stages": {
+    "1_investigator": {
+      "target_gene": "SLC29A1",
+      "comparison_species": "mus_musculus",
+      "selected_layers": [
+        "sequence",
+        "localisation",
+        "cell_expression",
+        "tissue_expression"
+      ],
+      "investigation_plan": "The pipeline will conduct an across-species biological risk assessment comparing human and mouse SLC29A1. It will evaluate sequence divergence within critical transporter domains, cross-species differences in subcellular localisation, and disparities in cell-type and tissue-level expression profiles relevant to fialuridine disposition and toxicity mechanisms."
+    },
+    "2_interpreter_draft": {
+      "findings": [
+        {
+          "layer": "sequence",
+          "claim": "Human and mouse canonical SLC29A1 share 78.4% global sequence identity.",
+          "evidence_quote": "78.4%",
+          "citations": [
+            "Biopython:PairwiseAligner",
+            "Ensembl:ENSG00000112759"
+          ]
+        },
+        {
+          "layer": "sequence",
+          "claim": "The mitochondrial targeting motif identified in human SLC29A1 is absent in mouse SLC29A1.",
+          "evidence_quote": "Present (residues 1-24)",
+          "citations": [
+            "Ensembl:ENSG00000112759"
+          ]
+        }
+      ],
+      "translational_concerns": [
+        "Divergence in the mitochondrial targeting motif between human (residues 1-24) and mouse indicates potential differences in subcellular distribution, specifically mitochondrial compartmentalization, which could lead to unpredicted mitochondrial toxicity or differing intracellular drug exposure in humans.",
+        "The localisation layer contains an evidence gap due to incomplete UniProt annotation for mouse subcellular compartments, preventing empirical confirmation of cross-species distribution differences."
+      ],
+      "recommended_experiments": [
+        "Conduct immunofluorescence confocal microscopy and subcellular fractionation assays in parallel across human and murine primary cells to empirically determine mitochondrial versus plasma membrane localization of SLC29A1."
+      ]
+    },
+    "3_sceptic_critique": {
+      "is_approved": true,
+      "flagged_claims": [],
+      "missing_data_warnings": [
+        "Subcellular localisation data for mouse SLC29A1 remains incomplete in UniProt, precluding definitive empirical cross-species comparison of organellar distribution."
+      ],
+      "required_revisions": []
+    },
+    "4_final_report": {
+      "findings": [
+        {
+          "layer": "sequence",
+          "claim": "Human and mouse canonical SLC29A1 share 78.4% global sequence identity.",
+          "evidence_quote": "78.4%",
+          "citations": [
+            "Biopython:PairwiseAligner",
+            "Ensembl:ENSG00000112759"
+          ]
+        },
+        {
+          "layer": "sequence",
+          "claim": "The mitochondrial targeting motif identified in human SLC29A1 is absent in mouse SLC29A1.",
+          "evidence_quote": "Present (residues 1-24)",
+          "citations": [
+            "Ensembl:ENSG00000112759"
+          ]
+        }
+      ],
+      "translational_concerns": [
+        "Divergence in the mitochondrial targeting motif between human (residues 1-24) and mouse indicates potential differences in subcellular distribution, specifically mitochondrial compartmentalization, which could lead to unpredicted mitochondrial toxicity or differing intracellular drug exposure in humans.",
+        "The localisation layer contains an evidence gap due to incomplete UniProt annotation for mouse subcellular compartments, preventing empirical confirmation of cross-species distribution differences."
+      ],
+      "recommended_experiments": [
+        "Conduct immunofluorescence confocal microscopy and subcellular fractionation assays in parallel across human and murine primary cells to empirically determine mitochondrial versus plasma membrane localization of SLC29A1."
+      ]
+    }
+  },
+  "revision_was_needed": false
+}
