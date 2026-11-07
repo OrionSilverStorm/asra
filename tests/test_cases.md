@@ -215,5 +215,9 @@ must not rank it highly.
 | GAPDH control | | | | |
 | Missing data | | | | |
 
+**Check on every case:** `data_version` is nullable and nothing enforces it, so a layer
+returning `status: ok` with `data_version: null` would pass silently. **Check this
+manually when scoring.**
+
 **Headline for the write-up:** in ___ of 4 cases the additional layers surfaced evidence
 that sequence identity alone did not capture.
