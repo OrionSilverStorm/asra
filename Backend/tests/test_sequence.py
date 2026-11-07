@@ -212,11 +212,83 @@ def test_legacy_query_keeps_shared_contract_without_resolving():
 def test_live_slc29a1_mouse():
     result = sequence.run_sequence("SLC29A1", "mus_musculus")
     assert result["orthology"]["type"] == "ortholog_one2one"
-    assert result["measurements"]["human_length"] == 456
-    assert result["measurements"]["animal_length"] == 460
     assert 0 < result["measurements"]["identity_percent"] <= 100
     assert 0 < result["measurements"]["human_coverage_percent"] <= 100
     assert 0 < result["measurements"]["animal_coverage_percent"] <= 100
     print(json.dumps({"human": result["human"]["protein_id"], "animal": result["animal"]["protein_id"],
                       "measurements": result["measurements"], "parameters": result["parameters"]}, indent=2))
     check_invariants(result)
+
+
+# Exact proteins retrieved from Ensembl homology on 2026-11-07. Release unknown.
+# Pinned here so normal regression tests never depend on the network.
+SLC29A1_FIXTURE = {'source': {'protein_id': 'ENSP00000360820', 'seq': 'MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATQYFTNRLDMSQNVSLVTAELSKDAQASAAPAAPLPERNSLSAIFNNVMTLCAMLPLLLFTYLNSFLHQRIPQSVRILGSLVAILLVFLITAILVKVQLDALPFFVITMIKIVLINSFGAILQGSLFGLAGLLPASYTAPIMSGQGLAGFFASVAMICAIASGSELSESAFGYFITACAVIILTIICYLGLPRLEFYRYYQQLKLEGPGEQETKLDLISKGEEPRAGKEESGVSVSNSQPTNESHSIKAILKNISVLAFSVCFIFTITIGMFPAVTVEVKSSIAGSSTWERYFIPVSCFLTFNIFDWLGRSLTAVFMWPGKDSRWLPSLVLARLVFVPLLLLCNIKPRRYLTVVFEHDAWFIFFMAAFAFSNGYLASLCMCFGPKKVKPAEAETAGAIMAFFLCLGLALGAVFSFLFRAIV'}, 'target': {'protein_id': 'ENSMUSP00000063096', 'seq': 'MTTSHQPQDRYKAVWLIFFVLGLGTLLPWNFFMTATKYFTNRLDVSQNVSSDTDQSCESTKALADPTVALPARSSLSAIFNNVMTLCAMLPLLVFTCLNSFLHQRISQSVRILGSLLAILLVFLVTAALVKVEMDALIFFVITMIKIVLINSFGAILQASLFGLAGVLPANYTAPIMSGQGLAGFFTSVAMICAIASGSELSESAFGYFITACAVVILAILCYLALPRTEFYRHYLQLNLAGPAEQETKLDLISKGEEPKGRREESGVPGPNSPPTNRNQSIKAILKSICVPALSVCFIFTVTIGLFPAVTAEVESSIAGTSPWKSYFIPVACFLNFNVFDWLGRSLTAVCMWPGQDSRWLPVLVASRIVFIPLLMLCNVKARHCGAQRHHFVFKHDAWFIAFMAAFAFSNGYLASLCMCFGPKKVKPAEAETAGNIMSFFLCLGLALGAVLSFLLRALV'}}
+
+SLC29A1_HASHES = (
+    "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae",
+    "8b9af2e71601f3c470efac73271b652b839acad3382426f71753c58e81af5284",
+)
+
+
+def test_pinned_slc29a1_alignment():
+    from hashlib import sha256
+    human, animal = (SLC29A1_FIXTURE[side]["seq"] for side in ("source", "target"))
+    # Check identities before asserting any metrics for this verified pair.
+    assert tuple(sha256(s.encode("ascii")).hexdigest() for s in (human, animal)) == SLC29A1_HASHES
+    assert SLC29A1_FIXTURE["source"]["protein_id"] == "ENSP00000360820"
+    assert SLC29A1_FIXTURE["target"]["protein_id"] == "ENSMUSP00000063096"
+    result = sequence.align_proteins(human, animal)
+    assert result["measurements"] == {
+        "human_length": 456, "animal_length": 460, "alignment_columns": 461,
+        "paired_columns": 455, "exact_matches": 366, "substitutions": 89,
+        "ambiguous_pairs": 0, "insertion_events": 1, "deletion_events": 1,
+        "inserted_residues": 5, "deleted_residues": 1,
+        "identity_percent": 100 * 366 / 461,
+        "paired_identity_percent": 100 * 366 / 455,
+        "human_coverage_percent": 100 * 455 / 456,
+        "animal_coverage_percent": 100 * 455 / 460,
+    }
+    assert result["alignment"]["score"] == 1872.0
+    check_invariants(result)
+
+
+@pytest.mark.parametrize("protein", ["AC*", "A*C", "AC**", "*", "ACJ", "ACO", "ACU", "ac", "AC DE", "AC-DE", "BZX"])
+def test_resolver_and_aligner_share_validation(protein):
+    record = {"id": "gene", "protein_id": "protein", "species": "homo_sapiens", "seq": protein}
+    if protein == "BZX":
+        assert resolver._protein_record(record, "homo_sapiens")["sequence"] == protein
+        sequence.align_proteins(protein, protein)
+    else:
+        with pytest.raises(resolver.MissingSequenceError):
+            resolver._protein_record(record, "homo_sapiens")
+        with pytest.raises(ValueError):
+            sequence.align_proteins(protein, PROTEIN)
+    assert record["seq"] == protein
+
+
+def test_provenance_hashes_exact_sequences(resolved):
+    from hashlib import sha256
+    with patch.object(sequence, "resolve_orthologue", return_value=resolved):
+        result = sequence.run_sequence("SYNTHETIC", "mus_musculus")
+    for label, side in (("human", "source"), ("animal", "target")):
+        assert result["provenance"][label] == {
+            "protein_id": resolved[side]["protein_id"],
+            "sequence_sha256": sha256(resolved[side]["sequence"].encode("ascii")).hexdigest(),
+        }
+    assert result["provenance"]["source_release"] == "unknown"
+
+
+@pytest.mark.parametrize("protein,location", [("AC*", "terminal"), ("A*C", "internal or repeated"), ("AC**", "internal or repeated")])
+def test_stop_policy_is_explicit(protein, location):
+    with pytest.raises(ValueError, match=location + " stop symbol"):
+        sequence.align_proteins(protein, PROTEIN)
+
+
+def test_legacy_query_with_gene_does_not_trigger_gene_resolution():
+    query = resolver.ResolvedQuery("mus_musculus", PROTEIN, "submitted", "SLC29A1")
+    with patch.object(sequence, "resolve_orthologue") as resolve:
+        result = sequence.run_sequence(query)
+    assert result.gene == "SLC29A1"
+    assert result.status == "incomplete"
+    assert result.observations[0].value == "20 aa"
+    resolve.assert_not_called()

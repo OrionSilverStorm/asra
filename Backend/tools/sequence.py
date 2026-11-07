@@ -3,7 +3,7 @@
 Gene API: run_sequence(gene, species) -> JSON-compatible dict. The existing
 run_sequence(ResolvedQuery) -> LayerResult call remains a sequence-only fallback;
 it cannot identify a gene from a submitted sequence. Role 1 must provide a gene
-and adapt the rich result to LayerResult's string observations before integration.
+and explicitly call tools.sequence_adapter.to_layer_result before integration.
 No shared contract or route is changed here.
 
 Definitions: L = all alignment columns (including terminal/internal gaps),
@@ -17,13 +17,14 @@ strings, lowercase, whitespace and pre-gapped sequences are rejected unchanged.
 """
 
 from datetime import datetime, timezone
+from hashlib import sha256
 from typing import overload
 
 from contract import LayerResult, Observation, SourceRecord
-from tools.resolver import ResolvedQuery, resolve_orthologue
+from tools.resolver import (ResolvedQuery, resolve_orthologue, SUPPORTED_RESIDUES,
+                            validate_protein_sequence)
 
 STANDARD_RESIDUES = frozenset("ACDEFGHIKLMNPQRSTVWY")
-SUPPORTED_RESIDUES = STANDARD_RESIDUES | frozenset("BZX")
 GAP_OPEN_SCORE = -10.0
 GAP_EXTEND_SCORE = -0.5
 
@@ -43,11 +44,7 @@ METRIC_DEFINITIONS = {
 
 
 def _validate_sequence(sequence: str, label: str) -> None:
-    if not isinstance(sequence, str) or not sequence:
-        raise ValueError(f"{label} must be a non-empty protein sequence.")
-    bad = sorted(set(sequence) - SUPPORTED_RESIDUES)
-    if bad:
-        raise ValueError(f"{label} has unsupported residue characters: {', '.join(bad)}")
+    validate_protein_sequence(sequence, label)
 
 
 def align_proteins(human: str, animal: str) -> dict:
@@ -201,6 +198,15 @@ def run_sequence(gene: str | ResolvedQuery, species: str | None = None) -> dict 
                             "url": resolved["source_url"]}],
         "retrieved_at": datetime.now(timezone.utc).isoformat(),
         "data_version": None,
+        "provenance": {
+            "human": {"protein_id": resolved["source"]["protein_id"],
+                      "sequence_sha256": sha256(resolved["source"]["sequence"].encode("ascii")).hexdigest()},
+            "animal": {"protein_id": resolved["target"]["protein_id"],
+                       "sequence_sha256": sha256(resolved["target"]["sequence"].encode("ascii")).hexdigest()},
+            "sequence_hash_definition": "SHA-256 of the exact unchanged ASCII sequence, without header or newline",
+            "source_release": "unknown",
+            "source_release_evidence": "Homology response provides no verified source release; REST API version and retrieval date are not data releases.",
+        },
         **result,
         "limitations": result["limitations"] + [
             "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",

@@ -34,6 +34,22 @@ def resolve(request: AssessmentRequest) -> ResolvedQuery:
     )
 
 
+# BLOSUM62 supports these ambiguous residues, but not J/O/U or stops.
+SUPPORTED_RESIDUES = frozenset("ACDEFGHIKLMNPQRSTVWYBZX")
+
+
+def validate_protein_sequence(sequence: str, label: str) -> None:
+    """Validate unchanged data; even terminal stop markers require review."""
+    if not isinstance(sequence, str) or not sequence:
+        raise ValueError(f"{label} must be a non-empty protein sequence.")
+    if "*" in sequence:
+        location = "terminal" if sequence.endswith("*") and "*" not in sequence[:-1] else "internal or repeated"
+        raise ValueError(f"{label} contains a {location} stop symbol; stops are not aligned or stripped.")
+    bad = sorted(set(sequence) - SUPPORTED_RESIDUES)
+    if bad:
+        raise ValueError(f"{label} has unsupported residue characters: {', '.join(bad)}")
+
+
 ENSEMBL_URL = "https://rest.ensembl.org"
 REQUEST_TIMEOUT = 30.0
 
@@ -81,11 +97,10 @@ def _protein_record(record: object, expected_species: str) -> dict:
     sequence = record.get("seq")
     if not isinstance(sequence, str) or not sequence.strip():
         raise MissingSequenceError(f"Missing {expected_species} protein sequence (seq).")
-    # Accept ambiguous amino acids and terminal stops without altering API data.
-    if re.fullmatch(r"[A-Z]+\*?", sequence) is None:
-        raise MissingSequenceError(
-            f"Invalid {expected_species} unaligned protein sequence (seq)."
-        )
+    try:
+        validate_protein_sequence(sequence, expected_species)
+    except ValueError as exc:
+        raise MissingSequenceError(str(exc)) from exc
     return {
         "gene_id": record["id"],
         "protein_id": record["protein_id"],
