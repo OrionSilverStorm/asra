@@ -125,7 +125,7 @@ returns incomplete submitted-sequence evidence and does not identify a gene.
 
 ## Integration and validation
 
-See [the callable integration handoff](sequence_integration_handoff.md) for exact
+See [the callable integration handoff](../../tools/sequence_integration_handoff.md) for exact
 arguments, schemas, dependencies, failure handling and reproduction commands.
 
 Focused Role 3 validation: **220 passed, 14 skipped** (optional live tests).

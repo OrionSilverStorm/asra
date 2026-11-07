@@ -1,5 +1,12 @@
 # ASRA integration handoff — Role 1 (Full-Stack & Integration)
 
+> **Integration status (7 Nov 2026, on `master`).** This guide predates the integration; read it with these updates:
+> - **Done:** branch merged; gene from label via `tools/resolver.py::gene_from_label` (human UniProt `GN=` or a bare uppercase symbol only, never `SP`); `tools/sequence_layer.py` wraps the gene path (`run_sequence(gene, species, functional=True)` → `to_layer_result`), keeps the legacy fallback, maps errors to `unavailable` (ambiguous candidates kept) and retries transient Ensembl 5xx/429/timeouts; frontend decodes the JSON evidence (`Frontend/lib/sequenceEvidence.ts`, `SequenceEvidence.tsx`, Markdown export); agent prompts use a compacted copy (`agents/evidence.py`); new `DataOrigin` value `"fixture"` for hand-entered demo data.
+> - **Decided differently:** no gene field was added to `AssessmentRequest`; the gene comes from the label only.
+> - **Outdated claim (§8):** the Sceptic *does* check that `citedField` exists and is backed by the cited source (`agents/sceptic.py`, deterministic pass).
+> - **Still open:** a "replay" origin for recorded Role 3 evidence; localisation / cell / tissue layers are stubs on `master`.
+> - Milestone notes moved to `Backend/docs/sequence/`.
+
 ## 1. Project context and scope
 
 ASRA is a preclinical cross-species biological risk investigator. Role 3 has completed Ensembl orthologue retrieval, Biopython global sequence alignment, UniProt functional annotation analysis, nine-species compatibility testing, evidence adaptation and scientific validation. Your implementation task is to connect this scientific evidence to the application without losing measurements, provenance or uncertainty.
@@ -13,7 +20,7 @@ ASRA is a preclinical cross-species biological risk investigator. Role 3 has com
 Read these first:
 
 1. `Backend/tools/sequence_integration_handoff.md` — public callable interfaces, adaptation and failure semantics.
-2. `Backend/tools/sequence_milestone4.md` — validated results, transcript concerns, tied alignments and nine-species outcomes.
+2. `Backend/docs/sequence/sequence_milestone4.md` — validated results, transcript concerns, tied alignments and nine-species outcomes.
 3. `Backend/tools/sequence.py`, `Backend/tools/resolver.py`, `Backend/tools/sequence_functional.py`, `Backend/tools/sequence_adapter.py` and their tests listed below.
 4. `Backend/contract/models.py`, `Backend/contract/__init__.py`, `Frontend/lib/types.ts` and `claude.md` — actual shared contracts and naming rules.
 5. Latest master orchestration, agents, frontend and Role 4 implementations. The inspected source branch still contains placeholder cellular modules; this does not describe newer teammate implementations.

@@ -1,7 +1,7 @@
 # Role 3 — Milestone 4 integration handoff
 
 Validated 7 November 2026. Scientific findings and unresolved transcript-selection
-issues: [Milestone 4 report](sequence_milestone4.md).
+issues: [Milestone 4 report](../docs/sequence/sequence_milestone4.md).
 
 
 Run with `Backend/` on `PYTHONPATH`, or use it as the working directory.
