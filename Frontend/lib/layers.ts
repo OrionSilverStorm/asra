@@ -16,25 +16,39 @@ export const LAYER_ORDER: LayerName[] = [
 ];
 
 /** Human-readable info for each layer, keyed by LayerName. */
-export const LAYER_META: Record<LayerName, { title: string; source: string; description: string }> = {
+/** `short` is a compact column label (e.g. the evidence matrix header). */
+export const LAYER_META: Record<LayerName, { title: string; short: string; source: string; description: string }> = {
   sequence: {
     title: "Sequence",
+    short: "Sequence",
     source: "Ensembl orthologues · Biopython",
     description: "Global identity and identity at mapped functional residues.",
   },
   localisation: {
     title: "Subcellular localisation",
+    short: "Localisation",
     source: "UniProt",
     description: "Shared, human-only and animal-only compartments.",
   },
   cell_expression: {
     title: "Cell-type expression",
+    short: "Cell type",
     source: "CELLxGENE Census",
     description: "Detection fractions per cell population.",
   },
   tissue_expression: {
     title: "Tissue expression",
+    short: "Tissue",
     source: "GTEx · Bgee",
     description: "Tissue distribution with matched anatomical IDs.",
   },
 };
+
+/**
+ * Layer a finding cites, from its "<layer>.<field>" citedField.
+ * Returns null if the prefix isn't a known layer (malformed citation).
+ */
+export function citedLayer(citedField: string): LayerName | null {
+  const prefix = citedField.split(".")[0];
+  return LAYER_ORDER.find((l) => l === prefix) ?? null;
+}

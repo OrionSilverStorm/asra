@@ -67,7 +67,7 @@ export function AssessmentWorkspace() {
   return (
     // scroll-mt-4 leaves a little space above when scrolled into view.
     <div ref={topRef} className="scroll-mt-4">
-      <Container className="py-10 sm:py-12">
+      <Container className="py-6 sm:py-8">
         {/* Invisible live region: screen readers announce progress. */}
         <p className="sr-only" aria-live="polite">
           {state.status === "submitting" && "Running assessment."}
@@ -78,11 +78,12 @@ export function AssessmentWorkspace() {
           // ── Report view ──
           <ReportView report={state.report} onReset={() => setState({ status: "idle" })} />
         ) : (
-          // ── Form view: a single centred card, capped at a readable width ──
-          <div className="mx-auto max-w-3xl">
-            <Card>
-              <CardHeader eyebrow="New assessment" title="Species and sequence" />
-              <CardBody className="flex flex-col gap-5">
+          // ── Form view: a single query panel, capped at a readable width ──
+          // id="query" is the target of the header's "Query" nav link.
+          <div className="max-w-3xl">
+            <Card id="query">
+              <CardHeader eyebrow="New assessment" title="Query" />
+              <CardBody className="flex flex-col gap-4">
                 {/* Error from the last attempt, shown above the form. */}
                 {state.status === "error" && (
                   <Alert tone="danger" title="Assessment failed" role="alert">

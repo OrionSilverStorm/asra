@@ -18,7 +18,7 @@ def run_assessment(request: AssessmentRequest) -> Report:
     query = resolve(request)
     # Each layer runs in isolation: a crash becomes an 'unavailable' result.
     layers = [run_isolated(name, fn, query) for name, fn in LAYERS.items()]
-    agents = run_agents(layers, sceptic=request.sceptic)
+    agents = run_agents(layers)
     report = build_report(request, compute_stats(query.sequence), layers, agents)
     log_event("assessment", {"report": report.model_dump(mode="json", by_alias=True)})
     return report

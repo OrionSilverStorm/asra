@@ -1,5 +1,5 @@
 /**
- * Badge: a small rounded label (status, concern level, data origin).
+ * Badge: a small square-cornered label (status, concern level, data origin).
  * Pick a semantic `tone`; the colours come from globals.css tokens.
  */
 
@@ -20,7 +20,8 @@ const TONES: Record<BadgeTone, string> = {
 
 export function Badge({ tone = "neutral", children }: { tone?: BadgeTone; children: ReactNode }) {
   return (
-    <span className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${TONES[tone]}`}>
+    // whitespace-nowrap: a badge never breaks across lines.
+    <span className={`inline-flex items-center whitespace-nowrap rounded-sm px-2 py-0.5 text-xs font-medium ${TONES[tone]}`}>
       {children}
     </span>
   );

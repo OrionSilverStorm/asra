@@ -35,13 +35,11 @@ If you change a field, update both files and this section.
 {
   "species": "mus_musculus",
   "sequence": "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKAVQVKVKALPDAQ",
-  "sequenceLabel": "test|DEMO1|Example protein",
-  "sceptic": true
+  "sequenceLabel": "test|DEMO1|Example protein"
 }
 ```
 - `sequence`: uppercase, letters `ACDEFGHIKLMNPQRSTVWYX` only, at least 10 residues. The frontend strips FASTA headers, whitespace and digits; the backend re-validates (invalid input → 422).
 - `sequenceLabel`: the FASTA header without `>`, or `null`.
-- `sceptic`: optional, defaults to `true`. `false` skips the Sceptic's Gemini challenge pass (the demo toggle); the deterministic citation checks always run.
 
 ## LayerResult (what every layer tool returns), snake_case
 ```json

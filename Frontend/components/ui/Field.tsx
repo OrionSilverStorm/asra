@@ -13,6 +13,8 @@ interface FieldProps {
   /** Must match the child input's id (links <label htmlFor>). */
   id: string;
   label: string;
+  /** Optional step number shown before the label (numbered query form). */
+  step?: number;
   /** Helper text shown when there is no error. */
   hint?: ReactNode;
   /** Error message; replaces the hint and turns red. */
@@ -20,10 +22,16 @@ interface FieldProps {
   children: ReactNode;
 }
 
-export function Field({ id, label, hint, error, children }: FieldProps) {
+export function Field({ id, label, step, hint, error, children }: FieldProps) {
   return (
     <div className="flex flex-col gap-1.5">
-      <label htmlFor={id} className="text-sm font-medium">
+      <label htmlFor={id} className="flex items-center gap-2 text-sm font-semibold">
+        {/* Numbered circle, as on the cBioPortal query page. */}
+        {step !== undefined && (
+          <span aria-hidden className="grid size-5 place-items-center rounded-full bg-accent text-[11px] font-bold text-accent-ink">
+            {step}
+          </span>
+        )}
         {label}
       </label>
       {children}
@@ -45,7 +53,7 @@ export function Field({ id, label, hint, error, children }: FieldProps) {
 
 /** Classes shared by every text-style input (Select, Textarea). */
 export const inputBase =
-  "w-full rounded-md border bg-surface text-ink placeholder:text-muted/70 transition focus:outline-none focus:ring-2 focus:ring-accent/40 disabled:opacity-60";
+  "w-full rounded border bg-surface text-ink placeholder:text-muted/70 transition focus:outline-none focus:ring-2 focus:ring-accent/30 disabled:opacity-60";
 
 /** Border colour: red when invalid, otherwise neutral with accent on focus. */
 export function inputBorder(invalid: boolean) {

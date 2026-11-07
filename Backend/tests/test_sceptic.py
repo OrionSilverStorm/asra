@@ -82,22 +82,6 @@ def test_model_failure_keeps_the_deterministic_result(monkeypatch):
 # ── Orchestration ──────────────────────────────────────────────────────────
 
 
-def test_toggle_off_skips_the_challenge(monkeypatch):
-    """sceptic=False still interprets, but never asks the Sceptic."""
-    calls = []
-    monkeypatch.setattr(llm, "available", lambda: True)
-
-    def ask_json(prompt, schema, agent):
-        calls.append(agent)
-        return [schema(claim="c", mechanism="m", concern="high",
-                       cited_field="localisation.shared_compartments", source_record_id="s1")]
-
-    monkeypatch.setattr(llm, "ask_json", ask_json)
-    # The claim is properly cited, so the deterministic pass keeps it.
-    assert [f.id for f in run_agents([layer()], sceptic=False).findings] == ["f1"]
-    assert calls == ["interpreter"]
-
-
 def test_revision_happens_at_most_once(monkeypatch):
     """Every claim rejected: the Interpreter is re-run once, then it stops."""
     calls = []

@@ -1,67 +1,73 @@
 /*
  * Global styles and design tokens.
  *
+ * Look: modelled on familiar research portals (cBioPortal, AlphaFold DB,
+ * UniProt): navy top bar, research-blue links/buttons, cool greys, flat
+ * panels and dense tables.
+ *
  * All colours are defined once here as CSS variables ("tokens") and then
  * exposed to Tailwind via @theme. Components only use the token names
  * (bg-surface, text-muted, border-rule, ...), never raw hex values. To
  * re-theme the site, edit this file.
+ *
+ * Light and dark values sit side by side in `light-dark(light, dark)`. The
+ * browser picks one based on `color-scheme`: light by default, dark when
+ * the user switches (data-theme="dark" on <html>, see lib/theme.ts). This
+ * keeps one token list instead of two copies.
  */
 
 @import "tailwindcss";
 
-/* ── Light theme (default) ─────────────────────────────────────────── */
 :root {
-  --paper: #fafaf7; /* page background: warm off-white, like paper */
-  --surface: #ffffff; /* cards */
-  --sunken: #f2f2ed; /* recessed areas: chart tracks, info boxes */
-  --ink: #14201f; /* main text */
-  --muted: #5b6664; /* secondary text */
-  --rule: #e3e3dc; /* borders and dividers */
-  --accent: #0f5e5a; /* brand colour: deep teal */
-  --accent-ink: #ffffff; /* text on accent backgrounds */
-  --accent-soft: #e4efed; /* tinted accent background */
+  /* Light is the default, whatever the OS setting. */
+  color-scheme: light;
 
-  /* Status colours: strong (text) + soft (background) pairs */
-  --ok: #0f6e5a; /* layer complete */
-  --ok-soft: #e1f1ec;
-  --warn: #8a5a00; /* incomplete / caveats */
-  --warn-soft: #fbf0d9;
-  --danger: #a3302a; /* errors, high concern */
-  --danger-soft: #f9e4e2;
-  --na: #6b7280; /* unavailable / missing data (grey) */
-  --na-soft: #ececea;
+  /* ── Surfaces and text ── */
+  --paper: light-dark(#f4f6f9, #0b1220); /* page background */
+  --surface: light-dark(#ffffff, #111a2b); /* panels */
+  --sunken: light-dark(#eef1f5, #172236); /* panel heading bars, zebra rows, tracks */
+  --ink: light-dark(#1b2430, #e3e8f0); /* main text */
+  --muted: light-dark(#5a6576, #95a2b6); /* secondary text */
+  --rule: light-dark(#d9dee5, #22304a); /* borders and dividers */
+
+  /* ── Brand: research blue for links, buttons, focus ── */
+  --accent: light-dark(#1f5fae, #6ea8f0);
+  --accent-ink: light-dark(#ffffff, #0b1220); /* text on accent backgrounds */
+  --accent-soft: light-dark(#e6eef9, #16294a); /* tinted accent background */
+
+  /* ── Chrome: the institutional navy header/footer bar ── */
+  --chrome: light-dark(#0f2c4c, #081626);
+  --chrome-ink: light-dark(#ffffff, #e3e8f0); /* text on the bar */
+  --chrome-muted: light-dark(#a9bbd1, #7f8fa6); /* secondary text on the bar */
+
+  /* ── Status colours: strong (text/fill) + soft (background) pairs ── */
+  --ok: light-dark(#1d7a4f, #5cc794); /* layer complete */
+  --ok-soft: light-dark(#e3f3ea, #12301f);
+  --warn: light-dark(#9a6300, #e8b85a); /* incomplete / caveats */
+  --warn-soft: light-dark(#fdf3dc, #33280f);
+  --danger: light-dark(#b42e2e, #f08a84); /* errors, high concern */
+  --danger-soft: light-dark(#fbe6e5, #3b1a1b);
+  --na: light-dark(#7a8494, #8c96a6); /* unavailable / missing data (grey) */
+  --na-soft: light-dark(#eceff3, #1a2333);
+
+  /* ── Residue classes (Clustal-like colours biologists already know) ── */
+  --res-hydrophobic: light-dark(#3b6fd1, #7aa5f2); /* A V L I M F W */
+  --res-polar: light-dark(#2e9a4e, #6ccf8a); /* S T N Q Y C */
+  --res-positive: light-dark(#d1453b, #f2877e); /* K R H */
+  --res-negative: light-dark(#a8459e, #dc8ad3); /* D E */
+  --res-special: light-dark(#d98a1c, #f0b45c); /* G P X */
 }
 
-/* ── Dark theme: same token names, different values ────────────────── */
-/* Follows the OS setting automatically. Limited to `screen` so printed
-   and PDF reports always use the light palette (dark ink on white). */
-@media screen and (prefers-color-scheme: dark) {
-  :root {
-    --paper: #0e1413;
-    --surface: #151d1c;
-    --sunken: #1b2423;
-    --ink: #e7ecea;
-    --muted: #9aa6a3;
-    --rule: #26302f;
-    --accent: #5fb8ae;
-    --accent-ink: #0b1514;
-    --accent-soft: #173230;
-    --ok: #6cc3a8;
-    --ok-soft: #15302a;
-    --warn: #e2b45a;
-    --warn-soft: #33290f;
-    --danger: #ef8a83;
-    --danger-soft: #3a1b19;
-    --na: #9aa1a8;
-    --na-soft: #22292a;
-  }
+/* Dark mode, switched on by the header toggle (lib/theme.ts). */
+:root[data-theme="dark"] {
+  color-scheme: dark;
 }
 
 /*
  * Map tokens to Tailwind utility names. `--color-surface` creates
  * bg-surface, text-surface, border-surface, etc. `inline` means Tailwind
- * references the variable instead of copying its value, so the dark-mode
- * override above takes effect.
+ * references the variable instead of copying its value, so theme changes
+ * take effect.
  */
 @theme inline {
   --color-paper: var(--paper);
@@ -73,6 +79,9 @@
   --color-accent: var(--accent);
   --color-accent-ink: var(--accent-ink);
   --color-accent-soft: var(--accent-soft);
+  --color-chrome: var(--chrome);
+  --color-chrome-ink: var(--chrome-ink);
+  --color-chrome-muted: var(--chrome-muted);
   --color-ok: var(--ok);
   --color-ok-soft: var(--ok-soft);
   --color-warn: var(--warn);
@@ -81,11 +90,15 @@
   --color-danger-soft: var(--danger-soft);
   --color-na: var(--na);
   --color-na-soft: var(--na-soft);
+  --color-res-hydrophobic: var(--res-hydrophobic);
+  --color-res-polar: var(--res-polar);
+  --color-res-positive: var(--res-positive);
+  --color-res-negative: var(--res-negative);
+  --color-res-special: var(--res-special);
 
   /* Font variables come from next/font in app/layout.tsx */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-  --font-serif: var(--font-source-serif);
 }
 
 /* Base page colours and font */
@@ -107,7 +120,13 @@ body {
 }
 
 @media print {
-  /* Pure white paper instead of the off-white screen background. */
+  /* Always print the light palette (dark ink on white), whatever the
+     on-screen theme. Listed with [data-theme] to beat its specificity. */
+  :root,
+  :root[data-theme] {
+    color-scheme: light;
+  }
+  /* Pure white paper instead of the grey screen background. */
   body {
     background: #ffffff;
   }

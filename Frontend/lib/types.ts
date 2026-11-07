@@ -44,12 +44,6 @@ export interface AssessmentRequest {
   sequence: string;
   /** FASTA header without the leading ">", if one was supplied. */
   sequenceLabel: string | null;
-  /**
-   * Run the Sceptic's challenge pass (default true). Off shows the
-   * Interpreter's claims unchallenged; the backend's citation checks run
-   * either way, so no claim escapes uncited.
-   */
-  sceptic: boolean;
 }
 
 /** The four evidence layers from the design doc. */

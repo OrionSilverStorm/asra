@@ -33,19 +33,15 @@ def _experiments(draft: Draft, findings: list[Finding], evidence: Evidence) -> l
     ]
 
 
-def run_agents(layers: list[LayerResult], sceptic: bool = True) -> AgentOutput:
-    """Select evidence, draft findings, review, and revise at most once.
-
-    `sceptic=False` skips the challenge pass (the demo's Sceptic toggle);
-    the deterministic citation checks still run, so no claim escapes uncited.
-    """
+def run_agents(layers: list[LayerResult]) -> AgentOutput:
+    """Select evidence, draft findings, review, and revise at most once."""
     evidence = select_evidence(layers)
     draft = interpret(evidence.citable)
-    findings, feedback = review(draft.findings, layers, use_llm=sceptic)
+    findings, feedback = review(draft.findings, layers)
     if feedback:
         # Single revision pass with the Sceptic's notes, then a final review.
         draft = interpret(evidence.citable, feedback)
-        findings, _ = review(draft.findings, layers, use_llm=sceptic)
+        findings, _ = review(draft.findings, layers)
     return AgentOutput(
         findings=findings,
         recommended_experiments=_experiments(draft, findings, evidence),

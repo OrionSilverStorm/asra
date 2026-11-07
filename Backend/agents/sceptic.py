@@ -99,6 +99,7 @@ def _challenge(findings: list[Finding], layers: list[LayerResult]) -> tuple[list
 def review(
     findings: list[Finding],
     layers: list[LayerResult],
+    # Deterministic-only review, for tests that must not reach Gemini.
     use_llm: bool = True,
 ) -> tuple[list[Finding], list[str]]:
     """Return (accepted findings, feedback notes for one revision pass)."""

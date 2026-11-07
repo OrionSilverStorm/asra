@@ -12,7 +12,7 @@ type Variant = "primary" | "secondary" | "ghost";
 
 /** Tailwind classes per variant. Colours come from tokens in globals.css. */
 const VARIANTS: Record<Variant, string> = {
-  primary: "bg-accent text-accent-ink hover:opacity-90",
+  primary: "bg-accent text-accent-ink hover:opacity-90 shadow-sm",
   secondary: "border border-rule bg-surface text-ink hover:bg-sunken",
   ghost: "text-muted hover:text-ink hover:bg-sunken",
 };
@@ -28,7 +28,7 @@ export function Button({ variant = "primary", className = "", type = "button", .
   return (
     <button
       type={type}
-      className={`inline-flex h-10 items-center justify-center gap-2 rounded-md px-4 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${VARIANTS[variant]} ${className}`}
+      className={`inline-flex h-9 items-center justify-center gap-2 rounded px-3.5 text-sm font-medium transition disabled:cursor-not-allowed disabled:opacity-50 ${VARIANTS[variant]} ${className}`}
       {...props}
     />
   );
