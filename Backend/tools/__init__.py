@@ -8,11 +8,12 @@ from contract import LayerName
 from tools.base import LayerFn
 from tools.cell_expression import run_cell_expression
 from tools.localisation import run_localisation
-from tools.sequence import run_sequence
+from tools.sequence_layer import run_sequence_layer
 from tools.tissue import run_tissue_expression
 
 LAYERS: dict[LayerName, LayerFn] = {
-    "sequence": run_sequence,
+    # Gene-based comparison when a gene is known, legacy fallback otherwise.
+    "sequence": run_sequence_layer,
     "localisation": run_localisation,
     "cell_expression": run_cell_expression,
     "tissue_expression": run_tissue_expression,

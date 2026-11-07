@@ -100,4 +100,8 @@ If you change a field, update both files and this section.
 ## Pipeline order
 `AssessmentRequest` → `tools/resolver.py` (ResolvedQuery) → 4 layers via `run_isolated` → `agents/` (Investigator → Interpreter ⇄ Sceptic, one revision) → `report/builder.py` → `Report`.
 
+Gene resolution (`resolver.gene_from_label`): the gene comes only from a human UniProt header's `GN=` or a label that is exactly an uppercase symbol; never a first-token guess (`sp|Q99808|…` is not gene `SP`). No gene → `gene=None`.
+
+Sequence layer (`tools/sequence_layer.py`): with a gene it runs Ensembl orthologue + alignment + UniProt features (`run_sequence(gene, species, functional=True)` → `to_layer_result`); its observation values are **JSON strings**. Without a gene it falls back to the submitted-length-only `incomplete` result. Orthologue errors become `unavailable` with the reason (ambiguous candidates kept as evidence).
+
 In the agent stage: the Investigator splits layers into citable evidence and excluded ones (its `gaps` become report limitations and "obtain this data" experiments); the Interpreter drafts findings, each with a suggested `experiment`; the Sceptic runs a deterministic pass (citation must match an observation; `incomplete` evidence is forced to `flagged`) and then a Gemini pass whose verdicts can only weaken a finding (`accept | downgrade | reject`), never promote one. An experiment is kept only while its finding survives. Each run is appended to `Backend/data/logs/runs.jsonl`.

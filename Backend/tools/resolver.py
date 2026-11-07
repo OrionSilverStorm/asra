@@ -25,18 +25,39 @@ class ResolvedQuery:
     gene: Optional[str] = None
 
 
+# HGNC-style human symbol: uppercase letter first, then uppercase/digits/hyphen.
+_SYMBOL = re.compile(r"[A-Z][A-Z0-9-]{0,19}")
+
+
+def gene_from_label(label: Optional[str]) -> Optional[str]:
+    """Return a human gene symbol stated explicitly in a FASTA label, else None.
+
+    Two routes only (see INTEGRATE4U.md §3), never a first-token guess, so
+    `sp|Q99808|S29A1_HUMAN` does not become gene "SP":
+    1. A UniProt header's `GN=<symbol>`, accepted only when the header says
+       the organism is human (OS=Homo sapiens or an _HUMAN entry name) and
+       does not name another organism.
+    2. A label that is exactly one uppercase symbol, e.g. "SLC29A1".
+    """
+    if not label:
+        return None
+    text = label.strip().lstrip(">").strip()
+    gn = re.search(r"\bGN=(\S+)", text)
+    if gn:
+        organism = re.search(r"\bOS=(.+?)(?:\s+[A-Z]{2}=|$)", text)
+        human = (organism.group(1).strip() == "Homo sapiens") if organism else "_HUMAN" in text
+        return gn.group(1) if human and _SYMBOL.fullmatch(gn.group(1)) else None
+    # Route 2: the whole label is a bare symbol (case-sensitive, so "demo" is not one).
+    return text if _SYMBOL.fullmatch(text) else None
+
+
 def resolve(request: AssessmentRequest) -> ResolvedQuery:
     """Build the shared query.
 
-    A gene symbol is taken only from an explicit sequence_label; a bare
-    sequence never yields a guessed gene (gene stays None).
+    The gene comes only from an explicit statement in sequence_label
+    (`gene_from_label`); a bare sequence never yields a guessed gene.
     """
-    gene: Optional[str] = None
-    if request.sequence_label:
-        candidate = request.sequence_label.strip().lstrip(">").strip()
-        if candidate:
-            # Extract first token, removing common FASTA delimiters like pipe or space
-            gene = candidate.split()[0].split("|")[0].strip().upper()
+    gene = gene_from_label(request.sequence_label)
 
     return ResolvedQuery(
         species=request.species,
