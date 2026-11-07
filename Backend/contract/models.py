@@ -42,8 +42,9 @@ LayerStatus = Literal["ok", "incomplete", "unavailable"]
 # Qualitative concern on a finding. Deliberately not a number (no risk scores).
 Concern = Literal["high", "moderate", "low", "flagged"]
 
-# Whether a report came from the real pipeline or the frontend's mock.
-DataOrigin = Literal["mock", "live"]
+# Whether a report came from the real pipeline, hand-entered demo fixtures
+# (any layer served by tools/fixtures.py), or the frontend's mock.
+DataOrigin = Literal["mock", "live", "fixture"]
 
 # The 20 standard amino acids plus X (unknown), shared with tools/sequence_stats.
 VALID_RESIDUES = frozenset("ACDEFGHIKLMNPQRSTVWYX")

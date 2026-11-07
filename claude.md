@@ -28,7 +28,7 @@ If you change a field, update both files and this section.
 | `LayerName` | `sequence`, `localisation`, `cell_expression`, `tissue_expression` |
 | `LayerStatus` | `ok` (ran, has data) · `incomplete` (partial data) · `unavailable` (did not run / failed) |
 | `Concern` | `high`, `moderate`, `low`, `flagged` |
-| `DataOrigin` | `live` (backend) · `mock` (frontend-only stand-in) |
+| `DataOrigin` | `live` (backend) · `fixture` (backend, at least one layer served hand-entered demo data, `data_version` = `"fixture (hand-entered)"`) · `mock` (frontend-only stand-in) |
 
 ## AssessmentRequest (frontend → `POST /assess`)
 ```json

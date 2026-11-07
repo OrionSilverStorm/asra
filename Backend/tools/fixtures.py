@@ -21,6 +21,10 @@ from typing import Optional
 from contract import LayerName, LayerResult, Observation, SourceRecord, SpeciesId
 from tools.resolver import ResolvedQuery
 
+# data_version stamped on every fixture layer. report/builder.py uses it to
+# set the report origin to "fixture"; Frontend/lib/layers.ts mirrors it.
+FIXTURE_VERSION = "fixture (hand-entered)"
+
 # Prepended to every fixture layer's limitations.
 FIXTURE_NOTE = (
     "FIXTURE DATA: copied by hand from the records cited here for demonstration. "
@@ -188,6 +192,6 @@ def fixture(layer: LayerName, query: ResolvedQuery) -> Optional[LayerResult]:
         layer=layer,
         # Never "ok": hand-entered evidence is partial by definition.
         status="incomplete",
-        data_version="fixture (hand-entered)",
+        data_version=FIXTURE_VERSION,
         **case[layer],
     )

@@ -126,8 +126,12 @@ export interface SequenceStats {
   composition: { residue: string; fraction: number }[];
 }
 
-/** Whether a report came from the in-browser mock or the real backend. */
-export type DataOrigin = "mock" | "live";
+/**
+ * Where a report's data came from: the real backend ("live"), the backend
+ * with hand-entered demo fixtures in any layer ("fixture"), or the
+ * in-browser mock ("mock").
+ */
+export type DataOrigin = "mock" | "live" | "fixture";
 
 /** The full report rendered by <ReportView>. */
 export interface Report {

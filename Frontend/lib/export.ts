@@ -75,6 +75,9 @@ export function reportToMarkdown(report: Report): string {
   if (report.origin === "mock") {
     push("> **Mock data.** Generated without the ASRA backend; only sequence statistics are real.", "");
   }
+  if (report.origin === "fixture") {
+    push("> **Demo fixture data.** At least one layer used hand-entered demo evidence, not a live retrieval.", "");
+  }
   push(
     `- **Species:** ${species.commonName} (*${species.scientificName}*)`,
     `- **Sequence:** ${report.request.sequenceLabel ?? "unlabelled"}`,

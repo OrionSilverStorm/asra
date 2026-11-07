@@ -66,8 +66,11 @@ export function ReportHeader({ report, onReset }: ReportHeaderProps) {
           {/* Entry ID + origin. Mock must be impossible to mistake for real results. */}
           <div className="mb-1.5 flex flex-wrap items-center gap-2">
             <span className="rounded-sm bg-accent-soft px-1.5 py-0.5 font-mono text-xs font-medium text-accent">{entryId}</span>
+            {/* Fixture reports must never read as a live retrieval. */}
             {report.origin === "mock" ? (
               <Badge tone="warn">Mock data · backend not connected</Badge>
+            ) : report.origin === "fixture" ? (
+              <Badge tone="warn">Demo fixture data · not a live retrieval</Badge>
             ) : (
               <Badge tone="ok">Live</Badge>
             )}

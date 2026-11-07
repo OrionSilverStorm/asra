@@ -9,6 +9,12 @@ from datetime import datetime, timezone
 
 from agents import AgentOutput
 from contract import AssessmentRequest, LayerResult, Report, SequenceStats
+from tools.fixtures import FIXTURE_VERSION
+
+
+def _fixture_layers(layers: list[LayerResult]) -> list[str]:
+    """Names of layers that served hand-entered demo data instead of a live retrieval."""
+    return [l.layer for l in layers if l.data_version == FIXTURE_VERSION]
 
 
 def _limitations(layers: list[LayerResult], agents: AgentOutput) -> list[str]:
@@ -19,6 +25,11 @@ def _limitations(layers: list[LayerResult], agents: AgentOutput) -> list[str]:
         notes.append(
             f"{len(missing)} of {len(layers)} layers did not return complete data "
             f"({', '.join(missing)}). Missing evidence is not evidence of similarity."
+        )
+    fixtures = _fixture_layers(layers)
+    if fixtures:
+        notes.append(
+            f"Demo fixture data (hand-entered, not a live retrieval) was used for: {', '.join(fixtures)}."
         )
     if all(l.gene is None for l in layers):
         notes.append("No gene identifier was resolved from the submission, so database layers could not run.")
@@ -35,7 +46,8 @@ def build_report(
     return Report(
         id=str(uuid.uuid4()),
         generated_at=datetime.now(timezone.utc).isoformat(),
-        origin="live",
+        # Any fixture-backed layer makes the whole report "fixture", never "live".
+        origin="fixture" if _fixture_layers(layers) else "live",
         request=request,
         sequence_stats=stats,
         layers=layers,
