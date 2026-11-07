@@ -25,6 +25,14 @@ const WATER_MASS = 18.02;
 /** Shortest sequence we accept; anything shorter is almost certainly a mistake. */
 export const MIN_SEQUENCE_LENGTH = 10;
 
+/**
+ * Example input (human insulin, one FASTA record). Shared by the sequence
+ * box placeholder and the form's "Load example" link, so it's defined once.
+ */
+export const EXAMPLE_FASTA =
+  ">sp|P01308|INS_HUMAN Insulin\n" +
+  "MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKTRREAEDLQVGQVELGGGPGAGSLQPLALEGSLQKRGIVEQCCTSICSLYQLENYCN";
+
 /** Result of parsing whatever the user pasted. */
 export interface ParsedSequence {
   /** FASTA header text (without ">"), or null for a raw sequence. */

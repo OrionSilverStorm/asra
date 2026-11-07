@@ -16,4 +16,4 @@ python-dotenv
 pytest
 httpx
 
-biopython==1.88
+biopython>=1.84

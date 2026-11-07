@@ -13,7 +13,7 @@
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Spinner } from "@/components/ui/Spinner";
-import { parseSequence, validateSequence } from "@/lib/sequence";
+import { EXAMPLE_FASTA, parseSequence, validateSequence } from "@/lib/sequence";
 import { isSpeciesId } from "@/lib/species";
 import type { AssessmentRequest } from "@/lib/types";
 import { SequenceInput } from "./SequenceInput";
@@ -25,6 +25,9 @@ interface AssessmentFormProps {
   /** True while the parent is waiting on a response; disables inputs. */
   submitting: boolean;
 }
+
+/** Species pre-selected by "Load example": mouse, the usual first model. */
+const EXAMPLE_SPECIES = "mus_musculus";
 
 /** One optional message per field; null/undefined = no error. */
 interface Errors {
@@ -82,7 +85,20 @@ export function AssessmentForm({ onSubmit, submitting }: AssessmentFormProps) {
       />
 
       {/* Action row, separated from the inputs by a rule. */}
-      <div className="flex items-center justify-end gap-3 border-t border-rule pt-5">
+      <div className="flex flex-wrap items-center gap-3 border-t border-rule pt-4">
+        {/* Example query link, as on cBioPortal: fills both fields at once. */}
+        <button
+          type="button"
+          disabled={submitting}
+          onClick={() => {
+            setSpecies(EXAMPLE_SPECIES);
+            setSequence(EXAMPLE_FASTA);
+            setErrors({});
+          }}
+          className="mr-auto text-sm text-accent hover:underline disabled:opacity-50"
+        >
+          Load example (mouse · human insulin)
+        </button>
         {/* Clear: disabled when there is nothing to clear. */}
         <Button
           variant="ghost"

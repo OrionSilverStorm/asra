@@ -1,16 +1,46 @@
-"""Unit tests for the strengthened Sceptic agent audit checks.
+"""Sceptic tests: the deterministic checks, then the Gemini pass (mocked)."""
 
-Verifies that the Sceptic rejects all 6 scientifically invalid patterns:
-1. Claims that missing annotations prove biological absence
-2. Unsupported clinical safety predictions
-3. Comparisons of incompatible cell populations
-4. Treating RNA expression as protein abundance
-5. Unsupported numerical comparisons between GTEx and Bgee
-6. Findings with unrelated or missing citations / invalid field references
-"""
+import pytest
 
-from agents.sceptic import review
+from agents import llm
+from agents.orchestrator import run_agents
+from agents.sceptic import Verdict, review
 from contract import Finding, LayerResult, Observation, SourceRecord
+
+
+def layer(status="ok"):
+    """One citable layer, matching the finding below."""
+    return LayerResult(
+        species="mus_musculus",
+        layer="localisation",
+        status=status,
+        observations=[Observation(field="shared_compartments", value="plasma membrane", source_record_id="s1")],
+        source_records=[SourceRecord(id="s1", source="UniProt")],
+    )
+
+
+def finding(**over):
+    """A finding that cites the observation above, unless overridden."""
+    base = dict(id="f1", claim="c", mechanism="m", concern="high",
+                cited_field="localisation.shared_compartments", source_record_id="s1")
+    return Finding(**{**base, **over})
+
+
+# ── Deterministic pass ─────────────────────────────────────────────────────
+
+
+def test_citation_must_match_an_observation():
+    """The source exists, but no observation of that field is behind it."""
+    accepted, feedback = review([finding(cited_field="localisation.invented")], [layer()], use_llm=False)
+    assert accepted == [] and "no observation" in feedback[0]
+
+
+def test_incomplete_evidence_is_flagged():
+    accepted, _ = review([finding()], [layer(status="incomplete")], use_llm=False)
+    assert accepted[0].concern == "flagged"
+
+
+# ── Strengthened Scientific Audit Checks ───────────────────────────────────
 
 
 def _make_fixture_layers() -> list[LayerResult]:
@@ -77,7 +107,7 @@ def test_sceptic_rejects_missing_citation():
         cited_field="sequence.global_identity",
         source_record_id="non_existent_source",
     )
-    accepted, feedback = review([f], layers)
+    accepted, feedback = review([f], layers, use_llm=False)
     assert len(accepted) == 0
     assert len(feedback) == 1
     assert "not in the evidence" in feedback[0]
@@ -94,10 +124,10 @@ def test_sceptic_rejects_invalid_cited_field():
         cited_field="sequence.non_existent_field",
         source_record_id="seq_rec",
     )
-    accepted, feedback = review([f], layers)
+    accepted, feedback = review([f], layers, use_llm=False)
     assert len(accepted) == 0
     assert len(feedback) == 1
-    assert "does not match any observation" in feedback[0]
+    assert "no observation" in feedback[0]
 
 
 def test_sceptic_rejects_clinical_safety_prediction():
@@ -111,7 +141,7 @@ def test_sceptic_rejects_clinical_safety_prediction():
         cited_field="sequence.global_identity",
         source_record_id="seq_rec",
     )
-    accepted, feedback = review([f], layers)
+    accepted, feedback = review([f], layers, use_llm=False)
     assert len(accepted) == 0
     assert len(feedback) == 1
     assert "unsupported clinical safety prediction" in feedback[0]
@@ -128,7 +158,7 @@ def test_sceptic_rejects_missing_annotation_treated_as_biological_absence():
         cited_field="localisation.compartment",
         source_record_id="loc_rec",
     )
-    accepted, feedback = review([f], layers)
+    accepted, feedback = review([f], layers, use_llm=False)
     assert len(accepted) == 0
     assert len(feedback) == 1
     assert "missing annotation" in feedback[0]
@@ -146,7 +176,7 @@ def test_sceptic_rejects_incompatible_cell_populations():
         cited_field="cell_expression.fraction_expressing",
         source_record_id="cell_rec",
     )
-    accepted, feedback = review([f], layers)
+    accepted, feedback = review([f], layers, use_llm=False)
     assert len(accepted) == 0
     assert len(feedback) == 1
     assert "incompatible cell populations" in feedback[0]
@@ -163,7 +193,7 @@ def test_sceptic_rejects_rna_conflated_with_protein_abundance():
         cited_field="cell_expression.fraction_expressing",
         source_record_id="cell_rec",
     )
-    accepted, feedback = review([f], layers)
+    accepted, feedback = review([f], layers, use_llm=False)
     assert len(accepted) == 0
     assert len(feedback) == 1
     assert "cannot be treated as a direct proxy for protein abundance" in feedback[0]
@@ -180,37 +210,78 @@ def test_sceptic_rejects_gtex_bgee_numerical_comparison():
         cited_field="tissue_expression.tpm",
         source_record_id="tissue_rec",
     )
-    accepted, feedback = review([f], layers)
+    accepted, feedback = review([f], layers, use_llm=False)
     assert len(accepted) == 0
     assert len(feedback) == 1
     assert "numerical comparison between GTEx and Bgee" in feedback[0]
 
 
-def test_sceptic_accepts_valid_finding_and_downgrades_incomplete():
-    """Valid findings pass audit, and findings resting on incomplete layers are downgraded."""
-    layers = _make_fixture_layers()
-    valid_seq = Finding(
-        id="f1",
-        claim="Human and mouse canonical SLC29A1 share 78.4% global identity.",
-        mechanism="Sequence divergence in transmembrane domains may alter substrate affinity.",
-        concern="moderate",
-        cited_field="sequence.global_identity",
-        source_record_id="seq_rec",
-    )
-    valid_loc_caveat = Finding(
-        id="f2",
-        claim="UniProt records indicate mouse mitochondrial localization data is unannotated.",
-        mechanism="Empirical cross-species validation required.",
-        concern="high",
-        cited_field="localisation.subcellular_location",
-        source_record_id="loc_rec",
-    )
-    accepted, feedback = review([valid_seq, valid_loc_caveat], layers)
-    assert len(accepted) == 2
-    assert len(feedback) == 0
-    # First finding from complete layer remains 'moderate'
-    assert accepted[0].concern == "moderate"
-    assert accepted[0].sceptic_note is None
-    # Second finding from incomplete layer is downgraded to 'flagged' with note
-    assert accepted[1].concern == "flagged"
-    assert "downgraded" in accepted[1].sceptic_note.lower()
+# ── Gemini pass ────────────────────────────────────────────────────────────
+
+
+@pytest.fixture
+def verdict(monkeypatch):
+    """Make the Sceptic's model call return one chosen verdict."""
+    def set_verdict(**kw):
+        monkeypatch.setattr(llm, "available", lambda: True)
+        monkeypatch.setattr(llm, "ask_json", lambda prompt, schema, agent: [Verdict(**kw)])
+    return set_verdict
+
+
+def test_downgrade_lowers_concern_and_records_the_note(verdict):
+    verdict(finding_id="f1", verdict="downgrade", note="Absence of annotation is not absence.")
+    [accepted], _ = review([finding()], [layer()])
+    assert accepted.concern == "flagged"
+    assert accepted.sceptic_note == "Absence of annotation is not absence."
+
+
+def test_reject_drops_the_finding(verdict):
+    verdict(finding_id="f1", verdict="reject", note="Unsupported.")
+    accepted, feedback = review([finding()], [layer()])
+    assert accepted == [] and "Unsupported." in feedback[0]
+
+
+def test_accept_cannot_raise_concern(verdict):
+    """A verdict never promotes a finding the deterministic pass flagged."""
+    verdict(finding_id="f1", verdict="accept", note="Stands.")
+    accepted, _ = review([finding()], [layer(status="incomplete")])
+    assert accepted[0].concern == "flagged"
+
+
+def test_model_failure_keeps_the_deterministic_result(monkeypatch):
+    def boom(*_, **__):
+        raise RuntimeError("quota exceeded")
+    monkeypatch.setattr(llm, "available", lambda: True)
+    monkeypatch.setattr(llm, "ask_json", boom)
+    accepted, feedback = review([finding()], [layer()])
+    assert [f.id for f in accepted] == ["f1"] and feedback == []
+
+
+# ── Orchestration ──────────────────────────────────────────────────────────
+
+
+def test_revision_happens_at_most_once(monkeypatch):
+    """Every claim rejected: the Interpreter is re-run once, then it stops."""
+    from agents.interpreter import Draft
+    calls = []
+    monkeypatch.setattr(llm, "available", lambda: True)
+
+    def ask_json(prompt, schema, agent):
+        calls.append(agent)
+        # The Interpreter always drafts an uncitable claim, so the Sceptic's
+        # deterministic pass always rejects it and always returns feedback.
+        return [schema(claim="c", mechanism="m", concern="high",
+                       cited_field="localisation.x", source_record_id="missing")] if agent == "interpreter" else []
+
+    monkeypatch.setattr(llm, "ask_json", ask_json)
+    assert run_agents([layer()]).findings == []
+    assert calls.count("interpreter") == 2
+
+
+def test_unusable_layers_become_limitations_and_experiments(monkeypatch):
+    """A layer that returned nothing is named, not silently dropped."""
+    monkeypatch.setattr(llm, "available", lambda: False)
+    out = run_agents([LayerResult(species="mus_musculus", layer="sequence", status="unavailable",
+                                  limitations=["Ensembl timed out."])])
+    assert "sequence" in out.limitations[0] and "Ensembl timed out." in out.limitations[0]
+    assert "sequence" in out.recommended_experiments[0]

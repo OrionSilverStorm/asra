@@ -13,13 +13,15 @@ export function RecommendedExperiments({ items }: { items: string[] }) {
       <CardBody>
         {items.length ? (
           // Numbered list with muted numbers.
-          <ol className="flex list-decimal flex-col gap-2 pl-5 text-sm leading-6 marker:text-muted">
+          <ol className="flex list-decimal flex-col gap-2 pl-5 text-sm leading-6 marker:font-mono marker:text-xs marker:text-muted">
             {items.map((x) => (
               <li key={x}>{x}</li>
             ))}
           </ol>
         ) : (
-          <EmptyState>No recommendations without evidence from the comparison layers.</EmptyState>
+          <EmptyState icon="experiments" hint="Experiments are suggested for findings that survive the Sceptic, and for missing data.">
+            No recommendations yet.
+          </EmptyState>
         )}
       </CardBody>
     </Card>

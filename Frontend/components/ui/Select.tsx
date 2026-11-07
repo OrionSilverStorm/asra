@@ -16,7 +16,7 @@ export function Select({ invalid = false, className = "", ...props }: SelectProp
     <select
       // `|| undefined` omits the attribute entirely when valid.
       aria-invalid={invalid || undefined}
-      className={`${inputBase} ${inputBorder(invalid)} h-10 px-3 text-sm ${className}`}
+      className={`${inputBase} ${inputBorder(invalid)} h-9 px-2.5 text-sm ${className}`}
       {...props}
     />
   );

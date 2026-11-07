@@ -11,9 +11,9 @@ from agents import AgentOutput
 from contract import AssessmentRequest, LayerResult, Report, SequenceStats
 
 
-def _limitations(layers: list[LayerResult]) -> list[str]:
-    """Report-level caveats derived from layer statuses."""
-    notes = []
+def _limitations(layers: list[LayerResult], agents: AgentOutput) -> list[str]:
+    """Report-level caveats from layer statuses and the agents' own gaps."""
+    notes = list(agents.limitations)
     missing = [l.layer for l in layers if l.status != "ok"]
     if missing:
         notes.append(
@@ -41,5 +41,5 @@ def build_report(
         layers=layers,
         findings=agents.findings,
         recommended_experiments=agents.recommended_experiments,
-        limitations=_limitations(layers),
+        limitations=_limitations(layers, agents),
     )

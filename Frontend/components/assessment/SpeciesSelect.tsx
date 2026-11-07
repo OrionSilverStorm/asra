@@ -23,7 +23,7 @@ interface SpeciesSelectProps {
 export function SpeciesSelect({ value, onChange, error, disabled }: SpeciesSelectProps) {
   const id = "species";
   return (
-    <Field id={id} label="Comparison species" hint="Compared against the human orthologue." error={error}>
+    <Field id={id} step={1} label="Select a comparison species" hint="Compared against the human orthologue." error={error}>
       <Select
         id={id}
         value={value}

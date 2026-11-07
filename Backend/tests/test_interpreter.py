@@ -14,16 +14,20 @@ EVIDENCE = [LayerResult(
 
 def test_no_key_means_no_findings(monkeypatch):
     monkeypatch.setattr(llm, "available", lambda: False)
-    assert interpret(EVIDENCE) == []
+    assert interpret(EVIDENCE).findings == []
 
 
 def test_drafts_become_findings_with_our_ids(monkeypatch):
     draft = FindingDraft(claim="c", mechanism="m", concern="low",
-                         cited_field="sequence.animal_length", source_record_id="user_input")
+                         cited_field="sequence.animal_length", source_record_id="user_input",
+                         experiment="Measure it")
     monkeypatch.setattr(llm, "available", lambda: True)
     monkeypatch.setattr(llm, "ask_json", lambda prompt, schema, agent: [draft])
-    [finding] = interpret(EVIDENCE)
+    out = interpret(EVIDENCE)
+    [finding] = out.findings
     assert finding.id == "f1" and finding.source_record_id == "user_input"
+    # The experiment is kept against the finding's id, not inside the Finding.
+    assert out.experiments == {"f1": "Measure it"}
 
 
 def test_model_failure_is_contained(monkeypatch):
@@ -31,7 +35,7 @@ def test_model_failure_is_contained(monkeypatch):
         raise RuntimeError("quota exceeded")
     monkeypatch.setattr(llm, "available", lambda: True)
     monkeypatch.setattr(llm, "ask_json", boom)
-    assert interpret(EVIDENCE) == []
+    assert interpret(EVIDENCE).findings == []
 
 
 def test_prompt_contains_evidence_and_feedback():

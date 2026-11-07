@@ -3,7 +3,7 @@
 from fastapi.testclient import TestClient
 
 from agents.sceptic import review
-from contract import Finding, LayerResult, SourceRecord
+from contract import Finding, LayerResult, Observation, SourceRecord
 from main import app
 
 client = TestClient(app)
@@ -43,9 +43,11 @@ def test_assess_rejects_unknown_species():
 
 def test_sceptic_rejects_uncited_and_flags_incomplete():
     layers = [LayerResult(species="mus_musculus", layer="sequence", status="incomplete",
+                          observations=[Observation(field="x", value="v", source_record_id="s1")],
                           source_records=[SourceRecord(id="s1", source="test")])]
     cited = Finding(id="a", claim="c", mechanism="m", concern="high", cited_field="sequence.x", source_record_id="s1")
     uncited = cited.model_copy(update={"id": "b", "source_record_id": "missing"})
-    accepted, feedback = review([cited, uncited], layers)
+    # use_llm=False: this test covers the deterministic pass only.
+    accepted, feedback = review([cited, uncited], layers, use_llm=False)
     assert [f.id for f in accepted] == ["a"] and accepted[0].concern == "flagged"
     assert len(feedback) == 1

@@ -9,6 +9,7 @@ Hard rules:
 - If a layer's status is "incomplete", set `concern` to "flagged".
 - `concern` must be one of: high, moderate, low, flagged.
 - If the evidence shows no meaningful difference, return an empty list. Returning nothing is better than an unsupported claim.
+- Set `experiment` to the one experiment a researcher could run to settle that finding, in a single sentence (for example an immunofluorescence or fractionation experiment to test a localisation claim). Name a measurement, not a literature search. Leave it empty if the finding suggests none.
 
 Comparison species: {species}
 
