@@ -72,6 +72,10 @@ class AssessmentRequest(CamelModel):
     sequence: str
     # FASTA header without ">", or null for a raw sequence.
     sequence_label: Optional[str] = None
+    # Run the Sceptic's challenge pass. Off shows what the Interpreter claims
+    # unchallenged (the demo's before/after toggle); the deterministic
+    # citation checks run either way.
+    sceptic: bool = True
 
     @field_validator("sequence")
     @classmethod

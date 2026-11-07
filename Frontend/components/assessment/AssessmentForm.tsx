@@ -12,6 +12,7 @@
 
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
+import { Checkbox } from "@/components/ui/Checkbox";
 import { Spinner } from "@/components/ui/Spinner";
 import { parseSequence, validateSequence } from "@/lib/sequence";
 import { isSpeciesId } from "@/lib/species";
@@ -36,6 +37,8 @@ export function AssessmentForm({ onSubmit, submitting }: AssessmentFormProps) {
   // Raw input values (controlled inputs).
   const [species, setSpecies] = useState("");
   const [sequence, setSequence] = useState("");
+  // On by default: the unchallenged view is the exception, not the norm.
+  const [sceptic, setSceptic] = useState(true);
   // Validation messages, only filled in on submit.
   const [errors, setErrors] = useState<Errors>({});
 
@@ -55,7 +58,7 @@ export function AssessmentForm({ onSubmit, submitting }: AssessmentFormProps) {
 
     // Send the cleaned sequence, not the raw text.
     const parsed = parseSequence(sequence);
-    onSubmit({ species, sequence: parsed.sequence, sequenceLabel: parsed.label });
+    onSubmit({ species, sequence: parsed.sequence, sequenceLabel: parsed.label, sceptic });
   }
 
   return (
@@ -81,6 +84,15 @@ export function AssessmentForm({ onSubmit, submitting }: AssessmentFormProps) {
         disabled={submitting}
       />
 
+      <Checkbox
+        id="sceptic"
+        label="Run the Sceptic"
+        hint="Challenges each finding against the raw evidence and downgrades weak claims."
+        checked={sceptic}
+        onChange={setSceptic}
+        disabled={submitting}
+      />
+
       {/* Action row, separated from the inputs by a rule. */}
       <div className="flex items-center justify-end gap-3 border-t border-rule pt-5">
         {/* Clear: disabled when there is nothing to clear. */}
@@ -90,6 +102,7 @@ export function AssessmentForm({ onSubmit, submitting }: AssessmentFormProps) {
           onClick={() => {
             setSpecies("");
             setSequence("");
+            setSceptic(true);
             setErrors({});
           }}
         >

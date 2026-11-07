@@ -35,8 +35,8 @@ def _client():
     return genai.Client(api_key=os.environ["GEMINI_API_KEY"])
 
 
-def ask_json(prompt: str, schema: type[T], agent: str) -> list[T]:
-    """Ask Gemini for a JSON list of `schema` objects and parse it.
+def ask_json(prompt: str, schema: type[T], agent: str) -> Optional[T]:
+    """Ask Gemini for one JSON object shaped like `schema` and parse it.
 
     Structured output (response_schema) forces the model to return data in
     our shape instead of free text. Every prompt and response is logged

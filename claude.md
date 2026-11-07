@@ -35,11 +35,13 @@ If you change a field, update both files and this section.
 {
   "species": "mus_musculus",
   "sequence": "MKTAYIAKQRQISFVKSHFSRQLEERLGLIEVQAPILSRVGDGTQDNLSGAEKAVQVKVKALPDAQ",
-  "sequenceLabel": "test|DEMO1|Example protein"
+  "sequenceLabel": "test|DEMO1|Example protein",
+  "sceptic": true
 }
 ```
 - `sequence`: uppercase, letters `ACDEFGHIKLMNPQRSTVWYX` only, at least 10 residues. The frontend strips FASTA headers, whitespace and digits; the backend re-validates (invalid input → 422).
 - `sequenceLabel`: the FASTA header without `>`, or `null`.
+- `sceptic`: optional, defaults to `true`. `false` skips the Sceptic's Gemini challenge pass (the demo toggle); the deterministic citation checks always run.
 
 ## LayerResult (what every layer tool returns), snake_case
 ```json
@@ -98,4 +100,6 @@ If you change a field, update both files and this section.
 - Error responses follow FastAPI: `{"detail": "text"}` or, for 422, `{"detail": [{"msg": "...", "loc": [...]}]}`.
 
 ## Pipeline order
-`AssessmentRequest` → `tools/resolver.py` (ResolvedQuery) → 4 layers via `run_isolated` → `agents/` (Investigator → Interpreter ⇄ Sceptic, one revision) → `report/builder.py` → `Report`. Each run is appended to `Backend/data/logs/runs.jsonl`.
+`AssessmentRequest` → `tools/resolver.py` (ResolvedQuery) → 4 layers via `run_isolated` → `agents/` (Investigator → Interpreter ⇄ Sceptic, one revision) → `report/builder.py` → `Report`.
+
+In the agent stage: the Investigator splits layers into citable evidence and excluded ones (its `gaps` become report limitations and "obtain this data" experiments); the Interpreter drafts findings, each with a suggested `experiment`; the Sceptic runs a deterministic pass (citation must match an observation; `incomplete` evidence is forced to `flagged`) and then a Gemini pass whose verdicts can only weaken a finding (`accept | downgrade | reject`), never promote one. An experiment is kept only while its finding survives. Each run is appended to `Backend/data/logs/runs.jsonl`.

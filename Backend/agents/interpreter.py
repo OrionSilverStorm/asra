@@ -11,6 +11,7 @@ rather than inventing any.
 
 import json
 import logging
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional
 
@@ -33,6 +34,18 @@ class FindingDraft(BaseModel):
     concern: Concern
     cited_field: str
     source_record_id: str
+    # The experiment that would settle this claim. Dropped with the finding if
+    # the Sceptic rejects it, so no suggestion outlives its evidence.
+    experiment: str = ""
+
+
+@dataclass
+class Draft:
+    """The Interpreter's output: findings plus the experiment each one suggests."""
+
+    findings: list[Finding] = field(default_factory=list)
+    # Finding id -> suggested follow-up experiment.
+    experiments: dict[str, str] = field(default_factory=dict)
 
 
 def _build_prompt(evidence: list[LayerResult], feedback: Optional[list[str]]) -> str:
@@ -45,15 +58,22 @@ def _build_prompt(evidence: list[LayerResult], feedback: Optional[list[str]]) ->
     )
 
 
-def interpret(evidence: list[LayerResult], feedback: Optional[list[str]] = None) -> list[Finding]:
+def interpret(evidence: list[LayerResult], feedback: Optional[list[str]] = None) -> Draft:
     """Draft findings from evidence; `feedback` is the Sceptic's notes on a revision pass."""
     # Nothing to interpret, or no model configured: make no claims.
     if not evidence or not llm.available():
-        return []
+        return Draft()
     try:
         drafts = llm.ask_json(_build_prompt(evidence, feedback), FindingDraft, agent="interpreter")
     except Exception:  # network/quota/parse errors must not sink the report
         log.exception("Interpreter call failed")
-        return []
+        return Draft()
     # Assign stable IDs ourselves; the model never chooses them.
-    return [Finding(id=f"f{i}", **d.model_dump()) for i, d in enumerate(drafts, start=1)]
+    out = Draft()
+    for i, d in enumerate(drafts, start=1):
+        fields = d.model_dump()
+        experiment = fields.pop("experiment", "").strip()
+        out.findings.append(Finding(id=f"f{i}", **fields))
+        if experiment:
+            out.experiments[f"f{i}"] = experiment
+    return out
