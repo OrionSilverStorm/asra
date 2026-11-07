@@ -26,12 +26,42 @@ const WATER_MASS = 18.02;
 export const MIN_SEQUENCE_LENGTH = 10;
 
 /**
- * Example input (human insulin, one FASTA record). Shared by the sequence
- * box placeholder and the form's "Load example" link, so it's defined once.
+ * Example input: human ENT1 (SLC29A1, UniProt Q99808, 456 aa), the ASRA
+ * benchmark case. Its header carries GN=, so the backend resolves the gene
+ * and runs the full orthologue comparison. Shared by the sequence box
+ * placeholder and the form's "Load example" link, so it's defined once.
  */
-export const EXAMPLE_FASTA =
-  ">sp|P01308|INS_HUMAN Insulin\n" +
-  "MALWMRLLPLLALLALWGPDPAAAFVNQHLCGSHLVEALYLVCGERGFFYTPKTRREAEDLQVGQVELGGGPGAGSLQPLALEGSLQKRGIVEQCCTSICSLYQLENYCN";
+export const EXAMPLE_HEADER =
+  ">sp|Q99808|S29A1_HUMAN Equilibrative nucleoside transporter 1 OS=Homo sapiens OX=9606 GN=SLC29A1 PE=1 SV=3";
+export const EXAMPLE_SEQUENCE =
+  "MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATQYFTNRLDMSQNVSLVTAELSKDAQASAAPAAPLPERNSLSAIFNNVMTLCAMLPLLLFTYLNSFLHQ" +
+  "RIPQSVRILGSLVAILLVFLITAILVKVQLDALPFFVITMIKIVLINSFGAILQGSLFGLAGLLPASYTAPIMSGQGLAGFFASVAMICAIASGSELSESAFG" +
+  "YFITACAVIILTIICYLGLPRLEFYRYYQQLKLEGPGEQETKLDLISKGEEPRAGKEESGVSVSNSQPTNESHSIKAILKNISVLAFSVCFIFTITIGMFPAV" +
+  "TVEVKSSIAGSSTWERYFIPVSCFLTFNIFDWLGRSLTAVFMWPGKDSRWLPSLVLARLVFVPLLLLCNIKPRRYLTVVFEHDAWFIFFMAAFAFSNGYLASLC" +
+  "MCFGPKKVKPAEAETAGAIMAFFLCLGLALGAVFSFLFRAIV";
+export const EXAMPLE_FASTA = `${EXAMPLE_HEADER}\n${EXAMPLE_SEQUENCE}`;
+
+/** HGNC-style human symbol (mirrors Backend/tools/resolver.py `_SYMBOL`). */
+const SYMBOL = /^[A-Z][A-Z0-9-]{0,19}$/;
+
+/**
+ * Gene symbol the backend will resolve from a FASTA label, or null.
+ * Mirrors Backend/tools/resolver.py `gene_from_label` so the form can warn
+ * before submit: GN= from a human UniProt header, or a bare uppercase
+ * symbol. Never a first-token guess. The backend re-checks; this is a hint.
+ */
+export function geneFromLabel(label: string | null): string | null {
+  if (!label) return null;
+  const text = label.trim().replace(/^>/, "").trim();
+  const gn = text.match(/\bGN=(\S+)/);
+  if (gn) {
+    // Organism must be human: OS=Homo sapiens, or an _HUMAN entry name when OS= is absent.
+    const os = text.match(/\bOS=(.+?)(?:\s+[A-Z]{2}=|$)/);
+    const human = os ? os[1].trim() === "Homo sapiens" : text.includes("_HUMAN");
+    return human && SYMBOL.test(gn[1]) ? gn[1] : null;
+  }
+  return SYMBOL.test(text) ? text : null;
+}
 
 /** Result of parsing whatever the user pasted. */
 export interface ParsedSequence {

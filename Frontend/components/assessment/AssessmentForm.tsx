@@ -97,7 +97,7 @@ export function AssessmentForm({ onSubmit, submitting }: AssessmentFormProps) {
           }}
           className="mr-auto text-sm text-accent hover:underline disabled:opacity-50"
         >
-          Load example (mouse · human insulin)
+          Load example (mouse · human ENT1/SLC29A1)
         </button>
         {/* Clear: disabled when there is nothing to clear. */}
         <Button
