@@ -9,6 +9,23 @@ import type { AssessmentRequest, Report } from "../types";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 /**
+ * Extracts a readable message from an error response. FastAPI sends
+ * `{"detail": "text"}` or, for validation errors (422),
+ * `{"detail": [{"msg": "..."}, ...]}`.
+ */
+async function errorDetail(res: Response): Promise<string> {
+  const text = await res.text().catch(() => "");
+  try {
+    const { detail } = JSON.parse(text);
+    if (typeof detail === "string") return `: ${detail}`;
+    if (Array.isArray(detail)) return `: ${detail.map((d: { msg: string }) => d.msg).join("; ")}`;
+  } catch {
+    // Not JSON: fall through to the raw text.
+  }
+  return text ? `: ${text}` : "";
+}
+
+/**
  * Calls the FastAPI backend. Expects POST /assess to return a Report.
  * Network and HTTP errors are turned into readable Error messages that the
  * workspace shows in an alert.
@@ -34,8 +51,7 @@ export async function submitAssessmentHttp(
 
   // The server answered but with 4xx/5xx; include its message if any.
   if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`Backend returned ${res.status}${detail ? `: ${detail}` : ""}`);
+    throw new Error(`Backend returned ${res.status}${await errorDetail(res)}`);
   }
 
   // Trust the backend to follow the contract in ../types.ts.

@@ -1,0 +1,13 @@
+# Python bytecode and tool caches
+__pycache__/
+.pytest_cache/
+# Local virtual environment
+.venv/
+# Credentials (design doc: never committed)
+.env
+# Runtime output: cached API responses and run logs
+data/cache/*
+data/logs/*
+# ...but keep the folders themselves
+!data/cache/.gitkeep
+!data/logs/.gitkeep

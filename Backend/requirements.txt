@@ -2,7 +2,11 @@
 # Layer owners add their own packages here (biopython, pandas, requests, ...).
 # cellxgene-census is heavy; keep it in a separate file if it gets added.
 
-# Web framework for the HTTP API
+# Web framework for the HTTP API (also installs pydantic, used by contract/)
 fastapi
 # ASGI server that runs the FastAPI app (`uvicorn main:app`)
 uvicorn[standard]
+
+# Testing: pytest runs tests/, httpx powers FastAPI's TestClient
+pytest
+httpx
