@@ -7,6 +7,12 @@
 
 import type { LayerName } from "./types";
 
+/**
+ * data_version the backend gives hand-entered demo evidence
+ * (Backend/tools/fixtures.py FIXTURE_VERSION). Keep the two in sync.
+ */
+export const FIXTURE_DATA_VERSION = "fixture (hand-entered)";
+
 /** Canonical order in which layers are shown (matches the design doc). */
 export const LAYER_ORDER: LayerName[] = [
   "sequence",

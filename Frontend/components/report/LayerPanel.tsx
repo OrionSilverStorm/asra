@@ -6,14 +6,20 @@
  * renders as a grey, dashed-border panel.
  *
  * Observations that come as human_/animal_ pairs are shown side by side
- * (Field | Human | <species>), with rows whose values differ marked.
+ * (Field | Human | <species>), with rows whose values differ marked. The
+ * gene-based sequence layer (JSON observations) gets its own readable view,
+ * and an ambiguous orthologue lists its candidates. Hand-entered fixture
+ * evidence is badged so it is never mistaken for a live retrieval.
  */
 
+import { Badge } from "@/components/ui/Badge";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { LAYER_META } from "@/lib/layers";
+import { FIXTURE_DATA_VERSION, LAYER_META } from "@/lib/layers";
 import { pairObservations } from "@/lib/observations";
+import { parseAmbiguousCandidates, parseSequenceEvidence } from "@/lib/sequenceEvidence";
 import type { LayerResult } from "@/lib/types";
 import { EmptyIcon } from "./EmptyState";
+import { SequenceEvidence } from "./SequenceEvidence";
 
 interface LayerPanelProps {
   layer: LayerResult;
@@ -25,12 +31,18 @@ export function LayerPanel({ layer, speciesName }: LayerPanelProps) {
   const meta = LAYER_META[layer.layer];
   // incomplete / unavailable -> grey "missing data" styling
   const muted = layer.status !== "ok";
-  // Side-by-side pairs, and the observations that have no partner.
-  const { pairs, rest } = pairObservations(layer.observations);
+  // Gene-based sequence evidence (null for every other layer / legacy result).
+  const evidence = parseSequenceEvidence(layer);
+  // Candidate orthologues when Ensembl couldn't give a unique one.
+  const candidates = parseAmbiguousCandidates(layer);
+  // Side-by-side pairs, and the observations that have no partner. Skipped
+  // when one of the dedicated views above takes over.
+  const { pairs, rest } = evidence || candidates ? { pairs: [], rest: [] } : pairObservations(layer.observations);
 
   return (
     <article
-      className={`flex flex-col gap-3 rounded border p-4 ${
+      // The sequence evidence view needs the full row width.
+      className={`flex flex-col gap-3 rounded border p-4 ${evidence ? "md:col-span-2" : ""} ${
         muted ? "border-dashed border-na/50 bg-na-soft" : "border-rule bg-surface"
       }`}
     >
@@ -40,8 +52,27 @@ export function LayerPanel({ layer, speciesName }: LayerPanelProps) {
           <h3 className="text-sm font-semibold">{meta.title}</h3>
           <p className="text-xs text-muted">{meta.source}</p>
         </div>
-        <StatusBadge status={layer.status} />
+        <div className="flex flex-wrap justify-end gap-1.5">
+          {layer.data_version === FIXTURE_DATA_VERSION && <Badge tone="warn">Demo fixture</Badge>}
+          <StatusBadge status={layer.status} />
+        </div>
       </header>
+
+      {evidence && <SequenceEvidence evidence={evidence} layer={layer} speciesName={speciesName} />}
+
+      {/* Ambiguous orthologue: list every candidate; none was chosen. */}
+      {candidates && (
+        <div className="flex flex-col gap-1.5 text-sm">
+          <p className="font-medium">{candidates.length} candidate orthologues; none selected</p>
+          <ul className="flex flex-col gap-1 font-mono text-xs">
+            {candidates.map((c, i) => (
+              <li key={i} className="rounded-sm bg-surface px-2 py-1">
+                {c.targetGene ?? "unknown gene"} · {c.targetProtein ?? "no protein id"} · {c.type ?? "unknown type"}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
 
       {/* Human vs animal comparison table. */}
       {pairs.length > 0 && (
