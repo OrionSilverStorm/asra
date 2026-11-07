@@ -14,8 +14,11 @@ Rules:
 """
 
 import json
+import logging
 
 from contract import LayerResult
+
+log = logging.getLogger("asra.agents")
 
 # Fields replaced by a one-line note: per-residue maps and aligned strings.
 _OMIT = {"human_to_animal", "animal_to_human", "alignment"}
@@ -31,33 +34,43 @@ def _protein(p: dict) -> dict:
     return {k: v for k, v in p.items() if k not in {"sequence", "seq"}}
 
 
+def _dicts(v) -> list[dict]:
+    """The dict items of a list (live data may hold None or omit a list entirely)."""
+    return [x for x in v if isinstance(x, dict)] if isinstance(v, list) else []
+
+
 def _functional(fa: dict) -> dict:
-    """Keep statuses, identities, the motif check and annotated substitutions."""
+    """Keep statuses, identities, the motif check and annotated substitutions.
+
+    Any part may be null in live data (e.g. `identity` when a UniProt mapping
+    could not be verified), so every lookup tolerates missing values.
+    """
     # Feature id -> "Type: description", to name what each substitution overlaps.
     names = {f.get("id"): f"{f.get('type')}: {f.get('description') or ''}".strip(": ")
-             for f in fa.get("mapped_human_features", [])}
+             for f in _dicts(fa.get("mapped_human_features"))}
+    proteins = fa.get("proteins") if isinstance(fa.get("proteins"), dict) else {}
     return {
         "status": fa.get("status"),
         "proteins": {
             side: {
                 "status": p.get("status"),
                 "reason_code": p.get("reason_code"),
-                "identity": {k: p.get("identity", {}).get(k) for k in ("status", "accession", "isoform")},
-                "feature_count": len(p.get("features", [])),
+                "identity": {k: (p.get("identity") or {}).get(k) for k in ("status", "accession", "isoform")},
+                "feature_count": len(_dicts(p.get("features"))),
             }
-            for side, p in fa.get("proteins", {}).items()
+            for side, p in proteins.items() if isinstance(p, dict)
         },
         # Annotated substitutions with the human features they overlap.
         "functional_substitutions": [
             {"substitution": _label(s),
-             "features": sorted({names[a["feature_id"]] for a in s.get("annotation_overlaps", [])
+             "features": sorted({names[a.get("feature_id")] for a in _dicts(s.get("annotation_overlaps"))
                                  if a.get("feature_id") in names})}
-            for s in fa.get("functional_substitutions", [])
+            for s in _dicts(fa.get("functional_substitutions"))
         ],
-        "other_substitutions_count": len(fa.get("other_substitutions", [])),
-        "unclassified_substitutions_count": len(fa.get("unclassified_substitutions", [])),
+        "other_substitutions_count": len(_dicts(fa.get("other_substitutions"))),
+        "unclassified_substitutions_count": len(_dicts(fa.get("unclassified_substitutions"))),
         "slc29a1_motif": fa.get("slc29a1_motif"),
-        "limitations": fa.get("limitations", []),
+        "limitations": fa.get("limitations") or [],
     }
 
 
@@ -94,7 +107,11 @@ def compact_for_prompt(layers: list[LayerResult]) -> list[dict]:
             except (TypeError, ValueError):
                 continue  # plain-string observation: leave as is
             # Only rewrite structured values; plain JSON scalars stay as written.
-            if isinstance(decoded, (dict, list)):
+            if not isinstance(decoded, (dict, list)):
+                continue
+            try:
                 obs["value"] = json.dumps(_compact_value(obs["field"], decoded), separators=(",", ":"))
+            except Exception:  # an unexpected shape must never break the agents
+                log.warning("Could not compact %s.%s; sending it unchanged", layer.layer, obs["field"])
         out.append(data)
     return out

@@ -44,3 +44,14 @@ def test_plain_string_layers_untouched():
                         observations=[Observation(field="shared_compartments", value="Plasma membrane")])
     [compact] = compact_for_prompt([layer])
     assert compact == layer.model_dump(mode="json")
+
+
+def test_tolerates_null_parts_from_live_data():
+    # Live UniProt can leave identity/features null (unverified mapping); found in a live run.
+    rich = demonstration()
+    rich["functional_analysis"]["proteins"]["animal"]["identity"] = None
+    rich["functional_analysis"]["proteins"]["animal"]["features"] = None
+    [compact] = compact_for_prompt([to_layer_result(rich)])
+    values = {o["field"]: json.loads(o["value"]) for o in compact["observations"]}
+    assert values["functional_analysis"]["proteins"]["animal"]["identity"]["accession"] is None
+    assert values["functional_analysis"]["proteins"]["animal"]["feature_count"] == 0
