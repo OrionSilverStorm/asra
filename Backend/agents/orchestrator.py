@@ -4,12 +4,18 @@ Exactly one revision cycle after the Sceptic replies (design doc): no
 open-ended debate, so a demo can never hang.
 """
 
+from __future__ import annotations
+
+import logging
 from dataclasses import dataclass, field
+from typing import Optional
 
 from agents.interpreter import Draft, interpret
 from agents.investigator import Evidence, select_evidence
 from agents.sceptic import review
 from contract import Finding, LayerResult
+
+log = logging.getLogger("asra.agents")
 
 
 @dataclass
@@ -33,17 +39,41 @@ def _experiments(draft: Draft, findings: list[Finding], evidence: Evidence) -> l
     ]
 
 
-def run_agents(layers: list[LayerResult]) -> AgentOutput:
-    """Select evidence, draft findings, review, and revise at most once."""
+def run_agents(
+    layers: list[LayerResult],
+    query: Optional[str] = None,
+) -> AgentOutput:
+    """Select evidence, draft findings, review, and revise at most once.
+
+    Parameters
+    ----------
+    layers:
+        Output from the biological tools/layers.
+    query:
+        Optional original user query string (logged for provenance).
+
+    Returns
+    -------
+    AgentOutput:
+        Audited findings, recommended follow-up assays, and gap limitations.
+    """
+    log.info("Agent stage started with %d layer(s)", len(layers))
     evidence = select_evidence(layers)
     draft = interpret(evidence.citable)
+    log.info("Interpreter produced %d initial draft finding(s)", len(draft.findings))
+
     findings, feedback = review(draft.findings, layers)
+    log.info("Sceptic review: %d accepted, %d feedback note(s)", len(findings), len(feedback))
+
     if feedback:
-        # Single revision pass with the Sceptic's notes, then a final review.
+        log.info("Single revision pass initiated with Sceptic feedback")
         draft = interpret(evidence.citable, feedback)
-        findings, _ = review(draft.findings, layers)
+        findings, final_feedback = review(draft.findings, layers)
+        log.info("Post-revision review: %d accepted, %d remaining feedback note(s)", len(findings), len(final_feedback))
+
+    experiments = _experiments(draft, findings, evidence)
     return AgentOutput(
         findings=findings,
-        recommended_experiments=_experiments(draft, findings, evidence),
+        recommended_experiments=experiments,
         limitations=evidence.gaps,
     )

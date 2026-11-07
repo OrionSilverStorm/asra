@@ -5,12 +5,19 @@ If no key is set, `available()` is False and agents skip the model, so the
 pipeline, tests and offline demos still work.
 """
 
+from __future__ import annotations
+
+import json
+import logging
 import os
+import re
 from functools import lru_cache
 from typing import Optional, TypeVar
 
 from dotenv import load_dotenv
 from pydantic import BaseModel
+
+log = logging.getLogger("asra.llm")
 
 # Load Backend/.env into os.environ (no-op if the file doesn't exist).
 load_dotenv()
@@ -30,9 +37,12 @@ def available() -> bool:
 def _client():
     """Create the SDK client once, on first use (import is deferred so the
     package isn't needed when no key is set)."""
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise RuntimeError("GEMINI_API_KEY environment variable is not set.")
     from google import genai
 
-    return genai.Client(api_key=os.environ["GEMINI_API_KEY"])
+    return genai.Client(api_key=api_key)
 
 
 def ask_json(prompt: str, schema: type[T], agent: str) -> Optional[T]:
@@ -41,16 +51,70 @@ def ask_json(prompt: str, schema: type[T], agent: str) -> Optional[T]:
     Structured output (response_schema) forces the model to return data in
     our shape instead of free text. Every prompt and response is logged
     (design doc: "log every prompt and response").
+
+    Failure containment:
+    - If the API key is missing, returns [] without calling Gemini.
+    - If quota is exceeded, network times out, or the API fails, logs the error
+      and raises so the caller (Interpreter) can catch it and return [] without
+      inventing findings.
+    - If response parsing encounters formatting anomalies, attempts robust JSON
+      fallback before failing.
     """
-    # Deferred import: importing anything under `pipeline` runs its __init__,
-    # which imports the runner, which imports agents -> circular at load time.
+    # Deferred import to prevent circular imports with pipeline package
     from pipeline.run_log import log_event
 
-    response = _client().models.generate_content(
-        model=MODEL,
-        contents=prompt,
-        config={"response_mime_type": "application/json", "response_schema": list[schema]},
+    if not available():
+        log.warning("GEMINI_API_KEY not configured; skipping LLM call")
+        return []
+
+    try:
+        response = _client().models.generate_content(
+            model=MODEL,
+            contents=prompt,
+            config={
+                "response_mime_type": "application/json",
+                "response_schema": list[schema],
+            },
+        )
+    except Exception as exc:
+        log.error("Gemini API call failed for %s: %s", agent, exc)
+        log_event(
+            "llm_error",
+            {"agent": agent, "model": MODEL, "error": str(exc)},
+        )
+        raise
+
+    response_text = getattr(response, "text", "") or ""
+    log_event(
+        "llm",
+        {
+            "agent": agent,
+            "model": MODEL,
+            "prompt": prompt,
+            "response": response_text,
+        },
     )
-    log_event("llm", {"agent": agent, "model": MODEL, "prompt": prompt, "response": response.text})
-    parsed: Optional[list[T]] = response.parsed
-    return parsed or []
+
+    # 1. Primary: use the SDK's built-in pydantic parsing
+    parsed: Optional[list[T]] = getattr(response, "parsed", None)
+    if parsed is not None:
+        return parsed
+
+    # 2. Fallback: if response.parsed was None, attempt manual JSON extraction
+    if response_text.strip():
+        try:
+            cleaned = re.sub(r"^```(?:json)?\s*", "", response_text.strip())
+            cleaned = re.sub(r"\s*```$", "", cleaned)
+            raw_data = json.loads(cleaned)
+            if isinstance(raw_data, list):
+                return [
+                    schema(**item)
+                    for item in raw_data
+                    if isinstance(item, dict)
+                ]
+            elif isinstance(raw_data, dict):
+                return [schema(**raw_data)]
+        except Exception as parse_exc:
+            log.warning("Fallback JSON parsing failed for %s: %s", agent, parse_exc)
+
+    return []

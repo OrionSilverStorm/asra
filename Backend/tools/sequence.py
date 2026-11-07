@@ -16,6 +16,8 @@ resolved substitution. Unsupported symbols (including stops, U, O, J), empty
 strings, lowercase, whitespace and pre-gapped sequences are rejected unchanged.
 """
 
+from __future__ import annotations
+
 from datetime import datetime, timezone
 from hashlib import sha256
 from typing import overload

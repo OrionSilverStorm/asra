@@ -8,11 +8,13 @@ from agents.sceptic import Verdict, review
 from contract import Finding, LayerResult, Observation, SourceRecord
 
 
-def layer(status="ok", field="shared_compartments"):
-    """One citable layer carrying a single observation."""
+def layer(status="ok"):
+    """One citable layer, matching the finding below."""
     return LayerResult(
-        species="mus_musculus", layer="localisation", status=status,
-        observations=[Observation(field=field, value="plasma membrane", source_record_id="s1")],
+        species="mus_musculus",
+        layer="localisation",
+        status=status,
+        observations=[Observation(field="shared_compartments", value="plasma membrane", source_record_id="s1")],
         source_records=[SourceRecord(id="s1", source="UniProt")],
     )
 
@@ -36,6 +38,182 @@ def test_citation_must_match_an_observation():
 def test_incomplete_evidence_is_flagged():
     accepted, _ = review([finding()], [layer(status="incomplete")], use_llm=False)
     assert accepted[0].concern == "flagged"
+
+
+# ── Strengthened Scientific Audit Checks ───────────────────────────────────
+
+
+def _make_fixture_layers() -> list[LayerResult]:
+    """Create a realistic set of 4 layer results with known sources and observations."""
+    seq_obs = [
+        Observation(field="global_identity", value="78.4%", source_record_id="seq_rec"),
+        Observation(field="mitochondrial_motif", value="Human 1-24; Mouse absent", source_record_id="seq_rec"),
+    ]
+    seq_records = [SourceRecord(id="seq_rec", source="Ensembl v1.0")]
+
+    loc_records = [SourceRecord(id="loc_rec", source="UniProtKB")]
+
+    cell_obs = [
+        Observation(field="fraction_expressing", value="0.45", source_record_id="cell_rec"),
+    ]
+    cell_records = [SourceRecord(id="cell_rec", source="CELLxGENE Census")]
+
+    tissue_obs = [
+        Observation(field="tpm", value="12.5", source_record_id="tissue_rec"),
+    ]
+    tissue_records = [SourceRecord(id="tissue_rec", source="GTEx v8")]
+
+    return [
+        LayerResult(
+            species="mus_musculus",
+            layer="sequence",
+            status="ok",
+            observations=seq_obs,
+            source_records=seq_records,
+        ),
+        LayerResult(
+            species="mus_musculus",
+            layer="localisation",
+            status="incomplete",
+            observations=[],
+            source_records=loc_records,
+            limitations=["Mouse subcellular compartment unannotated in UniProt"],
+        ),
+        LayerResult(
+            species="mus_musculus",
+            layer="cell_expression",
+            status="ok",
+            observations=cell_obs,
+            source_records=cell_records,
+        ),
+        LayerResult(
+            species="mus_musculus",
+            layer="tissue_expression",
+            status="ok",
+            observations=tissue_obs,
+            source_records=tissue_records,
+        ),
+    ]
+
+
+def test_sceptic_rejects_missing_citation():
+    """Finding citing a non-existent source record must be rejected."""
+    layers = _make_fixture_layers()
+    f = Finding(
+        id="f1",
+        claim="Human and mouse differ at residue 42.",
+        mechanism="Possible conformational change.",
+        concern="moderate",
+        cited_field="sequence.global_identity",
+        source_record_id="non_existent_source",
+    )
+    accepted, feedback = review([f], layers, use_llm=False)
+    assert len(accepted) == 0
+    assert len(feedback) == 1
+    assert "not in the evidence" in feedback[0]
+
+
+def test_sceptic_rejects_invalid_cited_field():
+    """Finding citing a field that does not exist in the layer must be rejected."""
+    layers = _make_fixture_layers()
+    f = Finding(
+        id="f1",
+        claim="Human and mouse differ at non-existent metric.",
+        mechanism="Mechanism claim.",
+        concern="moderate",
+        cited_field="sequence.non_existent_field",
+        source_record_id="seq_rec",
+    )
+    accepted, feedback = review([f], layers, use_llm=False)
+    assert len(accepted) == 0
+    assert len(feedback) == 1
+    assert "no observation" in feedback[0]
+
+
+def test_sceptic_rejects_clinical_safety_prediction():
+    """Claims using 'safe', 'safety', or predicting lack of toxicity must be rejected."""
+    layers = _make_fixture_layers()
+    f = Finding(
+        id="f1",
+        claim="The compound is expected to be safe in humans based on mouse homology.",
+        mechanism="Will not cause toxicity because mouse model tolerated it.",
+        concern="low",
+        cited_field="sequence.global_identity",
+        source_record_id="seq_rec",
+    )
+    accepted, feedback = review([f], layers, use_llm=False)
+    assert len(accepted) == 0
+    assert len(feedback) == 1
+    assert "unsupported clinical safety prediction" in feedback[0]
+
+
+def test_sceptic_rejects_missing_annotation_treated_as_biological_absence():
+    """Claiming biological absence based on incomplete UniProt annotation must be rejected."""
+    layers = _make_fixture_layers()
+    f = Finding(
+        id="f1",
+        claim="Mouse ENT1 is absent in mitochondrial membrane.",
+        mechanism="Does not localize to mitochondria because UniProt lacks annotation.",
+        concern="high",
+        cited_field="localisation.compartment",
+        source_record_id="loc_rec",
+    )
+    accepted, feedback = review([f], layers, use_llm=False)
+    assert len(accepted) == 0
+    assert len(feedback) == 1
+    assert "missing annotation" in feedback[0]
+    assert "not evidence of biological absence" in feedback[0]
+
+
+def test_sceptic_rejects_incompatible_cell_populations():
+    """Comparing incompatible cell populations without normalisation must be rejected."""
+    layers = _make_fixture_layers()
+    f = Finding(
+        id="f1",
+        claim="Expression diverges in incompatible cell population comparison.",
+        mechanism="Mismatched population across unnormalised datasets.",
+        concern="high",
+        cited_field="cell_expression.fraction_expressing",
+        source_record_id="cell_rec",
+    )
+    accepted, feedback = review([f], layers, use_llm=False)
+    assert len(accepted) == 0
+    assert len(feedback) == 1
+    assert "incompatible cell populations" in feedback[0]
+
+
+def test_sceptic_rejects_rna_conflated_with_protein_abundance():
+    """Treating single-cell RNA transcript count as proof of protein abundance must be rejected."""
+    layers = _make_fixture_layers()
+    f = Finding(
+        id="f1",
+        claim="High transcript levels confirm high protein abundance in mouse cells.",
+        mechanism="Protein expression confirmed directly by RNA expression.",
+        concern="moderate",
+        cited_field="cell_expression.fraction_expressing",
+        source_record_id="cell_rec",
+    )
+    accepted, feedback = review([f], layers, use_llm=False)
+    assert len(accepted) == 0
+    assert len(feedback) == 1
+    assert "cannot be treated as a direct proxy for protein abundance" in feedback[0]
+
+
+def test_sceptic_rejects_gtex_bgee_numerical_comparison():
+    """Computing a fold difference or dividing GTEx by Bgee must be rejected."""
+    layers = _make_fixture_layers()
+    f = Finding(
+        id="f1",
+        claim="Expression shows 4-fold difference between GTEx and Bgee.",
+        mechanism="Calculated by dividing GTEx TPM by Bgee expression score.",
+        concern="high",
+        cited_field="tissue_expression.tpm",
+        source_record_id="tissue_rec",
+    )
+    accepted, feedback = review([f], layers, use_llm=False)
+    assert len(accepted) == 0
+    assert len(feedback) == 1
+    assert "numerical comparison between GTEx and Bgee" in feedback[0]
 
 
 # ── Gemini pass ────────────────────────────────────────────────────────────
@@ -84,6 +262,7 @@ def test_model_failure_keeps_the_deterministic_result(monkeypatch):
 
 def test_revision_happens_at_most_once(monkeypatch):
     """Every claim rejected: the Interpreter is re-run once, then it stops."""
+    from agents.interpreter import Draft
     calls = []
     monkeypatch.setattr(llm, "available", lambda: True)
 
