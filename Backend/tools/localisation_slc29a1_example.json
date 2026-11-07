@@ -1,0 +1,389 @@
+{
+  "layer": "localisation",
+  "status": "partial",
+  "observations": [
+    {
+      "type": "overlapping_annotation",
+      "location_id": "SL-0015",
+      "statement": "Both records annotate Apical cell membrane.",
+      "source_ids": [
+        "Q99808",
+        "Q9JIM1"
+      ]
+    },
+    {
+      "type": "overlapping_annotation",
+      "location_id": "SL-0026",
+      "statement": "Both records annotate Basolateral cell membrane.",
+      "source_ids": [
+        "Q99808",
+        "Q9JIM1"
+      ]
+    },
+    {
+      "type": "overlapping_annotation",
+      "location_id": "SL-0039",
+      "statement": "Both records annotate Cell membrane.",
+      "source_ids": [
+        "Q99808",
+        "Q9JIM1"
+      ]
+    },
+    {
+      "type": "incomplete_evidence",
+      "statement": "The comparison has incomplete records or localisation evidence; inspect limitations and errors.",
+      "source_ids": [
+        "Q99808",
+        "Q9JIM1"
+      ]
+    }
+  ],
+  "measurements": {
+    "proteins": {
+      "human": {
+        "accession": "Q99808",
+        "taxon_id": 9606,
+        "scientific_name": "Homo sapiens",
+        "reviewed": true,
+        "source_url": "https://www.uniprot.org/uniprotkb/Q99808/entry",
+        "api_url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+        "resolution_url": "https://rest.uniprot.org/uniprotkb/search?query=gene_exact%3ASLC29A1+AND+organism_id%3A9606+AND+reviewed%3Atrue&format=json&size=100&fields=accession%2Cgene_names%2Corganism_id%2Creviewed",
+        "entry_version": 215,
+        "last_annotation_update": "2026-11-04",
+        "release": "2026_04",
+        "locations": [
+          {
+            "id": "SL-0026",
+            "name": "Basolateral cell membrane",
+            "evidence": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "12527552",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/12527552/"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "23639800",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/23639800/"
+              }
+            ],
+            "evidence_support": "experimental",
+            "topology": {
+              "id": "SL-9909",
+              "name": "Multi-pass membrane protein",
+              "evidence": [
+                {
+                  "evidenceCode": "ECO:0000305"
+                }
+              ],
+              "evidence_support": "other"
+            },
+            "orientation": null,
+            "molecule": null
+          },
+          {
+            "id": "SL-0015",
+            "name": "Apical cell membrane",
+            "evidence": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "12527552",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/12527552/"
+              }
+            ],
+            "evidence_support": "experimental",
+            "topology": {
+              "id": "SL-9909",
+              "name": "Multi-pass membrane protein",
+              "evidence": [
+                {
+                  "evidenceCode": "ECO:0000305"
+                }
+              ],
+              "evidence_support": "other"
+            },
+            "orientation": null,
+            "molecule": null
+          },
+          {
+            "id": "SL-0039",
+            "name": "Cell membrane",
+            "evidence": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "11584005",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/11584005/"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "15501974",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/15501974/"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "23219802",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/23219802/"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "26406980",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/26406980/"
+              }
+            ],
+            "evidence_support": "experimental",
+            "topology": {
+              "id": "SL-9909",
+              "name": "Multi-pass membrane protein",
+              "evidence": [
+                {
+                  "evidenceCode": "ECO:0000305"
+                }
+              ],
+              "evidence_support": "other"
+            },
+            "orientation": null,
+            "molecule": null
+          }
+        ],
+        "notes": [
+          {
+            "text": "Localized to the basolateral membrane of Sertoli cells (PubMed:23639800). Localized to the cell membrane of erythrocytes (PubMed:11584005, PubMed:23219802)",
+            "evidence": [
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "11584005",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/11584005/"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "12527552",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/12527552/"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "23219802",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/23219802/"
+              },
+              {
+                "evidenceCode": "ECO:0000269",
+                "source": "PubMed",
+                "id": "23639800",
+                "url": "https://pubmed.ncbi.nlm.nih.gov/23639800/"
+              }
+            ],
+            "molecule": null
+          }
+        ]
+      },
+      "animal": {
+        "accession": "Q9JIM1",
+        "taxon_id": 10090,
+        "scientific_name": "Mus musculus",
+        "reviewed": true,
+        "source_url": "https://www.uniprot.org/uniprotkb/Q9JIM1/entry",
+        "api_url": "https://rest.uniprot.org/uniprotkb/Q9JIM1.json",
+        "resolution_url": "https://rest.uniprot.org/uniprotkb/search?query=gene_exact%3ASLC29A1+AND+organism_id%3A10090+AND+reviewed%3Atrue&format=json&size=100&fields=accession%2Cgene_names%2Corganism_id%2Creviewed",
+        "entry_version": 170,
+        "last_annotation_update": "2026-11-04",
+        "release": "2026_04",
+        "locations": [
+          {
+            "id": "SL-0026",
+            "name": "Basolateral cell membrane",
+            "evidence": [
+              {
+                "evidenceCode": "ECO:0000250",
+                "source": "UniProtKB",
+                "id": "Q99808",
+                "url": "https://www.uniprot.org/uniprotkb/Q99808/entry"
+              }
+            ],
+            "evidence_support": "by_similarity",
+            "topology": {
+              "id": "SL-9909",
+              "name": "Multi-pass membrane protein",
+              "evidence": [
+                {
+                  "evidenceCode": "ECO:0000305"
+                }
+              ],
+              "evidence_support": "other"
+            },
+            "orientation": null,
+            "molecule": null
+          },
+          {
+            "id": "SL-0015",
+            "name": "Apical cell membrane",
+            "evidence": [
+              {
+                "evidenceCode": "ECO:0000250",
+                "source": "UniProtKB",
+                "id": "Q99808",
+                "url": "https://www.uniprot.org/uniprotkb/Q99808/entry"
+              }
+            ],
+            "evidence_support": "by_similarity",
+            "topology": {
+              "id": "SL-9909",
+              "name": "Multi-pass membrane protein",
+              "evidence": [
+                {
+                  "evidenceCode": "ECO:0000305"
+                }
+              ],
+              "evidence_support": "other"
+            },
+            "orientation": null,
+            "molecule": null
+          },
+          {
+            "id": "SL-0039",
+            "name": "Cell membrane",
+            "evidence": [
+              {
+                "evidenceCode": "ECO:0000250",
+                "source": "UniProtKB",
+                "id": "Q99808",
+                "url": "https://www.uniprot.org/uniprotkb/Q99808/entry"
+              }
+            ],
+            "evidence_support": "by_similarity",
+            "topology": {
+              "id": "SL-9909",
+              "name": "Multi-pass membrane protein",
+              "evidence": [
+                {
+                  "evidenceCode": "ECO:0000305"
+                }
+              ],
+              "evidence_support": "other"
+            },
+            "orientation": null,
+            "molecule": null
+          }
+        ],
+        "notes": []
+      }
+    },
+    "errors": [],
+    "gene": "SLC29A1",
+    "species": "mus_musculus",
+    "retrieved_at": "2026-11-07T18:21:34.043878+00:00",
+    "comparison": {
+      "status": "overlap_only",
+      "overlapping_locations": [
+        {
+          "id": "SL-0015",
+          "name": "Apical cell membrane",
+          "source_ids": [
+            "Q99808",
+            "Q9JIM1"
+          ],
+          "evidence_support": {
+            "human": [
+              "experimental"
+            ],
+            "animal": [
+              "by_similarity"
+            ]
+          }
+        },
+        {
+          "id": "SL-0026",
+          "name": "Basolateral cell membrane",
+          "source_ids": [
+            "Q99808",
+            "Q9JIM1"
+          ],
+          "evidence_support": {
+            "human": [
+              "experimental"
+            ],
+            "animal": [
+              "by_similarity"
+            ]
+          }
+        },
+        {
+          "id": "SL-0039",
+          "name": "Cell membrane",
+          "source_ids": [
+            "Q99808",
+            "Q9JIM1"
+          ],
+          "evidence_support": {
+            "human": [
+              "experimental"
+            ],
+            "animal": [
+              "by_similarity"
+            ]
+          }
+        }
+      ],
+      "human_only_annotations": [],
+      "animal_only_annotations": [],
+      "supported_annotation_differences": [],
+      "biological_difference_supported": false
+    }
+  },
+  "sources": [
+    {
+      "id": "search:9606:True",
+      "database": "UniProt",
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=gene_exact%3ASLC29A1+AND+organism_id%3A9606+AND+reviewed%3Atrue&format=json&size=100&fields=accession%2Cgene_names%2Corganism_id%2Creviewed",
+      "kind": "resolution_search",
+      "release": "2026_04"
+    },
+    {
+      "id": "Q99808",
+      "database": "UniProt",
+      "kind": "protein_record",
+      "url": "https://www.uniprot.org/uniprotkb/Q99808/entry",
+      "api_url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+      "taxon_id": 9606,
+      "entry_version": 215,
+      "release": "2026_04"
+    },
+    {
+      "id": "search:10090:True",
+      "database": "UniProt",
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=gene_exact%3ASLC29A1+AND+organism_id%3A10090+AND+reviewed%3Atrue&format=json&size=100&fields=accession%2Cgene_names%2Corganism_id%2Creviewed",
+      "kind": "resolution_search",
+      "release": "2026_04"
+    },
+    {
+      "id": "Q9JIM1",
+      "database": "UniProt",
+      "kind": "protein_record",
+      "url": "https://www.uniprot.org/uniprotkb/Q9JIM1/entry",
+      "api_url": "https://rest.uniprot.org/uniprotkb/Q9JIM1.json",
+      "taxon_id": 10090,
+      "entry_version": 170,
+      "release": "2026_04"
+    }
+  ],
+  "limitations": [
+    "Missing localisation annotations do not establish biological absence from a compartment.",
+    "Matching gene symbols and taxonomy resolve candidate counterparts, not independently verified orthology; renamed genes and one-to-many orthologues need an orthology resource.",
+    "Comparisons use exact location IDs (or unambiguous normalized labels when IDs are missing), without ontology ancestor expansion. Broad and specific membrane terms need not conflict.",
+    "Annotations may concern different tissues, conditions or isoforms. Their overlap does not establish identical localisation, and annotation differences do not establish biological differences.",
+    "UniProt annotations alone do not establish a drug mechanism or drug safety; additional comparative literature and experimental evidence are required.",
+    "The ENT1/fialuridine mitochondrial mechanism is not established by this annotation comparison. Additional literature is needed to assess species-specific mitochondrial targeting, drug transport and toxicity.",
+    "animal: some location evidence is transferred by similarity from Q99808; it is not independent cross-species experimental confirmation.",
+    "animal Basolateral cell membrane: evidence is by_similarity; no attached experimental PubMed evidence was identified.",
+    "animal Apical cell membrane: evidence is by_similarity; no attached experimental PubMed evidence was identified.",
+    "animal Cell membrane: evidence is by_similarity; no attached experimental PubMed evidence was identified."
+  ]
+}
