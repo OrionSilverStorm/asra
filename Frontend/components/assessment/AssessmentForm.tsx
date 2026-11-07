@@ -116,6 +116,12 @@ export function AssessmentForm({ onSubmit, submitting }: AssessmentFormProps) {
           {submitting && <Spinner />}
           {submitting ? "Running assessment…" : "Run assessment"}
         </Button>
+        {/* Set expectations: a gene run waits on external databases and Gemini. */}
+        {submitting && (
+          <p className="w-full text-right text-xs text-muted">
+            Fetching orthologues and running agents. This can take up to a minute.
+          </p>
+        )}
       </div>
     </form>
   );

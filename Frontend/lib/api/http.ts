@@ -9,6 +9,13 @@ import type { AssessmentRequest, Report } from "../types";
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 /**
+ * Give up after this long. A gene run makes several Ensembl/UniProt calls
+ * (30 s timeouts, retried on 5xx) plus up to three Gemini calls, so allow
+ * well over a minute, but never leave the user on a spinner forever.
+ */
+const TIMEOUT_MS = 150_000;
+
+/**
  * Extracts a readable message from an error response. FastAPI sends
  * `{"detail": "text"}` or, for validation errors (422),
  * `{"detail": [{"msg": "..."}, ...]}`.
@@ -35,14 +42,22 @@ export async function submitAssessmentHttp(
   signal?: AbortSignal,
 ): Promise<Report> {
   let res: Response;
+  // Abort on whichever comes first: the caller cancelling, or the time limit.
+  const timeout = AbortSignal.timeout(TIMEOUT_MS);
   try {
     res = await fetch(`${API_URL}/assess`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(request),
-      signal, // lets the caller cancel (e.g. user submits again)
+      signal: signal ? AbortSignal.any([signal, timeout]) : timeout,
     });
   } catch (err) {
+    // Hit the time limit (not a user cancel): say so plainly.
+    if (timeout.aborted && !signal?.aborted) {
+      throw new Error(
+        `The assessment took longer than ${TIMEOUT_MS / 60_000} minutes. The backend or an upstream database may be slow; try again.`,
+      );
+    }
     // A cancelled request is not an error worth showing; rethrow untouched.
     if (err instanceof DOMException && err.name === "AbortError") throw err;
     // fetch only throws on network failure (server down, CORS, DNS...).
