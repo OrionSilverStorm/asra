@@ -7,6 +7,11 @@ fastapi
 # ASGI server that runs the FastAPI app (`uvicorn main:app`)
 uvicorn[standard]
 
+# Google Gemini SDK, used by agents/llm.py
+google-genai
+# Loads Backend/.env (GEMINI_API_KEY) into environment variables
+python-dotenv
+
 # Testing: pytest runs tests/, httpx powers FastAPI's TestClient
 pytest
 httpx
