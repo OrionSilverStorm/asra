@@ -1,4 +1,4 @@
-"""Milestone 2: global protein comparison, without functional interpretation.
+"""Role 3: global comparison with optional Milestone 3 annotation evidence.
 
 Gene API: run_sequence(gene, species) -> JSON-compatible dict. The existing
 run_sequence(ResolvedQuery) -> LayerResult call remains a sequence-only fallback;
@@ -162,20 +162,22 @@ def align_proteins(human: str, animal: str) -> dict:
 
 
 @overload
-def run_sequence(gene: str, species: str) -> dict: ...
+def run_sequence(gene: str, species: str, *, functional: bool = False) -> dict: ...
 
 
 @overload
 def run_sequence(gene: ResolvedQuery) -> LayerResult: ...
 
 
-def run_sequence(gene: str | ResolvedQuery, species: str | None = None) -> dict | LayerResult:
+def run_sequence(gene: str | ResolvedQuery, species: str | None = None, *, functional: bool = False) -> dict | LayerResult:
     """Resolve and compare a unique orthologue; propagate resolver errors intact.
 
     AmbiguousOrthologueError retains all candidates; no first candidate is picked.
     The one-argument legacy call retains submitted-sequence evidence only, even
     if its query has a gene, because it cannot equate the submitted protein with
     an Ensembl protein. Gene-based results describe the retrieved proteins.
+    Set functional=True for verified UniProt features and the curated SLC29A1
+    literature check. The default preserves the Milestone 2 schema/network cost.
     """
     if isinstance(gene, ResolvedQuery):
         if species is not None:
@@ -189,7 +191,7 @@ def run_sequence(gene: str | ResolvedQuery, species: str | None = None) -> dict 
         )
     resolved = resolve_orthologue(gene, species)
     result = align_proteins(resolved["source"]["sequence"], resolved["target"]["sequence"])
-    return {
+    output = {
         "gene": resolved["gene"], "species": resolved["species"],
         "layer": "sequence", "status": "ok",
         "human": resolved["source"], "animal": resolved["target"],
@@ -213,3 +215,7 @@ def run_sequence(gene: str | ResolvedQuery, species: str | None = None) -> dict 
             "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
         ],
     }
+    if functional:
+        from tools.sequence_functional import add_functional_analysis
+        return add_functional_analysis(output)
+    return output

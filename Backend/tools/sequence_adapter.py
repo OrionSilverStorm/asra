@@ -17,6 +17,7 @@ EVIDENCE_FIELDS = frozenset({
 DIRECT_FIELDS = frozenset({
     "gene", "species", "layer", "status", "source_records", "limitations", "data_version",
 })
+OPTIONAL_EVIDENCE_FIELDS = frozenset({"functional_analysis"})
 
 
 def to_layer_result(result: dict) -> LayerResult:
@@ -27,9 +28,9 @@ def to_layer_result(result: dict) -> LayerResult:
     map keys are strings. Consumers must decode these values explicitly.
     """
     expected = EVIDENCE_FIELDS | DIRECT_FIELDS
-    if set(result) != expected:
+    if not expected <= set(result) or set(result) - expected - OPTIONAL_EVIDENCE_FIELDS:
         raise ValueError(f"Sequence schema mismatch: missing={sorted(expected - set(result))}, "
-                         f"unhandled={sorted(set(result) - expected)}")
+                         f"unhandled={sorted(set(result) - expected - OPTIONAL_EVIDENCE_FIELDS)}")
     if result["layer"] != "sequence":
         raise ValueError("Expected sequence layer evidence.")
     for source in result["source_records"]:
@@ -39,13 +40,15 @@ def to_layer_result(result: dict) -> LayerResult:
     ids = [source.id for source in sources]
     if "ensembl_orthology" not in ids or len(ids) != len(set(ids)):
         raise ValueError("Expected a unique ensembl_orthology citation and unique source IDs.")
+    if "functional_analysis" in result and "sequence_functional_analysis" not in ids:
+        raise ValueError("Expected a sequence_functional_analysis source record.")
     return LayerResult(
         **{key: result[key] for key in DIRECT_FIELDS - {"source_records", "limitations"}},
         source_records=sources,
         observations=[Observation(field=key,
                                   value=json.dumps(result[key], allow_nan=False, sort_keys=True),
-                                  source_record_id="ensembl_orthology")
-                      for key in sorted(EVIDENCE_FIELDS)],
+                                  source_record_id=("sequence_functional_analysis" if key == "functional_analysis" else "ensembl_orthology"))
+                      for key in sorted(EVIDENCE_FIELDS | (OPTIONAL_EVIDENCE_FIELDS & set(result)))],
         limitations=[*result["limitations"],
                      "Structured sequence observations are JSON strings; decode to recover numeric measurements and mapped evidence. Coordinate map keys are JSON strings."],
     )
