@@ -1,19 +1,32 @@
 # Backend Python dependencies. Install with: pip install -r requirements.txt
-# Layer owners add their own packages here (biopython, pandas, requests, ...).
-# cellxgene-census is heavy; keep it in a separate file if it gets added.
 
 # Web framework for the HTTP API
 fastapi
 # ASGI server that runs the FastAPI app (`uvicorn main:app`)
 uvicorn[standard]
+# Loads Backend/.env (GEMINI_API_KEY) into environment variables
+python-dotenv
+# HTTP client for Ensembl, CELLxGENE Discover, GTEx and Bgee (also powers FastAPI's TestClient)
+httpx
+# Kept from the cellular-tissue branch for teammates' scripts
+requests
+
+# Protein sequence analysis (pairwise alignment)
+biopython>=1.84
 
 # Google Gemini SDK, used by agents/llm.py
 google-genai
-# Loads Backend/.env (GEMINI_API_KEY) into environment variables
-python-dotenv
+# Kept from the cellular-tissue branch (agent experiments; not imported by the pipeline)
+google-adk
 
-# Testing: pytest runs tests/, httpx powers FastAPI's TestClient
+# CELLxGENE Census (optional deep cell-type audit, tools/cell_census.py).
+# tiledbsoma ships no Windows wheels, so these install on Linux/macOS only; on
+# Windows the cell layer uses the CELLxGENE Discover HTTP API instead.
+numpy; sys_platform != "win32"
+pandas; sys_platform != "win32"
+scipy; sys_platform != "win32"
+anndata; sys_platform != "win32"
+cellxgene-census; sys_platform != "win32"
+
+# Testing
 pytest
-httpx
-
-biopython>=1.84
