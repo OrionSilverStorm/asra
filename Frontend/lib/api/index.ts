@@ -2,7 +2,7 @@
  * Public entry point of the API layer.
  *
  * Components only ever call `submitAssessment()` from here. Whether that hits
- * the in-browser mock or the real FastAPI backend is decided by one env var,
+ * the real FastAPI backend or the in-browser mock is decided by one env var,
  * so swapping data sources never requires touching UI code.
  */
 
@@ -11,11 +11,11 @@ import { submitAssessmentHttp } from "./http";
 import { submitAssessmentMock } from "./mock";
 
 /**
- * Mock unless NEXT_PUBLIC_USE_MOCK is explicitly "false".
- * NEXT_PUBLIC_* vars are inlined into the browser bundle at build time, so a
- * dev-server restart is needed after changing it.
+ * Live backend unless NEXT_PUBLIC_USE_MOCK is explicitly "true" (useful for
+ * UI work without running Python). NEXT_PUBLIC_* vars are inlined at build
+ * time, so restart the dev server after changing it.
  */
-export const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK !== "false";
+export const USE_MOCK = process.env.NEXT_PUBLIC_USE_MOCK === "true";
 
 /**
  * Run an assessment and resolve with a Report.

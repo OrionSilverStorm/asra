@@ -27,7 +27,8 @@ app = FastAPI(title="ASRA", description="Across-Species Risk Assessment")
 # adds the headers that grant that permission.
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Next.js dev server; add the deployed URL later
+    # Next.js dev server under both hostnames; add the deployed URL later.
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_credentials=True,  # allow cookies/auth headers if we ever need them
     allow_methods=["*"],  # GET, POST, etc.
     allow_headers=["*"],  # e.g. Content-Type: application/json

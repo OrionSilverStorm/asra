@@ -67,8 +67,8 @@ export interface SourceRecord {
   id: string;
   /** Database or publication name, e.g. "UniProt". */
   source: string;
-  /** Optional link to the record. */
-  url?: string;
+  /** Optional link to the record (the backend sends null when absent). */
+  url?: string | null;
 }
 
 /** One measured fact inside a layer, e.g. field "global_identity", value "85%". */
