@@ -79,8 +79,43 @@ def test_ambiguous_orthologue_keeps_candidates():
     assert layer.observations[0].source_record_id == layer.source_records[0].id
 
 
-def test_api_failure_is_unavailable_with_reason():
+def test_api_failure_is_unavailable_with_reason(monkeypatch):
+    # "timed out" is transient, so it is retried; skip the real waits.
+    monkeypatch.setattr("tools.sequence_layer.time.sleep", lambda s: None)
     with patch("tools.sequence_layer.run_sequence", side_effect=EnsemblAPIError("timed out")):
         layer = run_sequence_layer(ResolvedQuery("mus_musculus", SEQ, None, "SLC29A1"))
     assert layer.status == "unavailable"
     assert "EnsemblAPIError" in layer.limitations[0]
+
+
+def test_transient_ensembl_error_is_retried_then_succeeds(monkeypatch):
+    # First call 500s, second succeeds: the layer should return the result.
+    monkeypatch.setattr("tools.sequence_layer.time.sleep", lambda s: None)
+    ok = object()
+    calls = iter([EnsemblAPIError("Ensembl HTTP 500 resolving X to mus_musculus."), ok])
+
+    def flaky(*a, **k):
+        result = next(calls)
+        if isinstance(result, Exception):
+            raise result
+        return result
+
+    with patch("tools.sequence_layer.run_sequence", side_effect=flaky), \
+         patch("tools.sequence_layer.to_layer_result", side_effect=lambda r: r):
+        assert run_sequence_layer(ResolvedQuery("mus_musculus", SEQ, None, "SLC29A1")) is ok
+
+
+def test_persistent_500_reports_attempt_count(monkeypatch):
+    sleeps = []
+    monkeypatch.setattr("tools.sequence_layer.time.sleep", sleeps.append)
+    with patch("tools.sequence_layer.run_sequence", side_effect=EnsemblAPIError("Ensembl HTTP 503 resolving X.")) as run:
+        layer = run_sequence_layer(ResolvedQuery("mus_musculus", SEQ, None, "SLC29A1"))
+    assert run.call_count == 3 and sleeps == [1.0, 2.0]
+    assert layer.status == "unavailable" and "after 3 attempts" in layer.limitations[0]
+
+
+def test_client_error_is_not_retried(monkeypatch):
+    monkeypatch.setattr("tools.sequence_layer.time.sleep", lambda s: pytest.fail("should not retry"))
+    with patch("tools.sequence_layer.run_sequence", side_effect=EnsemblAPIError("Ensembl HTTP 400 resolving X.")) as run:
+        layer = run_sequence_layer(ResolvedQuery("mus_musculus", SEQ, None, "SLC29A1"))
+    assert run.call_count == 1 and "after 1 attempt)" in layer.limitations[0]
