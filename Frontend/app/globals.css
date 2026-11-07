@@ -1,26 +1,124 @@
+/*
+ * Global styles and design tokens.
+ *
+ * All colours are defined once here as CSS variables ("tokens") and then
+ * exposed to Tailwind via @theme. Components only use the token names
+ * (bg-surface, text-muted, border-rule, ...), never raw hex values. To
+ * re-theme the site, edit this file.
+ */
+
 @import "tailwindcss";
 
+/* ── Light theme (default) ─────────────────────────────────────────── */
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --paper: #fafaf7; /* page background: warm off-white, like paper */
+  --surface: #ffffff; /* cards */
+  --sunken: #f2f2ed; /* recessed areas: chart tracks, info boxes */
+  --ink: #14201f; /* main text */
+  --muted: #5b6664; /* secondary text */
+  --rule: #e3e3dc; /* borders and dividers */
+  --accent: #0f5e5a; /* brand colour: deep teal */
+  --accent-ink: #ffffff; /* text on accent backgrounds */
+  --accent-soft: #e4efed; /* tinted accent background */
+
+  /* Status colours: strong (text) + soft (background) pairs */
+  --ok: #0f6e5a; /* layer complete */
+  --ok-soft: #e1f1ec;
+  --warn: #8a5a00; /* incomplete / caveats */
+  --warn-soft: #fbf0d9;
+  --danger: #a3302a; /* errors, high concern */
+  --danger-soft: #f9e4e2;
+  --na: #6b7280; /* unavailable / missing data (grey) */
+  --na-soft: #ececea;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+/* ── Dark theme: same token names, different values ────────────────── */
+/* Follows the OS setting automatically. Limited to `screen` so printed
+   and PDF reports always use the light palette (dark ink on white). */
+@media screen and (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --paper: #0e1413;
+    --surface: #151d1c;
+    --sunken: #1b2423;
+    --ink: #e7ecea;
+    --muted: #9aa6a3;
+    --rule: #26302f;
+    --accent: #5fb8ae;
+    --accent-ink: #0b1514;
+    --accent-soft: #173230;
+    --ok: #6cc3a8;
+    --ok-soft: #15302a;
+    --warn: #e2b45a;
+    --warn-soft: #33290f;
+    --danger: #ef8a83;
+    --danger-soft: #3a1b19;
+    --na: #9aa1a8;
+    --na-soft: #22292a;
   }
 }
 
+/*
+ * Map tokens to Tailwind utility names. `--color-surface` creates
+ * bg-surface, text-surface, border-surface, etc. `inline` means Tailwind
+ * references the variable instead of copying its value, so the dark-mode
+ * override above takes effect.
+ */
+@theme inline {
+  --color-paper: var(--paper);
+  --color-surface: var(--surface);
+  --color-sunken: var(--sunken);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-rule: var(--rule);
+  --color-accent: var(--accent);
+  --color-accent-ink: var(--accent-ink);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-na: var(--na);
+  --color-na-soft: var(--na-soft);
+
+  /* Font variables come from next/font in app/layout.tsx */
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --font-serif: var(--font-source-serif);
+}
+
+/* Base page colours and font */
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans), system-ui, sans-serif;
+}
+
+/* Visible focus ring for keyboard users on every focusable element */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+/* ── Print / PDF export ────────────────────────────────────────────── */
+@page {
+  margin: 16mm 14mm; /* A4/Letter-friendly margins */
+}
+
+@media print {
+  /* Pure white paper instead of the off-white screen background. */
+  body {
+    background: #ffffff;
+  }
+  /* Keep each layer panel and finding on one page instead of splitting it. */
+  article {
+    break-inside: avoid;
+  }
+  /* Print tinted backgrounds (badges, caveat, grey panels) and bar-chart
+     fills; browsers drop backgrounds by default. */
+  * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
 }
