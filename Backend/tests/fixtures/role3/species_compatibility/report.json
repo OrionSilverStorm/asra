@@ -1,0 +1,2326 @@
+{
+  "frontend_species": [
+    "mus_musculus",
+    "rattus_norvegicus",
+    "cavia_porcellus",
+    "macaca_mulatta",
+    "macaca_fascicularis",
+    "canis_lupus_familiaris",
+    "sus_scrofa",
+    "oryctolagus_cuniculus",
+    "danio_rerio"
+  ],
+  "frontend_sha256": "b55269b3c759ea443f1924d56067f2b87cc20e1f26646aa1bb60eb2eb97b15ff",
+  "mode": "live",
+  "rows": [
+    {
+      "gene": "CD28",
+      "frontend_species": "macaca_mulatta",
+      "ensembl_species": "macaca_mulatta",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000178562",
+          "protein_id": "ENSP00000324890",
+          "species": "homo_sapiens",
+          "sequence_length": 220,
+          "sequence_sha256": "ecde17e42264c2bbec2b8d2dfe0fff4fb8be50b6c3d962af0b29816dbda0647f"
+        },
+        "animal": {
+          "gene_id": "ENSMMUG00000057214",
+          "protein_id": "ENSMMUP00000065245",
+          "species": "macaca_mulatta",
+          "sequence_length": 220,
+          "sequence_sha256": "0b90beeb9ac447eeb44c5b548a50bda547914991d09b94b9591615d8b2cf9a44"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=macaca_mulatta&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "dn_ds": null,
+          "method_link_type": "ENSEMBL_ORTHOLOGUES",
+          "taxonomy_level": "Catarrhini",
+          "type": "ortholog_one2one"
+        }
+      },
+      "sequence": {
+        "status": "ok",
+        "functional_status": "ok",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000178562",
+            "protein_id": "ENSP00000324890",
+            "species": "homo_sapiens",
+            "sequence_length": 220,
+            "sequence_sha256": "ecde17e42264c2bbec2b8d2dfe0fff4fb8be50b6c3d962af0b29816dbda0647f",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "P10747",
+            "uniprot_isoform": "P10747-1",
+            "feature_count": 14,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSMMUG00000057214",
+            "protein_id": "ENSMMUP00000065245",
+            "species": "macaca_mulatta",
+            "sequence_length": 220,
+            "sequence_sha256": "0b90beeb9ac447eeb44c5b548a50bda547914991d09b94b9591615d8b2cf9a44",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "A0A5F7ZKV3",
+            "uniprot_isoform": "A0A5F7ZKV3",
+            "feature_count": 3,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 220,
+          "animal_length": 220,
+          "alignment_columns": 220,
+          "paired_columns": 220,
+          "exact_matches": 216,
+          "substitutions": 4,
+          "ambiguous_pairs": 0,
+          "insertion_events": 0,
+          "deletion_events": 0,
+          "inserted_residues": 0,
+          "deleted_residues": 0,
+          "identity_percent": 98.18181818181819,
+          "paired_identity_percent": 98.18181818181819,
+          "human_coverage_percent": 100.0,
+          "animal_coverage_percent": 100.0
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=macaca_mulatta&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:P10747",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/P10747.json"
+          },
+          {
+            "id": "uniprot:A0A5F7ZKV3",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/A0A5F7ZKV3.json"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": null,
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "CD28",
+      "frontend_species": "macaca_fascicularis",
+      "ensembl_species": "macaca_fascicularis",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000178562",
+          "protein_id": "ENSP00000324890",
+          "species": "homo_sapiens",
+          "sequence_length": 220,
+          "sequence_sha256": "ecde17e42264c2bbec2b8d2dfe0fff4fb8be50b6c3d962af0b29816dbda0647f"
+        },
+        "animal": {
+          "gene_id": "ENSMFAG00000003864",
+          "protein_id": "ENSMFAP00000034788",
+          "species": "macaca_fascicularis",
+          "sequence_length": 220,
+          "sequence_sha256": "0b90beeb9ac447eeb44c5b548a50bda547914991d09b94b9591615d8b2cf9a44"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=macaca_fascicularis&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "dn_ds": null,
+          "taxonomy_level": "Catarrhini",
+          "method_link_type": "ENSEMBL_ORTHOLOGUES",
+          "type": "ortholog_one2one"
+        }
+      },
+      "sequence": {
+        "status": "ok",
+        "functional_status": "ok",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000178562",
+            "protein_id": "ENSP00000324890",
+            "species": "homo_sapiens",
+            "sequence_length": 220,
+            "sequence_sha256": "ecde17e42264c2bbec2b8d2dfe0fff4fb8be50b6c3d962af0b29816dbda0647f",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "P10747",
+            "uniprot_isoform": "P10747-1",
+            "feature_count": 14,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSMFAG00000003864",
+            "protein_id": "ENSMFAP00000034788",
+            "species": "macaca_fascicularis",
+            "sequence_length": 220,
+            "sequence_sha256": "0b90beeb9ac447eeb44c5b548a50bda547914991d09b94b9591615d8b2cf9a44",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "A0ACM8QAJ6",
+            "uniprot_isoform": "A0ACM8QAJ6",
+            "feature_count": 3,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 220,
+          "animal_length": 220,
+          "alignment_columns": 220,
+          "paired_columns": 220,
+          "exact_matches": 216,
+          "substitutions": 4,
+          "ambiguous_pairs": 0,
+          "insertion_events": 0,
+          "deletion_events": 0,
+          "inserted_residues": 0,
+          "deleted_residues": 0,
+          "identity_percent": 98.18181818181819,
+          "paired_identity_percent": 98.18181818181819,
+          "human_coverage_percent": 100.0,
+          "animal_coverage_percent": 100.0
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=macaca_fascicularis&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:P10747",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/P10747.json"
+          },
+          {
+            "id": "uniprot:A0ACM8QAJ6",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/A0ACM8QAJ6.json"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": null,
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "CD28",
+      "frontend_species": "mus_musculus",
+      "ensembl_species": "mus_musculus",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000178562",
+          "protein_id": "ENSP00000324890",
+          "species": "homo_sapiens",
+          "sequence_length": 220,
+          "sequence_sha256": "ecde17e42264c2bbec2b8d2dfe0fff4fb8be50b6c3d962af0b29816dbda0647f"
+        },
+        "animal": {
+          "gene_id": "ENSMUSG00000026012",
+          "protein_id": "ENSMUSP00000027165",
+          "species": "mus_musculus",
+          "sequence_length": 218,
+          "sequence_sha256": "ad64033b69c51782617024ccaeda21b0a423ca6e38e5ad9830f7d4e2de13e14f"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=mus_musculus&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "type": "ortholog_one2one",
+          "dn_ds": null,
+          "method_link_type": "ENSEMBL_ORTHOLOGUES",
+          "taxonomy_level": "Euarchontoglires"
+        }
+      },
+      "sequence": {
+        "status": "ok",
+        "functional_status": "ok",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000178562",
+            "protein_id": "ENSP00000324890",
+            "species": "homo_sapiens",
+            "sequence_length": 220,
+            "sequence_sha256": "ecde17e42264c2bbec2b8d2dfe0fff4fb8be50b6c3d962af0b29816dbda0647f",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "P10747",
+            "uniprot_isoform": "P10747-1",
+            "feature_count": 14,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSMUSG00000026012",
+            "protein_id": "ENSMUSP00000027165",
+            "species": "mus_musculus",
+            "sequence_length": 218,
+            "sequence_sha256": "ad64033b69c51782617024ccaeda21b0a423ca6e38e5ad9830f7d4e2de13e14f",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "P31041",
+            "uniprot_isoform": "P31041",
+            "feature_count": 9,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 220,
+          "animal_length": 218,
+          "alignment_columns": 222,
+          "paired_columns": 216,
+          "exact_matches": 153,
+          "substitutions": 63,
+          "ambiguous_pairs": 0,
+          "insertion_events": 2,
+          "deletion_events": 2,
+          "inserted_residues": 2,
+          "deleted_residues": 4,
+          "identity_percent": 68.91891891891892,
+          "paired_identity_percent": 70.83333333333333,
+          "human_coverage_percent": 98.18181818181819,
+          "animal_coverage_percent": 99.08256880733946
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=mus_musculus&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:P10747",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/P10747.json"
+          },
+          {
+            "id": "uniprot:P31041",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/P31041.json"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": null,
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "SLC29A1",
+      "frontend_species": "mus_musculus",
+      "ensembl_species": "mus_musculus",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000112759",
+          "protein_id": "ENSP00000360820",
+          "species": "homo_sapiens",
+          "sequence_length": 456,
+          "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae"
+        },
+        "animal": {
+          "gene_id": "ENSMUSG00000023942",
+          "protein_id": "ENSMUSP00000063096",
+          "species": "mus_musculus",
+          "sequence_length": 460,
+          "sequence_sha256": "8b9af2e71601f3c470efac73271b652b839acad3382426f71753c58e81af5284"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=mus_musculus&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "method_link_type": "ENSEMBL_ORTHOLOGUES",
+          "dn_ds": null,
+          "type": "ortholog_one2one",
+          "taxonomy_level": "Eutheria"
+        }
+      },
+      "sequence": {
+        "status": "ok",
+        "functional_status": "ok",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000112759",
+            "protein_id": "ENSP00000360820",
+            "species": "homo_sapiens",
+            "sequence_length": 456,
+            "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "Q99808",
+            "uniprot_isoform": "Q99808-1",
+            "feature_count": 53,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSMUSG00000023942",
+            "protein_id": "ENSMUSP00000063096",
+            "species": "mus_musculus",
+            "sequence_length": 460,
+            "sequence_sha256": "8b9af2e71601f3c470efac73271b652b839acad3382426f71753c58e81af5284",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "Q9JIM1",
+            "uniprot_isoform": "Q9JIM1-1",
+            "feature_count": 16,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 456,
+          "animal_length": 460,
+          "alignment_columns": 461,
+          "paired_columns": 455,
+          "exact_matches": 366,
+          "substitutions": 89,
+          "ambiguous_pairs": 0,
+          "insertion_events": 1,
+          "deletion_events": 1,
+          "inserted_residues": 5,
+          "deleted_residues": 1,
+          "identity_percent": 79.39262472885032,
+          "paired_identity_percent": 80.43956043956044,
+          "human_coverage_percent": 99.78070175438596,
+          "animal_coverage_percent": 98.91304347826087
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=mus_musculus&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:Q99808",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/Q99808.json"
+          },
+          {
+            "id": "uniprot:Q9JIM1",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/Q9JIM1.json"
+          },
+          {
+            "id": "doi:10.1074/jbc.M513825200",
+            "source": "Lee et al. (2006), J Biol Chem 281:16700\u201316706; PMID 16595656",
+            "url": "https://doi.org/10.1074/jbc.M513825200"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": {
+          "human_window": "PERN",
+          "residues": [
+            {
+              "human_position": 71,
+              "animal_position": 71,
+              "human_residue": "P",
+              "animal_residue": "P",
+              "state": "identical"
+            },
+            {
+              "human_position": 72,
+              "animal_position": 72,
+              "human_residue": "E",
+              "animal_residue": "A",
+              "state": "substitution"
+            },
+            {
+              "human_position": 73,
+              "animal_position": 73,
+              "human_residue": "R",
+              "animal_residue": "R",
+              "state": "identical"
+            },
+            {
+              "human_position": 74,
+              "animal_position": 74,
+              "human_residue": "N",
+              "animal_residue": "S",
+              "state": "substitution"
+            }
+          ],
+          "animal_contiguous": true,
+          "animal_window": "PARS",
+          "alignment_ambiguous": false,
+          "interpretation": "Computed from these exact proteins and selected alignment; localisation and toxicity were not measured."
+        },
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "SLC29A1",
+      "frontend_species": "rattus_norvegicus",
+      "ensembl_species": "rattus_norvegicus",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000112759",
+          "protein_id": "ENSP00000360820",
+          "species": "homo_sapiens",
+          "sequence_length": 456,
+          "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae"
+        },
+        "animal": {
+          "gene_id": "ENSRNOG00000019752",
+          "protein_id": "ENSRNOP00000082743",
+          "species": "rattus_norvegicus",
+          "sequence_length": 504,
+          "sequence_sha256": "eb5e47444e0f72878314a8788c1a246dc5c482335d0f2d750f05df38522b1a28"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=rattus_norvegicus&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "type": "ortholog_one2one",
+          "taxonomy_level": "Eutheria",
+          "dn_ds": null,
+          "method_link_type": "ENSEMBL_ORTHOLOGUES"
+        }
+      },
+      "sequence": {
+        "status": "incomplete",
+        "functional_status": "incomplete",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000112759",
+            "protein_id": "ENSP00000360820",
+            "species": "homo_sapiens",
+            "sequence_length": 456,
+            "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "Q99808",
+            "uniprot_isoform": "Q99808-1",
+            "feature_count": 53,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSRNOG00000019752",
+            "protein_id": "ENSRNOP00000082743",
+            "species": "rattus_norvegicus",
+            "sequence_length": 504,
+            "sequence_sha256": "eb5e47444e0f72878314a8788c1a246dc5c482335d0f2d750f05df38522b1a28",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "A0ACJ1MV19",
+            "uniprot_isoform": "A0ACJ1MV19",
+            "feature_count": 13,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 456,
+          "animal_length": 504,
+          "alignment_columns": 504,
+          "paired_columns": 456,
+          "exact_matches": 357,
+          "substitutions": 99,
+          "ambiguous_pairs": 0,
+          "insertion_events": 2,
+          "deletion_events": 0,
+          "inserted_residues": 48,
+          "deleted_residues": 0,
+          "identity_percent": 70.83333333333333,
+          "paired_identity_percent": 78.28947368421052,
+          "human_coverage_percent": 100.0,
+          "animal_coverage_percent": 90.47619047619048
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Multiple optimal alignments exist; only the first traceback is reported. Gap placement and residue mappings may differ.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer.",
+          "Alternative optimal tracebacks exist; mapped features and overlaps depend on the selected traceback."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=rattus_norvegicus&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:Q99808",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/Q99808.json"
+          },
+          {
+            "id": "uniprot:A0ACJ1MV19",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/A0ACJ1MV19.json"
+          },
+          {
+            "id": "doi:10.1074/jbc.M513825200",
+            "source": "Lee et al. (2006), J Biol Chem 281:16700\u201316706; PMID 16595656",
+            "url": "https://doi.org/10.1074/jbc.M513825200"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": {
+          "human_window": "PERN",
+          "residues": [
+            {
+              "human_position": 71,
+              "animal_position": 118,
+              "human_residue": "P",
+              "animal_residue": "P",
+              "state": "identical"
+            },
+            {
+              "human_position": 72,
+              "animal_position": 119,
+              "human_residue": "E",
+              "animal_residue": "A",
+              "state": "substitution"
+            },
+            {
+              "human_position": 73,
+              "animal_position": 120,
+              "human_residue": "R",
+              "animal_residue": "R",
+              "state": "identical"
+            },
+            {
+              "human_position": 74,
+              "animal_position": 121,
+              "human_residue": "N",
+              "animal_residue": "S",
+              "state": "substitution"
+            }
+          ],
+          "animal_contiguous": true,
+          "animal_window": "PARS",
+          "alignment_ambiguous": true,
+          "interpretation": "Computed from these exact proteins and selected alignment; localisation and toxicity were not measured."
+        },
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "SLC29A1",
+      "frontend_species": "cavia_porcellus",
+      "ensembl_species": "cavia_porcellus",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000112759",
+          "protein_id": "ENSP00000360820",
+          "species": "homo_sapiens",
+          "sequence_length": 456,
+          "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae"
+        },
+        "animal": {
+          "gene_id": "ENSCPOG00000005137",
+          "protein_id": "ENSCPOP00000004621",
+          "species": "cavia_porcellus",
+          "sequence_length": 461,
+          "sequence_sha256": "782a716d33829e937fc772e7d8a24951e2bb931185f33ccb922341f16e832a28"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=cavia_porcellus&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "method_link_type": "ENSEMBL_ORTHOLOGUES",
+          "dn_ds": null,
+          "taxonomy_level": "Euarchontoglires",
+          "type": "ortholog_one2one"
+        }
+      },
+      "sequence": {
+        "status": "ok",
+        "functional_status": "ok",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000112759",
+            "protein_id": "ENSP00000360820",
+            "species": "homo_sapiens",
+            "sequence_length": 456,
+            "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "Q99808",
+            "uniprot_isoform": "Q99808-1",
+            "feature_count": 53,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSCPOG00000005137",
+            "protein_id": "ENSCPOP00000004621",
+            "species": "cavia_porcellus",
+            "sequence_length": 461,
+            "sequence_sha256": "782a716d33829e937fc772e7d8a24951e2bb931185f33ccb922341f16e832a28",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "H0V4R7",
+            "uniprot_isoform": "H0V4R7",
+            "feature_count": 12,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 456,
+          "animal_length": 461,
+          "alignment_columns": 461,
+          "paired_columns": 456,
+          "exact_matches": 397,
+          "substitutions": 59,
+          "ambiguous_pairs": 0,
+          "insertion_events": 1,
+          "deletion_events": 0,
+          "inserted_residues": 5,
+          "deleted_residues": 0,
+          "identity_percent": 86.11713665943601,
+          "paired_identity_percent": 87.06140350877193,
+          "human_coverage_percent": 100.0,
+          "animal_coverage_percent": 98.91540130151844
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=cavia_porcellus&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:Q99808",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/Q99808.json"
+          },
+          {
+            "id": "uniprot:H0V4R7",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/H0V4R7.json"
+          },
+          {
+            "id": "doi:10.1074/jbc.M513825200",
+            "source": "Lee et al. (2006), J Biol Chem 281:16700\u201316706; PMID 16595656",
+            "url": "https://doi.org/10.1074/jbc.M513825200"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": {
+          "human_window": "PERN",
+          "residues": [
+            {
+              "human_position": 71,
+              "animal_position": 71,
+              "human_residue": "P",
+              "animal_residue": "S",
+              "state": "substitution"
+            },
+            {
+              "human_position": 72,
+              "animal_position": 72,
+              "human_residue": "E",
+              "animal_residue": "E",
+              "state": "identical"
+            },
+            {
+              "human_position": 73,
+              "animal_position": 73,
+              "human_residue": "R",
+              "animal_residue": "R",
+              "state": "identical"
+            },
+            {
+              "human_position": 74,
+              "animal_position": 74,
+              "human_residue": "N",
+              "animal_residue": "N",
+              "state": "identical"
+            }
+          ],
+          "animal_contiguous": true,
+          "animal_window": "SERN",
+          "alignment_ambiguous": false,
+          "interpretation": "Computed from these exact proteins and selected alignment; localisation and toxicity were not measured."
+        },
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "SLC29A1",
+      "frontend_species": "macaca_mulatta",
+      "ensembl_species": "macaca_mulatta",
+      "resolver": {
+        "status": "orthologue_unavailable",
+        "error_type": "OrthologueNotFoundError",
+        "reason": "No Ensembl orthologue found for SLC29A1 to macaca_mulatta."
+      },
+      "sequence": {
+        "status": "orthologue_unavailable",
+        "error_type": "OrthologueNotFoundError",
+        "reason": "No Ensembl orthologue found for SLC29A1 to macaca_mulatta."
+      }
+    },
+    {
+      "gene": "SLC29A1",
+      "frontend_species": "macaca_fascicularis",
+      "ensembl_species": "macaca_fascicularis",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000112759",
+          "protein_id": "ENSP00000360820",
+          "species": "homo_sapiens",
+          "sequence_length": 456,
+          "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae"
+        },
+        "animal": {
+          "gene_id": "ENSMFAG00000038090",
+          "protein_id": "ENSMFAP00000060756",
+          "species": "macaca_fascicularis",
+          "sequence_length": 590,
+          "sequence_sha256": "9340603d70b10f02840876b9240b9db2f8cdfac5741a41d397fd2b48cd6b6d96"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=macaca_fascicularis&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "method_link_type": "ENSEMBL_ORTHOLOGUES",
+          "dn_ds": null,
+          "taxonomy_level": "Catarrhini",
+          "type": "ortholog_one2one"
+        }
+      },
+      "sequence": {
+        "status": "incomplete",
+        "functional_status": "incomplete",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000112759",
+            "protein_id": "ENSP00000360820",
+            "species": "homo_sapiens",
+            "sequence_length": 456,
+            "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "Q99808",
+            "uniprot_isoform": "Q99808-1",
+            "feature_count": 53,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSMFAG00000038090",
+            "protein_id": "ENSMFAP00000060756",
+            "species": "macaca_fascicularis",
+            "sequence_length": 590,
+            "sequence_sha256": "9340603d70b10f02840876b9240b9db2f8cdfac5741a41d397fd2b48cd6b6d96",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "A0A7N9D7I6",
+            "uniprot_isoform": "A0A7N9D7I6",
+            "feature_count": 13,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 456,
+          "animal_length": 590,
+          "alignment_columns": 590,
+          "paired_columns": 456,
+          "exact_matches": 453,
+          "substitutions": 3,
+          "ambiguous_pairs": 0,
+          "insertion_events": 1,
+          "deletion_events": 0,
+          "inserted_residues": 134,
+          "deleted_residues": 0,
+          "identity_percent": 76.77966101694915,
+          "paired_identity_percent": 99.34210526315789,
+          "human_coverage_percent": 100.0,
+          "animal_coverage_percent": 77.28813559322033
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Multiple optimal alignments exist; only the first traceback is reported. Gap placement and residue mappings may differ.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer.",
+          "Alternative optimal tracebacks exist; mapped features and overlaps depend on the selected traceback."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=macaca_fascicularis&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:Q99808",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/Q99808.json"
+          },
+          {
+            "id": "uniprot:A0A7N9D7I6",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/A0A7N9D7I6.json"
+          },
+          {
+            "id": "doi:10.1074/jbc.M513825200",
+            "source": "Lee et al. (2006), J Biol Chem 281:16700\u201316706; PMID 16595656",
+            "url": "https://doi.org/10.1074/jbc.M513825200"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": {
+          "human_window": "PERN",
+          "residues": [
+            {
+              "human_position": 71,
+              "animal_position": 205,
+              "human_residue": "P",
+              "animal_residue": "P",
+              "state": "identical"
+            },
+            {
+              "human_position": 72,
+              "animal_position": 206,
+              "human_residue": "E",
+              "animal_residue": "E",
+              "state": "identical"
+            },
+            {
+              "human_position": 73,
+              "animal_position": 207,
+              "human_residue": "R",
+              "animal_residue": "R",
+              "state": "identical"
+            },
+            {
+              "human_position": 74,
+              "animal_position": 208,
+              "human_residue": "N",
+              "animal_residue": "N",
+              "state": "identical"
+            }
+          ],
+          "animal_contiguous": true,
+          "animal_window": "PERN",
+          "alignment_ambiguous": true,
+          "interpretation": "Computed from these exact proteins and selected alignment; localisation and toxicity were not measured."
+        },
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "SLC29A1",
+      "frontend_species": "canis_lupus_familiaris",
+      "ensembl_species": "canis_lupus_familiaris",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000112759",
+          "protein_id": "ENSP00000360820",
+          "species": "homo_sapiens",
+          "sequence_length": 456,
+          "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae"
+        },
+        "animal": {
+          "gene_id": "ENSCAFG00845011282",
+          "protein_id": "ENSCAFP00845016038",
+          "species": "canis_lupus_familiaris",
+          "sequence_length": 522,
+          "sequence_sha256": "747170a2f10c5a8cbea1fdc4dd0ea528b20ad082843818a052ca410c0f112457"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=canis_lupus_familiaris&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "taxonomy_level": "Boreoeutheria",
+          "method_link_type": "ENSEMBL_ORTHOLOGUES",
+          "dn_ds": null,
+          "type": "ortholog_one2one"
+        }
+      },
+      "sequence": {
+        "status": "incomplete",
+        "functional_status": "incomplete",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000112759",
+            "protein_id": "ENSP00000360820",
+            "species": "homo_sapiens",
+            "sequence_length": 456,
+            "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "Q99808",
+            "uniprot_isoform": "Q99808-1",
+            "feature_count": 53,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSCAFG00845011282",
+            "protein_id": "ENSCAFP00845016038",
+            "species": "canis_lupus_familiaris",
+            "sequence_length": 522,
+            "sequence_sha256": "747170a2f10c5a8cbea1fdc4dd0ea528b20ad082843818a052ca410c0f112457",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "A0A8I3NI33",
+            "uniprot_isoform": "A0A8I3NI33",
+            "feature_count": 12,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 456,
+          "animal_length": 522,
+          "alignment_columns": 522,
+          "paired_columns": 456,
+          "exact_matches": 399,
+          "substitutions": 57,
+          "ambiguous_pairs": 0,
+          "insertion_events": 1,
+          "deletion_events": 0,
+          "inserted_residues": 66,
+          "deleted_residues": 0,
+          "identity_percent": 76.4367816091954,
+          "paired_identity_percent": 87.5,
+          "human_coverage_percent": 100.0,
+          "animal_coverage_percent": 87.35632183908046
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Multiple optimal alignments exist; only the first traceback is reported. Gap placement and residue mappings may differ.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer.",
+          "Alternative optimal tracebacks exist; mapped features and overlaps depend on the selected traceback."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=canis_lupus_familiaris&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:Q99808",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/Q99808.json"
+          },
+          {
+            "id": "uniprot:A0A8I3NI33",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/A0A8I3NI33.json"
+          },
+          {
+            "id": "doi:10.1074/jbc.M513825200",
+            "source": "Lee et al. (2006), J Biol Chem 281:16700\u201316706; PMID 16595656",
+            "url": "https://doi.org/10.1074/jbc.M513825200"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": {
+          "human_window": "PERN",
+          "residues": [
+            {
+              "human_position": 71,
+              "animal_position": 137,
+              "human_residue": "P",
+              "animal_residue": "P",
+              "state": "identical"
+            },
+            {
+              "human_position": 72,
+              "animal_position": 138,
+              "human_residue": "E",
+              "animal_residue": "E",
+              "state": "identical"
+            },
+            {
+              "human_position": 73,
+              "animal_position": 139,
+              "human_residue": "R",
+              "animal_residue": "R",
+              "state": "identical"
+            },
+            {
+              "human_position": 74,
+              "animal_position": 140,
+              "human_residue": "N",
+              "animal_residue": "N",
+              "state": "identical"
+            }
+          ],
+          "animal_contiguous": true,
+          "animal_window": "PERN",
+          "alignment_ambiguous": true,
+          "interpretation": "Computed from these exact proteins and selected alignment; localisation and toxicity were not measured."
+        },
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "SLC29A1",
+      "frontend_species": "sus_scrofa",
+      "ensembl_species": "sus_scrofa",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000112759",
+          "protein_id": "ENSP00000360820",
+          "species": "homo_sapiens",
+          "sequence_length": 456,
+          "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae"
+        },
+        "animal": {
+          "gene_id": "ENSSSCG00000001700",
+          "protein_id": "ENSSSCP00000052412",
+          "species": "sus_scrofa",
+          "sequence_length": 548,
+          "sequence_sha256": "53bc77c2d233baa792ec059f7ee786e4a8fdc729eaf3393473a8526ed6ef9a71"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=sus_scrofa&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "method_link_type": "ENSEMBL_ORTHOLOGUES",
+          "dn_ds": null,
+          "type": "ortholog_one2one",
+          "taxonomy_level": "Boreoeutheria"
+        }
+      },
+      "sequence": {
+        "status": "incomplete",
+        "functional_status": "incomplete",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000112759",
+            "protein_id": "ENSP00000360820",
+            "species": "homo_sapiens",
+            "sequence_length": 456,
+            "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "Q99808",
+            "uniprot_isoform": "Q99808-1",
+            "feature_count": 53,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSSSCG00000001700",
+            "protein_id": "ENSSSCP00000052412",
+            "species": "sus_scrofa",
+            "sequence_length": 548,
+            "sequence_sha256": "53bc77c2d233baa792ec059f7ee786e4a8fdc729eaf3393473a8526ed6ef9a71",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "A0A287B8K5",
+            "uniprot_isoform": "A0A287B8K5",
+            "feature_count": 12,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 456,
+          "animal_length": 548,
+          "alignment_columns": 548,
+          "paired_columns": 456,
+          "exact_matches": 398,
+          "substitutions": 58,
+          "ambiguous_pairs": 0,
+          "insertion_events": 3,
+          "deletion_events": 0,
+          "inserted_residues": 92,
+          "deleted_residues": 0,
+          "identity_percent": 72.62773722627738,
+          "paired_identity_percent": 87.28070175438596,
+          "human_coverage_percent": 100.0,
+          "animal_coverage_percent": 83.21167883211679
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Multiple optimal alignments exist; only the first traceback is reported. Gap placement and residue mappings may differ.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer.",
+          "Alternative optimal tracebacks exist; mapped features and overlaps depend on the selected traceback."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=sus_scrofa&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:Q99808",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/Q99808.json"
+          },
+          {
+            "id": "uniprot:A0A287B8K5",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/A0A287B8K5.json"
+          },
+          {
+            "id": "doi:10.1074/jbc.M513825200",
+            "source": "Lee et al. (2006), J Biol Chem 281:16700\u201316706; PMID 16595656",
+            "url": "https://doi.org/10.1074/jbc.M513825200"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": {
+          "human_window": "PERN",
+          "residues": [
+            {
+              "human_position": 71,
+              "animal_position": 162,
+              "human_residue": "P",
+              "animal_residue": "T",
+              "state": "substitution"
+            },
+            {
+              "human_position": 72,
+              "animal_position": 163,
+              "human_residue": "E",
+              "animal_residue": "E",
+              "state": "identical"
+            },
+            {
+              "human_position": 73,
+              "animal_position": 164,
+              "human_residue": "R",
+              "animal_residue": "R",
+              "state": "identical"
+            },
+            {
+              "human_position": 74,
+              "animal_position": 165,
+              "human_residue": "N",
+              "animal_residue": "N",
+              "state": "identical"
+            }
+          ],
+          "animal_contiguous": true,
+          "animal_window": "TERN",
+          "alignment_ambiguous": true,
+          "interpretation": "Computed from these exact proteins and selected alignment; localisation and toxicity were not measured."
+        },
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "SLC29A1",
+      "frontend_species": "oryctolagus_cuniculus",
+      "ensembl_species": "oryctolagus_cuniculus",
+      "resolver": {
+        "status": "ok",
+        "human": {
+          "gene_id": "ENSG00000112759",
+          "protein_id": "ENSP00000360820",
+          "species": "homo_sapiens",
+          "sequence_length": 456,
+          "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae"
+        },
+        "animal": {
+          "gene_id": "ENSOCUG00000017891",
+          "protein_id": "ENSOCUP00000003048",
+          "species": "oryctolagus_cuniculus",
+          "sequence_length": 456,
+          "sequence_sha256": "6347203fceb24d4cc35932e3ec1e8edbbf7603c65c213a446eecbad1be539719"
+        },
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=oryctolagus_cuniculus&type=orthologues&sequence=protein&aligned=0&format=full",
+        "orthology": {
+          "type": "ortholog_one2one",
+          "taxonomy_level": "Euarchontoglires",
+          "dn_ds": null,
+          "method_link_type": "ENSEMBL_ORTHOLOGUES"
+        }
+      },
+      "sequence": {
+        "status": "ok",
+        "functional_status": "ok",
+        "proteins": {
+          "human": {
+            "gene_id": "ENSG00000112759",
+            "protein_id": "ENSP00000360820",
+            "species": "homo_sapiens",
+            "sequence_length": 456,
+            "sequence_sha256": "49bca4bf056d239c66207751c15e2f1bf5c5f810a8685932c00ef588360f46ae",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "Q99808",
+            "uniprot_isoform": "Q99808-1",
+            "feature_count": 53,
+            "uniprot_release": "2026_04"
+          },
+          "animal": {
+            "gene_id": "ENSOCUG00000017891",
+            "protein_id": "ENSOCUP00000003048",
+            "species": "oryctolagus_cuniculus",
+            "sequence_length": 456,
+            "sequence_sha256": "6347203fceb24d4cc35932e3ec1e8edbbf7603c65c213a446eecbad1be539719",
+            "annotation_status": "ok",
+            "reason_code": null,
+            "reason": null,
+            "uniprot_accession": "G1SJV6",
+            "uniprot_isoform": "G1SJV6",
+            "feature_count": 12,
+            "uniprot_release": "2026_04"
+          }
+        },
+        "measurements": {
+          "human_length": 456,
+          "animal_length": 456,
+          "alignment_columns": 456,
+          "paired_columns": 456,
+          "exact_matches": 405,
+          "substitutions": 51,
+          "ambiguous_pairs": 0,
+          "insertion_events": 0,
+          "deletion_events": 0,
+          "inserted_residues": 0,
+          "deleted_residues": 0,
+          "identity_percent": 88.8157894736842,
+          "paired_identity_percent": 88.8157894736842,
+          "human_coverage_percent": 100.0,
+          "animal_coverage_percent": 100.0
+        },
+        "limitations": [
+          "Alignment differences do not establish toxicity, biological effects or functional equivalence.",
+          "Gap runs describe this alignment, not inferred evolutionary insertion/deletion events.",
+          "Results and residue mappings depend on scoring parameters and the selected protein isoforms.",
+          "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
+          "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+          "Missing annotations are not evidence of biological absence; other substitutions have no selected annotation overlap, not proven lack of effect.",
+          "Feature overlap (including mutagenesis records) does not establish the effect of a naturally occurring substitution, altered function or drug toxicity.",
+          "Only displayed UniProt sequences are supported; non-displayed isoforms require explicit isoform annotations before coordinate transfer."
+        ],
+        "source_records": [
+          {
+            "id": "ensembl_orthology",
+            "source": "Ensembl REST homology",
+            "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=oryctolagus_cuniculus&type=orthologues&sequence=protein&aligned=0&format=full"
+          },
+          {
+            "id": "uniprot:Q99808",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/Q99808.json"
+          },
+          {
+            "id": "uniprot:G1SJV6",
+            "source": "UniProtKB",
+            "url": "https://rest.uniprot.org/uniprotkb/G1SJV6.json"
+          },
+          {
+            "id": "doi:10.1074/jbc.M513825200",
+            "source": "Lee et al. (2006), J Biol Chem 281:16700\u201316706; PMID 16595656",
+            "url": "https://doi.org/10.1074/jbc.M513825200"
+          },
+          {
+            "id": "sequence_functional_analysis",
+            "source": "Role 3 alignment analysis; underlying sources cited within functional_analysis"
+          }
+        ],
+        "slc29a1_motif": {
+          "human_window": "PERN",
+          "residues": [
+            {
+              "human_position": 71,
+              "animal_position": 71,
+              "human_residue": "P",
+              "animal_residue": "P",
+              "state": "identical"
+            },
+            {
+              "human_position": 72,
+              "animal_position": 72,
+              "human_residue": "E",
+              "animal_residue": "E",
+              "state": "identical"
+            },
+            {
+              "human_position": 73,
+              "animal_position": 73,
+              "human_residue": "R",
+              "animal_residue": "H",
+              "state": "substitution"
+            },
+            {
+              "human_position": 74,
+              "animal_position": 74,
+              "human_residue": "N",
+              "animal_residue": "G",
+              "state": "substitution"
+            }
+          ],
+          "animal_contiguous": true,
+          "animal_window": "PEHG",
+          "alignment_ambiguous": false,
+          "interpretation": "Computed from these exact proteins and selected alignment; localisation and toxicity were not measured."
+        },
+        "adapter_status": "ok"
+      }
+    },
+    {
+      "gene": "SLC29A1",
+      "frontend_species": "danio_rerio",
+      "ensembl_species": "danio_rerio",
+      "resolver": {
+        "status": "ambiguous_orthologue",
+        "error_type": "AmbiguousOrthologueError",
+        "reason": "SLC29A1 to danio_rerio is not a unique one-to-one orthologue (1 source records, 2 relationships); a justified biological selection is required.",
+        "candidates": [
+          {
+            "source": {
+              "id": "ENSG00000112759",
+              "species": "homo_sapiens",
+              "perc_id": 62.7193,
+              "taxon_id": 9606,
+              "seq": "MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATQYFTNRLDMSQNVSLVTAELSKDAQASAAPAAPLPERNSLSAIFNNVMTLCAMLPLLLFTYLNSFLHQRIPQSVRILGSLVAILLVFLITAILVKVQLDALPFFVITMIKIVLINSFGAILQGSLFGLAGLLPASYTAPIMSGQGLAGFFASVAMICAIASGSELSESAFGYFITACAVIILTIICYLGLPRLEFYRYYQQLKLEGPGEQETKLDLISKGEEPRAGKEESGVSVSNSQPTNESHSIKAILKNISVLAFSVCFIFTITIGMFPAVTVEVKSSIAGSSTWERYFIPVSCFLTFNIFDWLGRSLTAVFMWPGKDSRWLPSLVLARLVFVPLLLLCNIKPRRYLTVVFEHDAWFIFFMAAFAFSNGYLASLCMCFGPKKVKPAEAETAGAIMAFFLCLGLALGAVFSFLFRAIV",
+              "cigar_line": "47M9D189M5D28MD55MD7MD130M",
+              "perc_pos": 75.8772,
+              "protein_id": "ENSP00000360820"
+            },
+            "dn_ds": null,
+            "target": {
+              "cigar_line": "44M2D13M8DM12D171MDM3D13M4D12MD51MD3MD131M",
+              "perc_pos": 78.6364,
+              "protein_id": "ENSDARP00000137952",
+              "id": "ENSDARG00000101289",
+              "species": "danio_rerio",
+              "perc_id": 65,
+              "taxon_id": 7955,
+              "seq": "MTAVNAPRDRYNAVWIIFFILGLGTLLPWNFFMTATLYFTKRLEETNGGLNQTANTTEIRSVLQSKFNNVMTLCAMVPLLIFTCLNSFIHQRIPQKLRISGSLSVILVVFLITAVLVKVEMEPLPFFTLTMIKIICINSFGAILQGSLFGLAGMLPASYTTPIMSGQGLAGAFAAFSMICAIASGSELEDSAFGYFITACVVILLAIVSYLALPRMEFFQYFSESNRSRSSTDEENKMDLLKPEGQAEKRPVLSLTEEESKPTVSVFAIFKQIWVMALSVCFVFIITIGIFPAVTVEVQSTIPDRGAWEKYFIPVSCFLLFNVMDWVGRSLTAVCMWPGKDSIWLPILVIARVVFVPLFILCNVQPRSFLPVVFSHDAWYIIFMIFFSFSNGYLASLCMCFGPKKVSQHEAETAGAIMAFFLSLGLAVGAALSFGFRNMI"
+            },
+            "taxonomy_level": "Euteleostomi",
+            "type": "ortholog_one2many",
+            "method_link_type": "ENSEMBL_ORTHOLOGUES"
+          },
+          {
+            "type": "ortholog_one2many",
+            "method_link_type": "ENSEMBL_ORTHOLOGUES",
+            "taxonomy_level": "Euteleostomi",
+            "dn_ds": null,
+            "target": {
+              "id": "ENSDARG00000054447",
+              "perc_id": 67.6606,
+              "species": "danio_rerio",
+              "taxon_id": 7955,
+              "seq": "MDPQVPKDKYNGVWLIFFMLGLGTLLPWNFFMTATMYFTSRLADPLTAMNNASMNSTEEDSRSVLQAKFNNVMTLCAMVPLLVFTCLNSILHQRIPQKIRIAGSLTLILLVFLLTAILVKIHLEPLPFFIVTMVKIIFINSFGAVLQGSLFGMAGLLPASYTTPIMSGQGLAGTFAAFSMICAIASGSELHDSAFGYFITACAVISLAIASYVVLPKLEFYQHYQESRQNKPAEDEENKMDLLKKDQRLQSAGDDDKKSPSILAIFKKIWVMALSVCFAFTITIGTFPAVTVDVKSTIADGGAWEKYFIPVSCFLFFNVFDWAGRSLTAVCMWPGKDSKLLPALLLARVVFVPLFMLCNVQPRYNLPVFFTHDGWFIAFMILFAFSNGYLASLCMCFGPKKVDPSEAETAGAIMAFFLSLGLALGASLSFLFRGLV",
+              "cigar_line": "4MD53M6D3M12D172M4D11M7D4M6D58MD131M",
+              "protein_id": "ENSDARP00000142204",
+              "perc_pos": 77.9817
+            },
+            "source": {
+              "cigar_line": "47M8D189M5D34M3D56MD130M",
+              "protein_id": "ENSP00000360820",
+              "perc_pos": 74.5614,
+              "id": "ENSG00000112759",
+              "perc_id": 64.693,
+              "species": "homo_sapiens",
+              "taxon_id": 9606,
+              "seq": "MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATQYFTNRLDMSQNVSLVTAELSKDAQASAAPAAPLPERNSLSAIFNNVMTLCAMLPLLLFTYLNSFLHQRIPQSVRILGSLVAILLVFLITAILVKVQLDALPFFVITMIKIVLINSFGAILQGSLFGLAGLLPASYTAPIMSGQGLAGFFASVAMICAIASGSELSESAFGYFITACAVIILTIICYLGLPRLEFYRYYQQLKLEGPGEQETKLDLISKGEEPRAGKEESGVSVSNSQPTNESHSIKAILKNISVLAFSVCFIFTITIGMFPAVTVEVKSSIAGSSTWERYFIPVSCFLTFNIFDWLGRSLTAVFMWPGKDSRWLPSLVLARLVFVPLLLLCNIKPRRYLTVVFEHDAWFIFFMAAFAFSNGYLASLCMCFGPKKVKPAEAETAGAIMAFFLCLGLALGAVFSFLFRAIV"
+            }
+          }
+        ]
+      },
+      "sequence": {
+        "status": "ambiguous_orthologue",
+        "error_type": "AmbiguousOrthologueError",
+        "reason": "SLC29A1 to danio_rerio is not a unique one-to-one orthologue (1 source records, 2 relationships); a justified biological selection is required.",
+        "candidates": [
+          {
+            "source": {
+              "id": "ENSG00000112759",
+              "species": "homo_sapiens",
+              "perc_id": 62.7193,
+              "taxon_id": 9606,
+              "seq": "MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATQYFTNRLDMSQNVSLVTAELSKDAQASAAPAAPLPERNSLSAIFNNVMTLCAMLPLLLFTYLNSFLHQRIPQSVRILGSLVAILLVFLITAILVKVQLDALPFFVITMIKIVLINSFGAILQGSLFGLAGLLPASYTAPIMSGQGLAGFFASVAMICAIASGSELSESAFGYFITACAVIILTIICYLGLPRLEFYRYYQQLKLEGPGEQETKLDLISKGEEPRAGKEESGVSVSNSQPTNESHSIKAILKNISVLAFSVCFIFTITIGMFPAVTVEVKSSIAGSSTWERYFIPVSCFLTFNIFDWLGRSLTAVFMWPGKDSRWLPSLVLARLVFVPLLLLCNIKPRRYLTVVFEHDAWFIFFMAAFAFSNGYLASLCMCFGPKKVKPAEAETAGAIMAFFLCLGLALGAVFSFLFRAIV",
+              "cigar_line": "47M9D189M5D28MD55MD7MD130M",
+              "perc_pos": 75.8772,
+              "protein_id": "ENSP00000360820"
+            },
+            "dn_ds": null,
+            "target": {
+              "cigar_line": "44M2D13M8DM12D171MDM3D13M4D12MD51MD3MD131M",
+              "perc_pos": 78.6364,
+              "protein_id": "ENSDARP00000137952",
+              "id": "ENSDARG00000101289",
+              "species": "danio_rerio",
+              "perc_id": 65,
+              "taxon_id": 7955,
+              "seq": "MTAVNAPRDRYNAVWIIFFILGLGTLLPWNFFMTATLYFTKRLEETNGGLNQTANTTEIRSVLQSKFNNVMTLCAMVPLLIFTCLNSFIHQRIPQKLRISGSLSVILVVFLITAVLVKVEMEPLPFFTLTMIKIICINSFGAILQGSLFGLAGMLPASYTTPIMSGQGLAGAFAAFSMICAIASGSELEDSAFGYFITACVVILLAIVSYLALPRMEFFQYFSESNRSRSSTDEENKMDLLKPEGQAEKRPVLSLTEEESKPTVSVFAIFKQIWVMALSVCFVFIITIGIFPAVTVEVQSTIPDRGAWEKYFIPVSCFLLFNVMDWVGRSLTAVCMWPGKDSIWLPILVIARVVFVPLFILCNVQPRSFLPVVFSHDAWYIIFMIFFSFSNGYLASLCMCFGPKKVSQHEAETAGAIMAFFLSLGLAVGAALSFGFRNMI"
+            },
+            "taxonomy_level": "Euteleostomi",
+            "type": "ortholog_one2many",
+            "method_link_type": "ENSEMBL_ORTHOLOGUES"
+          },
+          {
+            "type": "ortholog_one2many",
+            "method_link_type": "ENSEMBL_ORTHOLOGUES",
+            "taxonomy_level": "Euteleostomi",
+            "dn_ds": null,
+            "target": {
+              "id": "ENSDARG00000054447",
+              "perc_id": 67.6606,
+              "species": "danio_rerio",
+              "taxon_id": 7955,
+              "seq": "MDPQVPKDKYNGVWLIFFMLGLGTLLPWNFFMTATMYFTSRLADPLTAMNNASMNSTEEDSRSVLQAKFNNVMTLCAMVPLLVFTCLNSILHQRIPQKIRIAGSLTLILLVFLLTAILVKIHLEPLPFFIVTMVKIIFINSFGAVLQGSLFGMAGLLPASYTTPIMSGQGLAGTFAAFSMICAIASGSELHDSAFGYFITACAVISLAIASYVVLPKLEFYQHYQESRQNKPAEDEENKMDLLKKDQRLQSAGDDDKKSPSILAIFKKIWVMALSVCFAFTITIGTFPAVTVDVKSTIADGGAWEKYFIPVSCFLFFNVFDWAGRSLTAVCMWPGKDSKLLPALLLARVVFVPLFMLCNVQPRYNLPVFFTHDGWFIAFMILFAFSNGYLASLCMCFGPKKVDPSEAETAGAIMAFFLSLGLALGASLSFLFRGLV",
+              "cigar_line": "4MD53M6D3M12D172M4D11M7D4M6D58MD131M",
+              "protein_id": "ENSDARP00000142204",
+              "perc_pos": 77.9817
+            },
+            "source": {
+              "cigar_line": "47M8D189M5D34M3D56MD130M",
+              "protein_id": "ENSP00000360820",
+              "perc_pos": 74.5614,
+              "id": "ENSG00000112759",
+              "perc_id": 64.693,
+              "species": "homo_sapiens",
+              "taxon_id": 9606,
+              "seq": "MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATQYFTNRLDMSQNVSLVTAELSKDAQASAAPAAPLPERNSLSAIFNNVMTLCAMLPLLLFTYLNSFLHQRIPQSVRILGSLVAILLVFLITAILVKVQLDALPFFVITMIKIVLINSFGAILQGSLFGLAGLLPASYTAPIMSGQGLAGFFASVAMICAIASGSELSESAFGYFITACAVIILTIICYLGLPRLEFYRYYQQLKLEGPGEQETKLDLISKGEEPRAGKEESGVSVSNSQPTNESHSIKAILKNISVLAFSVCFIFTITIGMFPAVTVEVKSSIAGSSTWERYFIPVSCFLTFNIFDWLGRSLTAVFMWPGKDSRWLPSLVLARLVFVPLLLLCNIKPRRYLTVVFEHDAWFIFFMAAFAFSNGYLASLCMCFGPKKVKPAEAETAGAIMAFFLCLGLALGAVFSFLFRAIV"
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "policy": "Sequential; >=0.4 s between requests; 20 s operation / 10 s connect timeout; one transient retry, wait capped at 5 s; successful UniProt requests reused within audit. No homology request reuse.",
+  "catalogue": {
+    "mus_musculus": [
+      {
+        "name": "mus_musculus",
+        "taxon_id": "10090",
+        "assembly": "GRCm39",
+        "release": 116,
+        "aliases": [
+          "ensmm",
+          "m_musculus",
+          "house mouse",
+          "mouse",
+          "10090",
+          "mmus",
+          "mus",
+          "mus musculus",
+          "musmus",
+          "mmusculus"
+        ]
+      }
+    ],
+    "rattus_norvegicus": [
+      {
+        "name": "rattus_norvegicus",
+        "taxon_id": "10116",
+        "assembly": "GRCr8",
+        "release": 116,
+        "aliases": []
+      }
+    ],
+    "cavia_porcellus": [
+      {
+        "name": "cavia_porcellus",
+        "taxon_id": "10141",
+        "assembly": "Cavpor3.0",
+        "release": 116,
+        "aliases": [
+          "cavia porcellus",
+          "cpor",
+          "guinea pig",
+          "cavpor",
+          "guinea_pig",
+          "cporcellus",
+          "domestic guinea pig",
+          "10141"
+        ]
+      }
+    ],
+    "macaca_mulatta": [
+      {
+        "name": "macaca_mulatta",
+        "taxon_id": "9544",
+        "assembly": "Mmul_10",
+        "release": 116,
+        "aliases": []
+      }
+    ],
+    "macaca_fascicularis": [
+      {
+        "name": "macaca_fascicularis",
+        "taxon_id": "9541",
+        "assembly": "Macaca_fascicularis_6.0",
+        "release": 116,
+        "aliases": []
+      }
+    ],
+    "canis_lupus_familiaris": [
+      {
+        "name": "canis_lupus_familiaris",
+        "taxon_id": "9615",
+        "assembly": "ROS_Cfam_1.0",
+        "release": 116,
+        "aliases": [
+          "dog",
+          "canis familiaris",
+          "canis lupus familiaris"
+        ]
+      }
+    ],
+    "sus_scrofa": [
+      {
+        "name": "sus_scrofa",
+        "taxon_id": "9823",
+        "assembly": "Sscrofa11.1",
+        "release": 116,
+        "aliases": [
+          "9823",
+          "sscrofa",
+          "pigs",
+          "sscr",
+          "pig",
+          "sus scrofa",
+          "wild boar",
+          "swine"
+        ]
+      }
+    ],
+    "oryctolagus_cuniculus": [
+      {
+        "name": "oryctolagus_cuniculus",
+        "taxon_id": "9986",
+        "assembly": "OryCun2.0",
+        "release": 116,
+        "aliases": [
+          "ocun",
+          "orycun",
+          "oryctolagus cuniculus",
+          "9986",
+          "rabbit",
+          "ocuniculus"
+        ]
+      }
+    ],
+    "danio_rerio": [
+      {
+        "name": "danio_rerio",
+        "taxon_id": "7955",
+        "assembly": "GRCz11",
+        "release": 116,
+        "aliases": [
+          "danrer",
+          "zfish",
+          "danio rerio",
+          "d_rerio",
+          "drerio",
+          "danio",
+          "7955",
+          "drer",
+          "zebrafish"
+        ]
+      }
+    ]
+  },
+  "http_events": [
+    {
+      "url": "https://rest.ensembl.org/info/species?content-type=application%2Fjson",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:15:25.494281+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:15:32 GMT",
+        "x-ratelimit-reset": "2668",
+        "x-ratelimit-remaining": "54999"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=macaca_mulatta&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:15:31.280551+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:15:43 GMT",
+        "x-ratelimit-reset": "2657",
+        "x-ratelimit-remaining": "54998"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=macaca_mulatta&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:15:40.968595+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:15:43 GMT",
+        "x-ratelimit-reset": "2657",
+        "x-ratelimit-remaining": "54998"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000324890&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:15:41.368830+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:15:43 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/P10747.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:15:47.785116+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:15:48 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSMMUP00000065245&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:15:53.603216+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:15:54 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/A0A5F7ZKV3.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:15:56.355653+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:15:57 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=macaca_fascicularis&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:15:56.756152+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:15 GMT",
+        "x-ratelimit-reset": "2625",
+        "x-ratelimit-remaining": "54997"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=macaca_fascicularis&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:13.626191+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:15 GMT",
+        "x-ratelimit-reset": "2625",
+        "x-ratelimit-remaining": "54997"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000324890&format=json&size=500",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/P10747.json",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSMFAP00000034788&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:14.026443+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:16 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/A0ACM8QAJ6.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:14.427025+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:16 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=mus_musculus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:15.812084+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:24 GMT",
+        "x-ratelimit-reset": "2616",
+        "x-ratelimit-remaining": "54996"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28?target_species=mus_musculus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:23.993057+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:24 GMT",
+        "x-ratelimit-reset": "2616",
+        "x-ratelimit-remaining": "54996"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000324890&format=json&size=500",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/P10747.json",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSMUSP00000027165&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:24.393174+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:24 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/P31041.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:29.140169+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:29 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=mus_musculus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:29.540313+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:39 GMT",
+        "x-ratelimit-reset": "2601",
+        "x-ratelimit-remaining": "54995"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=mus_musculus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:37.739169+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:39 GMT",
+        "x-ratelimit-reset": "2601",
+        "x-ratelimit-remaining": "54995"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000360820&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:38.139270+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:39 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:38.625174+00:00",
+      "error_type": "ConnectTimeout",
+      "error": "timed out"
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+      "attempt": 2,
+      "retrieved_at": "2026-11-07T19:16:49.668664+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:52 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSMUSP00000063096&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:16:50.068820+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:16:52 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/Q9JIM1.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:02.441584+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:02 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=rattus_norvegicus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:04.811498+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:10 GMT",
+        "x-ratelimit-reset": "2570",
+        "x-ratelimit-remaining": "54994"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=rattus_norvegicus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:09.495357+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:10 GMT",
+        "x-ratelimit-reset": "2570",
+        "x-ratelimit-remaining": "54994"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000360820&format=json&size=500",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSRNOP00000082743&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:09.895502+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:10 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/A0ACJ1MV19.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:17.592892+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:19 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=cavia_porcellus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:17.993040+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:23 GMT",
+        "x-ratelimit-reset": "2557",
+        "x-ratelimit-remaining": "54993"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=cavia_porcellus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:21.808477+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:23 GMT",
+        "x-ratelimit-reset": "2557",
+        "x-ratelimit-remaining": "54993"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000360820&format=json&size=500",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSCPOP00000004621&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:22.208589+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:24 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/H0V4R7.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:25.030952+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:27 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=macaca_mulatta&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:34.584243+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:35 GMT",
+        "x-ratelimit-reset": "2545",
+        "x-ratelimit-remaining": "54992"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=macaca_mulatta&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:35.219615+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:35 GMT",
+        "x-ratelimit-reset": "2545",
+        "x-ratelimit-remaining": "54992"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=macaca_fascicularis&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:35.619746+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:41 GMT",
+        "x-ratelimit-reset": "2539",
+        "x-ratelimit-remaining": "54991"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=macaca_fascicularis&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:40.633864+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:41 GMT",
+        "x-ratelimit-reset": "2539",
+        "x-ratelimit-remaining": "54991"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000360820&format=json&size=500",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSMFAP00000060756&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:41.033974+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:42 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/A0A7N9D7I6.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:55.739522+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:17:57 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=canis_lupus_familiaris&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:17:56.139594+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:04 GMT",
+        "x-ratelimit-reset": "2516",
+        "x-ratelimit-remaining": "54990"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=canis_lupus_familiaris&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:04.181158+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:04 GMT",
+        "x-ratelimit-reset": "2516",
+        "x-ratelimit-remaining": "54990"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000360820&format=json&size=500",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSCAFP00845016038&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:04.581258+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:04 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/A0A8I3NI33.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:19.511200+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:20 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=sus_scrofa&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:19.911354+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:27 GMT",
+        "x-ratelimit-reset": "2493",
+        "x-ratelimit-remaining": "54989"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=sus_scrofa&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:26.274421+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:27 GMT",
+        "x-ratelimit-reset": "2493",
+        "x-ratelimit-remaining": "54989"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000360820&format=json&size=500",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSSSCP00000052412&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:26.674546+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:28 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/A0A287B8K5.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:27.074888+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:28 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=oryctolagus_cuniculus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:28.139411+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:30 GMT",
+        "x-ratelimit-reset": "2490",
+        "x-ratelimit-remaining": "54988"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=oryctolagus_cuniculus&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:28.539635+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:30 GMT",
+        "x-ratelimit-reset": "2490",
+        "x-ratelimit-remaining": "54988"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSP00000360820&format=json&size=500",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+      "cache_hit": true
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/search?query=xref%3Aensembl-ENSOCUP00000003048&format=json&size=500",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:28.939778+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:30 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.uniprot.org/uniprotkb/G1SJV6.json",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:32.726571+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:34 GMT",
+        "x-uniprot-release": "2026_04",
+        "x-uniprot-release-date": "04-November-2026"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=danio_rerio&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:33.703135+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:36 GMT",
+        "x-ratelimit-reset": "2484",
+        "x-ratelimit-remaining": "54987"
+      }
+    },
+    {
+      "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=danio_rerio&type=orthologues&sequence=protein&aligned=0&format=full",
+      "attempt": 1,
+      "retrieved_at": "2026-11-07T19:18:36.830394+00:00",
+      "status_code": 200,
+      "headers": {
+        "date": "Sat, 07 Nov 2026 19:18:36 GMT",
+        "x-ratelimit-reset": "2484",
+        "x-ratelimit-remaining": "54987"
+      }
+    }
+  ]
+}
