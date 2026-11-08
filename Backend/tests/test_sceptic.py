@@ -286,3 +286,135 @@ def test_unusable_layers_become_limitations_and_experiments(monkeypatch):
                                   limitations=["Ensembl timed out."])])
     assert "sequence" in out.limitations[0] and "Ensembl timed out." in out.limitations[0]
     assert "sequence" in out.recommended_experiments[0]
+
+
+# ── Literature and Adversarial Tests ────────────────────────────────────────
+
+
+def test_literature_findings_retain_concern_in_incomplete_layer():
+    """Curated experimental literature in an incomplete layer must retain its concern."""
+    layers = [
+        LayerResult(
+            species="mus_musculus",
+            layer="localisation",
+            status="incomplete",
+            observations=[
+                Observation(
+                    field="literature_human_mitochondrial_location",
+                    value="LITERATURE (curated, not a database record): Human ENT1 is reported in the mitochondrial membrane; this is NOT annotated in UniProt",
+                    source_record_id="doi:10.1074/jbc.M307938200",
+                ),
+                Observation(
+                    field="human_compartments",
+                    value="Basolateral cell membrane (SL-0026)",
+                    source_record_id="uniprot:Q99808",
+                ),
+            ],
+            source_records=[
+                SourceRecord(
+                    id="doi:10.1074/jbc.M307938200",
+                    source="Lai Y, Tse CM, Unadkat JD. J Biol Chem 2004;279(6):4490-7",
+                    url="https://doi.org/10.1074/jbc.M307938200",
+                ),
+                SourceRecord(
+                    id="uniprot:Q99808",
+                    source="UniProt Q99808 (Homo sapiens)",
+                ),
+            ],
+            limitations=["Mouse localization is incomplete in UniProt"],
+        )
+    ]
+    lit_finding = Finding(
+        id="f1",
+        claim="Human ENT1 localizes to the mitochondrial membrane in experimental assays.",
+        mechanism="Mitochondrial localization is experimentally established in human but unannotated in UniProt.",
+        concern="high",
+        cited_field="localisation.literature_human_mitochondrial_location",
+        source_record_id="doi:10.1074/jbc.M307938200",
+    )
+    db_finding = Finding(
+        id="f2",
+        claim="Human ENT1 is present at the basolateral cell membrane.",
+        mechanism="Basolateral membrane localization from UniProt annotation.",
+        concern="high",
+        cited_field="localisation.human_compartments",
+        source_record_id="uniprot:Q99808",
+    )
+
+    accepted, feedback = review([lit_finding, db_finding], layers, use_llm=False)
+    assert len(accepted) == 2
+    assert len(feedback) == 0
+
+    by_id = {f.id: f for f in accepted}
+    # Literature finding retains concern="high" despite layer status="incomplete"
+    assert by_id["f1"].concern == "high"
+    assert by_id["f1"].sceptic_note is None
+
+    # Database finding in incomplete layer is downgraded to concern="flagged"
+    assert by_id["f2"].concern == "flagged"
+    assert "incomplete data" in by_id["f2"].sceptic_note.lower()
+
+
+def test_adversarial_invented_doi_rejected():
+    """Adversarial check: hallucinated DOI source record must be rejected."""
+    layers = _make_fixture_layers()
+    f = Finding(
+        id="f_fake_doi",
+        claim="Published study confirms altered mitochondrial binding affinity.",
+        mechanism="Differential kinetics reported in literature.",
+        concern="high",
+        cited_field="sequence.global_identity",
+        source_record_id="doi:10.1016/j.fake.2024.99999",
+    )
+    accepted, feedback = review([f], layers, use_llm=False)
+    assert len(accepted) == 0
+    assert len(feedback) == 1
+    assert "not in the evidence" in feedback[0]
+
+
+def test_adversarial_missing_annotation_absence_rejected():
+    """Adversarial check: asserting biological absence from database silence must be rejected."""
+    layers = _make_fixture_layers()
+    claims = [
+        ("Mouse protein is absent from the target compartment.", "Lack of UniProt annotation indicates biological absence."),
+        ("Does not localise to mitochondria in mice.", "Absence confirmed by missing annotation."),
+        ("Proven absent in animal model.", "Unannotated in database record."),
+    ]
+    for claim, mechanism in claims:
+        f = Finding(
+            id="f_abs",
+            claim=claim,
+            mechanism=mechanism,
+            concern="high",
+            cited_field="localisation.compartment",
+            source_record_id="loc_rec",
+        )
+        accepted, feedback = review([f], layers, use_llm=False)
+        assert len(accepted) == 0, f"Expected rejection for '{claim}'"
+        assert len(feedback) == 1
+        assert "not evidence of biological absence" in feedback[0]
+
+
+def test_adversarial_clinical_safety_predictions_rejected():
+    """Adversarial check: claims predicting clinical safety or non-toxicity must be rejected."""
+    layers = _make_fixture_layers()
+    forbidden_claims = [
+        ("Compound is clinically safe based on animal data.", "High homology predicts safe translation."),
+        ("Will not cause toxicity in human patients.", "Mouse model tolerated high exposure without toxicity."),
+        ("Safe starting dose can be calculated directly.", "Homology ensures safety prediction."),
+        ("Proven safe in preclinical trials.", "Lack of divergent residues indicates non-toxic profile."),
+    ]
+    for claim, mechanism in forbidden_claims:
+        f = Finding(
+            id="f_safe",
+            claim=claim,
+            mechanism=mechanism,
+            concern="low",
+            cited_field="sequence.global_identity",
+            source_record_id="seq_rec",
+        )
+        accepted, feedback = review([f], layers, use_llm=False)
+        assert len(accepted) == 0, f"Expected rejection for '{claim}'"
+        assert len(feedback) == 1
+        assert "unsupported clinical safety prediction" in feedback[0]
+

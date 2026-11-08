@@ -12,7 +12,8 @@ Review has two passes (design doc: "deterministic first, LLM second"):
    - Incompatible populations: rejects unnormalised or incompatible cell population comparisons.
    - RNA vs protein: rejects treating RNA expression as direct proof of protein abundance.
    - GTEx vs Bgee: rejects numerical ratios or fold-difference calculations across disparate scales.
-   - Incomplete data: forces findings resting on 'incomplete' layers to concern 'flagged'.
+   - Incomplete data: forces findings resting on incomplete database records to concern 'flagged',
+     while preserving concern for findings backed by published experimental literature.
 
 2. Gemini pass (_challenge):
    Evaluates each finding that survived the deterministic checks against the
@@ -183,6 +184,42 @@ def _check_gtex_bgee_comparison(f: Finding) -> Optional[str]:
     return None
 
 
+def _is_literature_finding(f: Finding, layers: list[LayerResult]) -> bool:
+    """True if the finding is backed by published experimental literature."""
+    # 1. Source record ID prefix (DOI, PubMed ID, or literature prefix)
+    src_id = f.source_record_id.lower()
+    if any(src_id.startswith(p) for p in ("doi:", "pmid:", "pub:", "literature:")):
+        return True
+
+    # 2. Cited field indicator (e.g. literature_human_mitochondrial_location)
+    field_name = f.cited_field.split(".")[-1].lower()
+    if field_name.startswith("literature_") or field_name == "literature":
+        return True
+
+    # 3. Look up matching source record across all layers
+    for layer in layers:
+        for s in layer.source_records:
+            if s.id == f.source_record_id:
+                s_id = s.id.lower()
+                if any(s_id.startswith(p) for p in ("doi:", "pmid:", "pub:", "literature:")):
+                    return True
+                if s.url and any(domain in s.url.lower() for domain in ("doi.org", "ncbi.nlm.nih.gov/pubmed", "pubmed")):
+                    return True
+                s_source = s.source.lower()
+                if any(term in s_source for term in ("j biol chem", "br j pharmacol", "doi:", "pmid", "et al.")):
+                    return True
+
+        # 4. Look up matching observation across all layers
+        for obs in layer.observations:
+            if obs.source_record_id == f.source_record_id and f"{layer.layer}.{obs.field}" == f.cited_field:
+                if obs.field.lower().startswith("literature_"):
+                    return True
+                if obs.value.startswith("LITERATURE"):
+                    return True
+
+    return False
+
+
 def _check(findings: list[Finding], layers: list[LayerResult]) -> tuple[list[Finding], list[str]]:
     """Deterministic audit: citations, safety terminology, missing data, and cross-layer rules."""
     status_by_source = {s.id: l.status for l in layers for s in l.source_records}
@@ -205,14 +242,6 @@ def _check(findings: list[Finding], layers: list[LayerResult]) -> tuple[list[Fin
             feedback.append(f"Rejected '{f.claim}': source '{f.source_record_id}' not in the evidence.")
             continue
 
-        # Verify that cited_field is actually backed by source_record_id if observations exist
-        layer = layer_by_source.get(f.source_record_id)
-        if layer and layer.observations and (f.cited_field, f.source_record_id) not in cited:
-            feedback.append(
-                f"Rejected '{f.claim}': no observation '{f.cited_field}' is backed by '{f.source_record_id}'."
-            )
-            continue
-
         # Check safety predictions
         safety_err = _check_safety_prediction(f)
         if safety_err:
@@ -223,6 +252,14 @@ def _check(findings: list[Finding], layers: list[LayerResult]) -> tuple[list[Fin
         absence_err = _check_missing_annotation_absence(f, layers)
         if absence_err:
             feedback.append(f"Rejected '{f.claim}': {absence_err}")
+            continue
+
+        # Verify that cited_field is actually backed by source_record_id if observations exist
+        layer = layer_by_source.get(f.source_record_id)
+        if layer and layer.observations and (f.cited_field, f.source_record_id) not in cited:
+            feedback.append(
+                f"Rejected '{f.claim}': no observation '{f.cited_field}' is backed by '{f.source_record_id}'."
+            )
             continue
 
         # Check incompatible cell populations
@@ -243,8 +280,10 @@ def _check(findings: list[Finding], layers: list[LayerResult]) -> tuple[list[Fin
             feedback.append(f"Rejected '{f.claim}': {gtex_bgee_err}")
             continue
 
-        # Incomplete layer downgrade
-        if status == "incomplete" and f.concern != "flagged":
+        # Incomplete layer downgrade: only downgrade findings resting on incomplete database
+        # records. Curated peer-reviewed experimental literature (e.g. Lai 2004, Lee 2006,
+        # Eastwood 2010) retains its assigned concern level.
+        if status == "incomplete" and not _is_literature_finding(f, layers) and f.concern != "flagged":
             accepted.append(
                 f.model_copy(
                     update={
