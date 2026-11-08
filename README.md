@@ -1,15 +1,23 @@
 # ASRA — Across-Species Risk Assessment
 
-**A preclinical cross-species biological risk investigator.** You give it a human protein
-and an animal model. It compares the two species across four independent biological layers,
-has three agents argue about what the differences mean, and returns a report in which
-**every claim carries a source record and no number is invented by a language model.**
+### When animal biology does not cleanly translate to humans.
 
-ASRA is built to surface a documented interspecies difference that sequence identity alone
-would miss. It is **not** a safety predictor and does not claim it "would have caught" any
-historical clinical failure — in the known cases the mechanistic explanation was published
-years after the trial. That wording is deliberate and consistent across the report, the UI
-and this file.
+*UCL Agentverse 2026 — Biotech Track*
+
+**ASRA is an evidence-grounded AI investigator for preclinical translation.** It helps
+researchers examine where animal evidence may not reliably transfer to humans, by combining
+four biological evidence layers, structured tool outputs and a multi-agent review process.
+
+**ASRA does not predict drug safety.** It identifies translational risk signals, evidence
+gaps and uncertainty. You give it a human protein and an animal model; it compares the two
+species across four independent layers, has three agents argue about what the differences
+mean, and returns a report in which **every claim carries a source record and no number is
+invented by a language model.**
+
+It is built to surface a documented interspecies difference that sequence identity alone
+would miss. It does not claim it "would have caught" any historical clinical failure — in
+the known cases the mechanistic explanation was published years after the trial. That
+wording is deliberate and consistent across the report, the UI and this file.
 
 ---
 
@@ -19,12 +27,19 @@ https://github.com/user-attachments/assets/51f0b54e-d7d4-4606-847a-a11d294f5edf
 
 ---
 
-## Why it exists
+## Problem and who it helps
+
+**The problem.** Traditional animal-to-human extrapolation can miss differences in protein
+conservation, cellular localisation and gene expression. These differences can weaken the
+biological assumptions behind preclinical decisions.
 
 Two orthologous proteins can be 90% identical in sequence and still behave differently in a
 way that kills a trial. Sequence identity cannot distinguish them on the axes that matter:
 *where in the cell* the protein sits, *which cell types* express it, *which tissues* carry it.
 ASRA checks those axes separately and reports the differences it can actually evidence.
+
+**Who it helps.** Preclinical researchers, pharmacologists and drug-development teams who
+need an evidence-backed view of whether a target behaves similarly across species.
 
 The hard problem is not finding differences — it is not inventing them. Hence the rules below.
 
@@ -117,12 +132,20 @@ report/builder.py ──────────────► Report  ──�
 
 | Layer | Asks | Sources | Note |
 |---|---|---|---|
-| **sequence** | How do the orthologous proteins differ residue by residue, and do differences fall in annotated functional sites? | Ensembl, UniProt, Biopython | With no resolved gene, falls back to submitted-length-only `incomplete` |
-| **localisation** | Do the two species annotate the same subcellular compartments? | UniProt | Compares exact location IDs; no ontology ancestor expansion |
-| **cell_expression** | Which cell types detect the gene, in each species? | CZ CELLxGENE | Always `incomplete` via the Discover API — aggregates lack per-dataset provenance |
-| **tissue_expression** | Which tissues express it? | GTEx + Bgee, matched on UBERON | Nothing is ever divided across GTEx and Bgee — incompatible scales |
+| **1. Protein conservation** (`sequence`) | How do the orthologous proteins differ residue by residue, and do differences fall in annotated functional sites? | Ensembl + Biopython for orthologues, identity and alignment coverage; UniProt features | With no resolved gene, falls back to submitted-length-only `incomplete` |
+| **2. Subcellular localisation** (`localisation`) | Where is the protein reported to be located within the cell, in each species? | UniProt | Compares exact location IDs; no ontology ancestor expansion |
+| **3. Cell-type expression** (`cell_expression`) | Which cell populations express the gene? | CZ CELLxGENE | Always `incomplete` via the Discover API — aggregates lack per-dataset provenance |
+| **4. Tissue expression** (`tissue_expression`) | What is the tissue-level expression context, and what cross-species evidence exists? | GTEx + Bgee, matched on UBERON | Nothing is ever divided across GTEx and Bgee — incompatible scales |
 
 ### The three agents
+
+| Investigator | Interpreter | Sceptic |
+|---|---|---|
+| Collects evidence | Synthesises findings | Challenges unsupported claims |
+
+Python computes the biological measurements; Gemini agents coordinate evidence gathering,
+explanation and critique. Structured JSON keeps tool outputs auditable, and a revision loop
+lets the Sceptic challenge unsupported conclusions.
 
 **Investigator** — deterministic, no model call. Splits layers into citable evidence and
 excluded ones. With four fixed layers there is no tool choice left for a model to make. Its
@@ -206,11 +229,48 @@ generated**, each with pass / partial / fail criteria and a full citation table:
    (the mouse Cyp3a locus holds at least six genes), so the sequence layer must refuse to
    return an identity figure rather than arbitrarily pick a paralogue.
 
+### Results
+
+All four cases were run live against `/assess` on 2026-11-08 and scored against those
+pre-committed criteria. Full write-up in [`evaluation_results.md`](evaluation_results.md);
+raw responses frozen in [`tests/frozen/`](tests/frozen).
+
+| Case | Sequence alone caught it? | Extra layers added evidence? | Sceptic caught the unsupported claim? | Verdict |
+|---|---|---|---|---|
+| SLC29A1 / mouse | No | Yes — UniProt Q99808 (entry v215) with experimental human compartments | Yes — downgraded 2 of 3 findings | **Pass** |
+| CYP3A4 / mouse | No — refused, correctly | Yes — named the one-to-many orthology and propagated it to all three other layers | Yes — downgraded the single finding | **Pass** |
+| GAPDH / mouse | No (layer failed) | Yes | Yes — flagged that a missing mouse annotation isn't biological absence | Partial |
+| CD28 / macaque | No | Yes — 15 observations, 7 source records, but from a **recorded** Census run, not live | Yes — noted the finding rests on curated literature | Partial |
+
+**In 4 of 4 cases the additional layers surfaced evidence that sequence identity alone did
+not capture.** In three of those four the sequence layer failed outright and the others still
+produced citable evidence — the layered design degraded gracefully rather than collapsing.
+
+Biological checks: **79.39% identity** for SLC29A1 human/mouse (366/461 columns),
+**98.18% identity** for CD28 human/rhesus, and **CYP3A4/mouse ambiguity preserved** —
+Ensembl lists nine `ortholog_many2many` mouse *Cyp3a* genes, and the layer returned
+`unavailable` rather than forcing an unsupported match.
+
 Code tests live separately in `Backend/tests/` (16 files). Run them from `Backend/`:
 
 ```sh
 pytest
 ```
+
+On the combined validation branch the backend suite reported **336 passed, 21 skipped, zero
+failures**. See [Known issues](#known-issues) for what a plain `master` checkout gives today.
+
+---
+
+## Safeguards and limitations
+
+**Safeguards.** Source identifiers and citations on every claim, explicit marking of missing
+or ambiguous evidence, and Sceptic review of each finding. The system is designed to **show
+uncertainty rather than hide it**.
+
+**Limitations.** ASRA does not establish clinical safety or efficacy. Sequence similarity
+does not prove functional equivalence. A missing annotation is never evidence of biological
+absence. All findings require expert interpretation and experimental validation.
 
 ---
 
@@ -231,8 +291,9 @@ Frontend/
   app/                 Next.js App Router
   components/          assessment form, report views, layout, ui
   lib/                 types.ts, sequence.ts, api/, export.ts, caseStudies.ts
-tests/                 scientific acceptance criteria + demo precache list
-docs/asra-demo.mp4     the demo video above
+tests/                 scientific acceptance criteria, frozen case outputs, precache list
+evaluation_results.md  the four cases, run live and scored
+docs/asra-demo.mp4     committed copy of the demo video
 ```
 
 ## Data sources
@@ -252,10 +313,13 @@ layer does not yet populate it.
 
 ## Known issues
 
-- `Backend/tests/test_cell_census.py` and `test_cellxgene_discovery.py` each carry a
-  duplicated `from __future__ import annotations`, which is a `SyntaxError`. Because
+- On `master`, `Backend/tests/test_cell_census.py` and `test_cellxgene_discovery.py` each
+  carry a duplicated `from __future__ import annotations`, which is a `SyntaxError`. Because
   collection errors interrupt pytest, this blocks the whole suite. Excluding those two files,
-  316 tests pass and 14 are deliberately skipped (opt-in live-API checks).
+  316 tests pass and 14 are deliberately skipped (opt-in live-API checks). The fix is already
+  on `audit/role4-biological-validation` (BUG-1 in
+  [`Backend/docs/role4_overnight_validation.md`](Backend/docs/role4_overnight_validation.md))
+  and lands on `master` when that branch merges.
 - `Backend/api/models.py` and `api/sequence.py` are unreferenced duplicates of
   `contract/models.py` and `tools/sequence_stats.py`, and can drift from the contract.
 - The localisation and cell-expression layers return `incomplete` on most inputs; for
@@ -264,6 +328,13 @@ layer does not yet populate it.
 - `cellxgene-census` has no Windows wheels, so on Windows the cell layer uses the CELLxGENE
   Discover HTTP API or a recorded Census run.
 - There is no CI configuration.
+
+## Collaborators
+
+Built for UCL Agentverse 2026 by **Shiven K · Elijah Onyenjiaka · Akmal Shaik ·
+Alvaro Alfaro · Angel Boateng** — backend orchestration and integration, Gemini reasoning
+and citation validation, the protein sequence engine, the biological evidence layers, and the
+web interface. Repository: [github.com/OrionSilverStorm/asra](https://github.com/OrionSilverStorm/asra).
 
 ## Licence
 
