@@ -215,6 +215,8 @@ must not rank it highly.
 | GAPDH control | | | | |
 | Missing data | | | | |
 
+**Completed results: see `evaluation_results.md` in the repo root.**
+
 **Check on every case:** `data_version` is nullable and nothing enforces it, so a layer
 returning `status: ok` with `data_version: null` would pass silently. **Check this
 manually when scoring.**
