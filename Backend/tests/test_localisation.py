@@ -571,3 +571,123 @@ def test_malformed_annotations_retain_failed_record_url(api):
     assert len(errors) == 1
     assert errors[0]["kind"] == "invalid_response"
     assert errors[0]["url"].endswith(f"/{HUMAN_ACCESSION}.json")
+
+
+def test_rabbit_crbn_resolves_via_verified_ensembl_orthologue_when_uniprot_genes_missing(monkeypatch):
+    """Rabbit TrEMBL A0A5F9CHQ0 has no gene symbol in UniProt but links to ENSOCUP00000033173."""
+    human_crbn = record("Q96SW2", 9606, locations=[
+        annotation("Cytoplasm", "SL-0086", [evidence()]),
+        annotation("Nucleus", "SL-0191", [evidence()]),
+    ])
+    human_crbn["genes"] = [{"geneName": {"value": "CRBN"}}]
+    rabbit_crbn = {
+        "primaryAccession": "A0A5F9CHQ0",
+        "entryType": "UniProtKB unreviewed (TrEMBL)",
+        "organism": {"taxonId": 9986, "scientificName": "Oryctolagus cuniculus"},
+        "uniProtKBCrossReferences": [{
+            "database": "Ensembl",
+            "id": "ENSOCUT00000046686.1",
+            "properties": [
+                {"key": "ProteinId", "value": "ENSOCUP00000033173.1"},
+                {"key": "GeneId", "value": "ENSOCUG00000025795.3"},
+            ],
+        }],
+        "comments": [{
+            "commentType": "SUBCELLULAR LOCATION",
+            "subcellularLocations": [
+                annotation("Cytoplasm", "SL-0086", [{"evidenceCode": "ECO:0000256", "source": "ARBA", "id": "ARBA00004496"}]),
+                annotation("Nucleus", "SL-0191", [{"evidenceCode": "ECO:0000256", "source": "ARBA", "id": "ARBA00004123"}]),
+            ],
+        }],
+        "entryAudit": {"entryVersion": 33},
+    }
+
+    def fake_request_json(url):
+        parsed = urlparse(url)
+        if parsed.path.endswith("/search"):
+            q = parse_qs(parsed.query)["query"][0]
+            if "organism_id:9606" in q and "reviewed:true" in q:
+                return {"results": [deepcopy(human_crbn)]}, dict(RELEASE_HEADERS)
+            if "organism_id:9986" in q and "gene_exact:CRBN" in q:
+                return {"results": []}, dict(RELEASE_HEADERS)
+            if "xref:ensembl-ENSOCUP00000033173" in q and "organism_id:9986" in q:
+                return {"results": [deepcopy(rabbit_crbn)]}, dict(RELEASE_HEADERS)
+            return {"results": []}, dict(RELEASE_HEADERS)
+        acc = parsed.path.rsplit("/", 1)[-1].removesuffix(".json")
+        return deepcopy({"Q96SW2": human_crbn, "A0A5F9CHQ0": rabbit_crbn}[acc]), dict(RELEASE_HEADERS)
+
+    monkeypatch.setattr(localisation, "_request_json", fake_request_json)
+    monkeypatch.setattr(localisation, "resolve_orthologue", lambda gene, species: {
+        "gene": "CRBN",
+        "species": "oryctolagus_cuniculus",
+        "target": {"gene_id": "ENSOCUG00000025795", "protein_id": "ENSOCUP00000033173"},
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CRBN",
+    })
+
+    detail = localisation.compare_localisation("CRBN", "oryctolagus_cuniculus")
+    assert detail["status"] == "partial"
+    assert detail["measurements"]["proteins"]["animal"]["accession"] == "A0A5F9CHQ0"
+    assert detail["measurements"]["errors"] == []
+    assert any("ENSOCUG00000025795 / ENSOCUP00000033173" in lim for lim in detail["limitations"])
+
+    layer_res = localisation.to_layer_result(
+        detail,
+        localisation.ResolvedQuery(species="oryctolagus_cuniculus", sequence="", sequence_label="CRBN", gene="CRBN"),
+    )
+    assert layer_res.status == "incomplete"
+    obs = {o.field: o.value for o in layer_res.observations}
+    assert obs["animal_compartments"] == "Cytoplasm (SL-0086); Nucleus (SL-0191)"
+    assert any(
+        s.id == "uniprot:A0A5F9CHQ0" and "ENSOCUG00000025795 / ENSOCUP00000033173" in s.source
+        for s in layer_res.source_records
+    )
+
+
+def test_macaque_cd28_disambiguates_multiple_unreviewed_isoforms_via_ensembl_orthologue(monkeypatch):
+    """When gene_exact returns multiple unreviewed entries, Ensembl 1-to-1 orthologue xref disambiguates."""
+    human_cd28 = record("P10747", 9606, locations=[annotation("Cell membrane", "SL-0039", [evidence()])])
+    human_cd28["genes"] = [{"geneName": {"value": "CD28"}}]
+    macaque_a = record("A0A5F7ZKV3", 9544, locations=[], reviewed=False)
+    macaque_a["organism"]["scientificName"] = "Macaca mulatta"
+    macaque_a["genes"] = [{"geneName": {"value": "CD28"}}]
+    macaque_a["uniProtKBCrossReferences"] = [{
+        "database": "Ensembl",
+        "id": "ENSMMUT00000103996.1",
+        "properties": [
+            {"key": "ProteinId", "value": "ENSMMUP00000065245.1"},
+            {"key": "GeneId", "value": "ENSMMUG00000057214.1"},
+        ],
+    }]
+    macaque_b = deepcopy(macaque_a)
+    macaque_b["primaryAccession"] = "Q0PDN4"
+    macaque_b["uniProtKBCrossReferences"] = []
+
+    def fake_request_json(url):
+        parsed = urlparse(url)
+        if parsed.path.endswith("/search"):
+            q = parse_qs(parsed.query)["query"][0]
+            if "organism_id:9606" in q and "reviewed:true" in q:
+                return {"results": [deepcopy(human_cd28)]}, dict(RELEASE_HEADERS)
+            if "organism_id:9544" in q and "gene_exact:CD28" in q and "reviewed:false" in q:
+                return {"results": [deepcopy(macaque_a), deepcopy(macaque_b)]}, dict(RELEASE_HEADERS)
+            if "xref:ensembl-ENSMMUP00000065245" in q and "organism_id:9544" in q:
+                return {"results": [deepcopy(macaque_a)]}, dict(RELEASE_HEADERS)
+            return {"results": []}, dict(RELEASE_HEADERS)
+        acc = parsed.path.rsplit("/", 1)[-1].removesuffix(".json")
+        return deepcopy({"P10747": human_cd28, "A0A5F7ZKV3": macaque_a}[acc]), dict(RELEASE_HEADERS)
+
+    monkeypatch.setattr(localisation, "_request_json", fake_request_json)
+    monkeypatch.setattr(localisation, "resolve_orthologue", lambda gene, species: {
+        "gene": "CD28",
+        "species": "macaca_mulatta",
+        "target": {"gene_id": "ENSMMUG00000057214", "protein_id": "ENSMMUP00000065245"},
+        "source_url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/CD28",
+    })
+
+    layer_res = localisation.run_localisation(
+        localisation.ResolvedQuery(species="macaca_mulatta", sequence="", sequence_label="CD28", gene="CD28")
+    )
+    assert layer_res.status == "incomplete"
+    obs = {o.field: o.value for o in layer_res.observations}
+    assert "localisation unknown" in obs["animal_compartments"]
+    assert any(s.id == "uniprot:A0A5F7ZKV3" for s in layer_res.source_records)

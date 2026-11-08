@@ -7,10 +7,11 @@ Sources, chosen per comparison species:
   match is an ontology match, never a fuzzy label match. Always `incomplete`:
   Discover aggregates cannot name the datasets/assays behind each value.
 - Other species (e.g. macaque, which Discover does not index): the CELLxGENE
-  Census audit in tools/cell_census.py, run live when `cellxgene_census` is
-  installed, else replayed from its recorded live run in data/benchmarks/.
-  Without either, only the human side is reported and the layer is
-  `incomplete`.
+  Census audit in tools/cell_census.py, replayed from its recorded live run in
+  data/benchmarks/ when available, or run live only when explicitly opted in via
+  `ASRA_LIVE_CENSUS=1` and `cellxgene_census` is installed (avoiding multi-minute
+  remote SOMA scans during interactive requests). Without either, only the human
+  side is reported and the layer is `incomplete`.
 
 Python computes every value here; the curated literature from
 tools/literature.py is appended as separate, labelled evidence.
@@ -18,6 +19,7 @@ tools/literature.py is appended as separate, labelled evidence.
 
 import importlib.util
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 from statistics import median
@@ -116,8 +118,10 @@ def _source(organism: str, symbol: str, gene_id: str) -> SourceRecord:
 
 
 def _describe(p: dict) -> str:
-    """'7.38% (49,606 expressing of 672,233 cells)'."""
-    return f"{p['fraction']:.2%} ({p['expressing']:,} expressing of {p['cells']:,} cells)"
+    """'7.38% (49,606 expressing of 672,233 cells)', omitting the denominator when total_count is from a broader cell pool."""
+    if p["cells"] > 0 and round(p["fraction"] * p["cells"]) == p["expressing"] and abs(p["expressing"] / p["cells"] - p["fraction"]) < 1e-4:
+        return f"{p['fraction']:.2%} ({p['expressing']:,} expressing of {p['cells']:,} cells)"
+    return f"{p['fraction']:.2%} ({p['expressing']:,} expressing cells)"
 
 
 def _field(key: tuple[str, str]) -> str:
@@ -187,17 +191,21 @@ def _human_only(query: ResolvedQuery, human: dict, human_src: SourceRecord, reas
 
 
 def _census(query: ResolvedQuery) -> LayerResult | None:
-    """Census audit: live when installed, else its recorded live run, else None."""
-    if importlib.util.find_spec("cellxgene_census"):
-        return run_census_expression(query)
+    """Census audit: recorded benchmark when available, else opt-in live scan when installed, else None."""
     recorded = BENCHMARKS / f"census_{query.gene}_{query.species}.json"
-    if not recorded.exists():
-        return None
-    result = LayerResult.model_validate(json.loads(recorded.read_text(encoding="utf-8")))
-    note = (f"Replayed a recorded live CELLxGENE Census run ({recorded.name}) because cellxgene_census "
-            "cannot be installed on this host (tiledbsoma has no Windows wheels).")
-    return result.model_copy(update={"limitations": [note, *result.limitations],
-                                     "data_version": f"{result.data_version} (recorded run)"})
+    if recorded.exists():
+        result = LayerResult.model_validate(json.loads(recorded.read_text(encoding="utf-8")))
+        note = (f"Replayed a recorded live CELLxGENE Census run ({recorded.name}) rather than "
+                "running a live remote TileDB-SOMA scan.")
+        return result.model_copy(update={"limitations": [note, *result.limitations],
+                                         "data_version": f"{result.data_version} (recorded run)"})
+    live_census_enabled = os.getenv(
+        "ASRA_LIVE_CENSUS", ""
+    ).strip().lower() in {"1", "true", "yes"}
+
+    if live_census_enabled and importlib.util.find_spec("cellxgene_census"):
+        return run_census_expression(query)
+    return None
 
 
 def _with_literature(result: LayerResult) -> LayerResult:
