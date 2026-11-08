@@ -171,7 +171,7 @@ def test_run_sequence_retains_identifiers_metadata_and_provenance(resolved):
     assert result["human"] == resolved["source"] and result["animal"] == resolved["target"]
     assert result["orthology"] == resolved["orthology"]
     assert result["source_records"][0]["url"] == resolved["source_url"]
-    assert result["status"] == "ok" and result["data_version"] is None
+    assert result["status"] == "ok" and result["data_version"] == "Ensembl REST homology; source release unknown"
     assert result["retrieved_at"]
     assert resolved == before
     check_invariants(result)

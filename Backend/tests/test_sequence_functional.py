@@ -51,7 +51,8 @@ def test_real_replay_preserves_identity_sources_and_observed_motif():
     assert observation.source_record_id == "sequence_functional_analysis"
     ids = {s.id for s in adapted.source_records}
     assert all(o.source_record_id in ids for o in adapted.observations)
-    assert result["data_version"] is None  # UniProt release cannot supply Ensembl release.
+    assert result["data_version"] == "Offline pinned Ensembl protein pair; source release unknown"
+    # UniProt release cannot supply the Ensembl release.
 
 
 @pytest.mark.parametrize("kind", ["Active site", "Domain", "Binding site", "Motif"])

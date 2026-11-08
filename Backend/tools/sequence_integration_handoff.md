@@ -73,7 +73,7 @@ candidates as JSON observations if needed; never pass an error_record to the ric
 adapter or coerce an ambiguous choice to success. Invalid input raises ValueError.
 Annotation `reason_code` distinguishes api_failure, missing_uniprot_mapping,
 unverified_uniprot_mapping, insufficient_functional_annotations and invalid responses.
-Unknown source release remains `data_version=None`; UniProt release cannot fill it.
+Unknown source release is explicit in `data_version="Ensembl REST homology; source release unknown"`; this identifies provenance, not a verified database release. UniProt release cannot supply the Ensembl release.
 Non-displayed isoform annotation transfer remains unsupported.
 
 ## Reproduction and validation

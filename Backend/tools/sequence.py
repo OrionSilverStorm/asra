@@ -200,7 +200,7 @@ def run_sequence(gene: str | ResolvedQuery, species: str | None = None, *, funct
         "source_records": [{"id": "ensembl_orthology", "source": "Ensembl REST homology",
                             "url": resolved["source_url"]}],
         "retrieved_at": datetime.now(timezone.utc).isoformat(),
-        "data_version": None,
+        "data_version": "Ensembl REST homology; source release unknown",
         "provenance": {
             "human": {"protein_id": resolved["source"]["protein_id"],
                       "sequence_sha256": sha256(resolved["source"]["sequence"].encode("ascii")).hexdigest()},
@@ -213,7 +213,7 @@ def run_sequence(gene: str | ResolvedQuery, species: str | None = None, *, funct
         **result,
         "limitations": result["limitations"] + [
             "Only the resolver's unique one-to-one relationship is compared; this is not evidence of functional equivalence.",
-            "Ensembl release is not supplied by the resolver; data_version is unknown. Retrieval time is recorded.",
+            "Ensembl release is not supplied by the resolver; data_version identifies the source with release explicitly unknown. Retrieval time is recorded.",
         ],
     }
     if functional:
