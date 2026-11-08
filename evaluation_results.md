@@ -86,7 +86,8 @@ Also unresolved: localisation reported multiple matching UniProt accessions
 | 4 | **GAPDH recommends bench work on a conserved gene** off a missing annotation. The Sceptic flags the claim; the recommendation survives. | Medium | `03_gapdh.json` |
 | 5 | ~~**Unresolved UniProt accession ambiguity** for macaque CD28 (A0A5F7ZKV3, Q0PDN4).~~ **Closed.** Now resolved to `A0A5F7ZKV3` via a verified Ensembl one-to-one orthologue (`ENSMMUG00000057214` / `ENSMMUP00000065245`), stated in the layer's limitations, with the caveat that only an unreviewed UniProt record could be resolved. The human record `P10747` is also retrieved now, so compartments are actually compared. | ~~Low~~ Closed | `02_cd28_rerun.json` |
 | 6 | **`functional_analysis` is a single 171 KB observation** in the SLC29A1 report. | Low — rendering | `01_slc29a1.json` |
-| 7 | **`/assess/agent-pipeline` accepts evidence in the request body.** Anyone passing it `MOCK_EVIDENCE` gets a flawless report that proves nothing. Never demo this endpoint. | **High — reputational** | `api/routes.py` |
+| 7 | ~~**`/assess/agent-pipeline` accepts evidence in the request body.** Anyone passing it `MOCK_EVIDENCE` gets a flawless report that proves nothing. Never demo this endpoint.~~ **Closed** by `b26bcbc` ("remove obsolete mock runner and evidence injection endpoint"): `Backend/api/main.py` deleted in full, taking `MOCK_EVIDENCE` with it, and the endpoint removed from `api/routes.py` — 202 deletions. The parallel mock stack no longer exists. | ~~**High — reputational**~~ Closed | `b26bcbc` |
+| 11 | **Isoform identity is never stated.** The CLDN18 report compares the canonical isoform (CLDN18.1, `ENSP00000183605`) without saying so anywhere: `CLDN18.2` / `P56856-2` is never mentioned and never ruled out. A text search of the 66 KB report returns 0 hits for `18.2`, `18.1`, `isoform A1/A2`, `P56856-2`, `exon 1` and `splice`; the 9 hits for `isoform` are all generic boilerplate. `SourceRecord` has no isoform field, so isoform identity stays in free prose. Protein IDs and SHA-256 sequence hashes are recorded in `provenance`, so the comparison is **traceable but not legible** — a reader cannot tell which isoform they are looking at. | **High for any isoform-specific target** | `05_cldn18.json` |
 
 ### Re-run on `51070ce`
 
@@ -96,6 +97,25 @@ statuses, same single finding, same Sceptic downgrade to `flagged`, same one rec
 experiment. Issue 5 closed; issue 3 reclassified above. Localisation gained five
 observations and the human record. The scoring table above stands as run against
 `3bbf30e`.
+
+### Fifth run: CLDN18 / `macaca_mulatta` on `51070ce`
+
+The live-demo target, run after the four benchmark cases
+(`tests/frozen/05_cldn18.json`). **The cleanest run of the six: no layer failed to an
+external error** — the first time that has happened.
+
+- One-to-one orthology verified: `ENSMMUG00000009636` / `ENSMMUP00000012607`, 98.85%
+  identity, taxonomy level Catarrhini.
+- `sequence` **ok** (15 observations), `tissue_expression` **ok**, `localisation`
+  **incomplete**, `cell_expression` **incomplete** for a declared reason: CELLxGENE
+  Discover indexes human and mouse only, and no Census audit exists for this gene and
+  species.
+- **2 findings.** The Sceptic moderated one (kept at `moderate`, noting feature overlap
+  alone does not establish altered function or phenotype) and flagged the other
+  (annotation discrepancy reflects unequal curation depth, not biological absence).
+
+Not scored in the table above: it is the demo target, not one of the four committed
+benchmark cases. See issue 11 for the isoform problem it exposed.
 
 No misleading safety claims were produced. No wrong orthologue was silently selected.
 No recorded data was presented as live without a label.
