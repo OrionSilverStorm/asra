@@ -82,11 +82,20 @@ Also unresolved: localisation reported multiple matching UniProt accessions
 |---|---|---|---|
 | 1 | **Network fragility.** Four runs, four different external failures: UniProt timeout, Ensembl timeout, Ensembl HTTP 500, plus one legitimate ambiguous-orthology stop. A different layer dropped each time. | **High — affects the live demo** | Runs 1–4 |
 | 2 | **`sequence` returns `status: ok` with `data_version: null`**, reproducibly. The resolver doesn't supply the Ensembl release. Limitation text explains it honestly. | Medium | All runs |
-| 3 | **CD28 cell layer is a recorded replay on Windows**, not a live query. Labelled honestly, but the demo machine's OS determines whether this case is live. | Medium | `02_cd28.json` |
+| 3 | **CD28 cell layer is a recorded replay — a documented design decision, not a platform limitation.** Since the role4 fixes, a recorded benchmark is the preferred path whenever one exists, even with `cellxgene_census` installed; a live scan requires explicit `ASRA_LIVE_CENSUS=1`. Rationale is latency: the live TileDB-SOMA scan of CD28/`macaca_mulatta` took 408s against the frontend's 150s timeout, versus <1 ms for the replay. Labelled in `data_version` as `(recorded run)` and in the layer's limitations. Still not evidence obtained at query time. | Medium | `02_cd28.json`, `02_cd28_rerun.json`, `docs/role4_overnight_validation.md` |
 | 4 | **GAPDH recommends bench work on a conserved gene** off a missing annotation. The Sceptic flags the claim; the recommendation survives. | Medium | `03_gapdh.json` |
-| 5 | **Unresolved UniProt accession ambiguity** for macaque CD28 (A0A5F7ZKV3, Q0PDN4). | Low | `02_cd28.json` |
+| 5 | ~~**Unresolved UniProt accession ambiguity** for macaque CD28 (A0A5F7ZKV3, Q0PDN4).~~ **Closed.** Now resolved to `A0A5F7ZKV3` via a verified Ensembl one-to-one orthologue (`ENSMMUG00000057214` / `ENSMMUP00000065245`), stated in the layer's limitations, with the caveat that only an unreviewed UniProt record could be resolved. The human record `P10747` is also retrieved now, so compartments are actually compared. | ~~Low~~ Closed | `02_cd28_rerun.json` |
 | 6 | **`functional_analysis` is a single 171 KB observation** in the SLC29A1 report. | Low — rendering | `01_slc29a1.json` |
 | 7 | **`/assess/agent-pipeline` accepts evidence in the request body.** Anyone passing it `MOCK_EVIDENCE` gets a flawless report that proves nothing. Never demo this endpoint. | **High — reputational** | `api/routes.py` |
+
+### Re-run on `51070ce`
+
+CD28 / `macaca_mulatta` was re-run against the current HEAD after the role4 fixes
+(`tests/frozen/02_cd28_rerun.json`). **The verdict is unchanged: Partial.** Same layer
+statuses, same single finding, same Sceptic downgrade to `flagged`, same one recommended
+experiment. Issue 5 closed; issue 3 reclassified above. Localisation gained five
+observations and the human record. The scoring table above stands as run against
+`3bbf30e`.
 
 No misleading safety claims were produced. No wrong orthologue was silently selected.
 No recorded data was presented as live without a label.
