@@ -570,3 +570,142 @@ def test_malformed_annotations_retain_failed_record_url(api):
     assert len(errors) == 1
     assert errors[0]["kind"] == "invalid_response"
     assert errors[0]["url"].endswith(f"/{HUMAN_ACCESSION}.json")
+
+
+# ── Canonical ASRA Pipeline Integration & Contract Tests ────────────────────
+
+
+def test_pipeline_resolved_query_complete_maps_to_ok(api):
+    query = localisation.ResolvedQuery(
+        species="mus_musculus",
+        sequence="MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATKYFTNRLDMSQNVSLVTAELSKDAQASAAPGSGPER",
+        sequence_label=">SLC29A1",
+        gene="SLC29A1",
+    )
+    result = localisation.run_localisation(query)
+
+    assert isinstance(result, localisation.LayerResult)
+    assert result.layer == "localisation"
+    assert result.gene == "SLC29A1"
+    assert result.species == "mus_musculus"
+    assert result.status == "ok"
+    assert result.data_version == "UniProtKB release 2026_03"
+
+    source_ids = {s.id for s in result.source_records}
+    assert HUMAN_ACCESSION in source_ids
+    assert MOUSE_ACCESSION in source_ids
+    assert "PubMed:12345678" in source_ids
+
+    obs_map = {o.field: o for o in result.observations}
+    assert "human_protein" in obs_map
+    assert "animal_protein" in obs_map
+    assert "human_subcellular_locations" in obs_map
+    assert "animal_subcellular_locations" in obs_map
+    assert "overlapping_location_sl_0039" in obs_map
+    assert "comparison_summary" in obs_map
+    assert "biological_difference_supported=False" in obs_map["comparison_summary"].value
+
+    for obs in result.observations:
+        assert obs.source_record_id in source_ids
+
+    dumped = result.model_dump(mode="json", by_alias=True)
+    assert "source_records" in dumped
+    assert "data_version" in dumped
+    assert "sourceRecordId" in dumped["observations"][0]
+
+
+def test_pipeline_slc29a1_human_vs_mouse_realistic_partial_maps_to_incomplete(api):
+    """Simulate real SLC29A1 UniProt records (Q99808 human vs Q9JIM1 mouse)."""
+    api.records[HUMAN_ACCESSION]["comments"][0]["subcellularLocations"] = [
+        annotation("Cell membrane", "SL-0039", [evidence("ECO:0000269", "9228014")]),
+        annotation("Basolateral cell membrane", "SL-0029", [evidence("ECO:0000269", "12527552")]),
+        annotation("Apical cell membrane", "SL-0014", [evidence("ECO:0000269", "12527552")]),
+    ]
+    api.records[MOUSE_ACCESSION]["comments"][0]["subcellularLocations"] = [
+        annotation(
+            "Cell membrane",
+            "SL-0039",
+            [{"evidenceCode": "ECO:0000250", "source": "UniProtKB", "id": HUMAN_ACCESSION}],
+        )
+    ]
+
+    query = localisation.ResolvedQuery(
+        species="mus_musculus",
+        sequence="MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATKYFTNRLDMSQNVSLVTAELSKDAQASAAPGSGPER",
+        sequence_label=">SLC29A1",
+        gene="SLC29A1",
+    )
+    result = localisation.run_localisation(query)
+
+    assert isinstance(result, localisation.LayerResult)
+    assert result.status == "incomplete"
+    assert result.gene == "SLC29A1"
+    assert result.species == "mus_musculus"
+
+    source_ids = {s.id for s in result.source_records}
+    assert {HUMAN_ACCESSION, MOUSE_ACCESSION, "PubMed:9228014", "PubMed:12527552"} <= source_ids
+
+    obs_map = {o.field: o for o in result.observations}
+    assert "overlapping_location_sl_0039" in obs_map
+    assert "annotation_difference_sl_0029" in obs_map
+    assert "annotation_difference_sl_0014" in obs_map
+    assert obs_map["annotation_difference_sl_0029"].source_record_id == HUMAN_ACCESSION
+    assert "does not establish absence in the other species" in obs_map["annotation_difference_sl_0029"].value
+    assert "evidence_completeness" in obs_map
+    assert "biological_difference_supported=False" in obs_map["comparison_summary"].value
+
+    limitations_text = " ".join(result.limitations)
+    assert "ENT1/fialuridine mitochondrial mechanism" in limitations_text
+    assert f"transferred by similarity from {HUMAN_ACCESSION}" in limitations_text
+    assert "Missing localisation annotations do not establish biological absence" in limitations_text
+
+    # Deterministic Sceptic citation verification check
+    for obs in result.observations:
+        assert obs.source_record_id is not None
+        assert obs.source_record_id in source_ids
+
+
+def test_pipeline_status_mapping_missing_gene_unavailable_and_error(api, monkeypatch):
+    # 1. Missing gene -> unavailable
+    no_gene_query = localisation.ResolvedQuery(
+        species="mus_musculus",
+        sequence="MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATKYFTNRLDMSQNVSLVTAELSKDAQASAAPGSGPER",
+        sequence_label=None,
+        gene=None,
+    )
+    no_gene_res = localisation.run_localisation(no_gene_query)
+    assert isinstance(no_gene_res, localisation.LayerResult)
+    assert no_gene_res.status == "unavailable"
+    assert no_gene_res.observations == []
+    assert any("Needs a resolved gene identifier" in lim for lim in no_gene_res.limitations)
+
+    # 2. Missing animal annotations -> incomplete, never annotation_difference
+    api.records[MOUSE_ACCESSION]["comments"] = []
+    query = localisation.ResolvedQuery(
+        species="mus_musculus",
+        sequence="MTTSHQPQDRYKAVWLIFFMLGLGTLLPWNFFMTATKYFTNRLDMSQNVSLVTAELSKDAQASAAPGSGPER",
+        sequence_label=">SLC29A1",
+        gene="SLC29A1",
+    )
+    partial_res = localisation.run_localisation(query)
+    assert partial_res.status == "incomplete"
+    obs_fields = {o.field for o in partial_res.observations}
+    assert not any(f.startswith("annotation_difference_") for f in obs_fields)
+    obs_map = {o.field: o for o in partial_res.observations}
+    assert "does not establish biological absence" in obs_map["animal_subcellular_locations"].value
+
+    # 3. No records found -> unavailable
+    api.search_results = {key: [] for key in api.search_results}
+    unavail_res = localisation.run_localisation(query)
+    assert unavail_res.status == "unavailable"
+    assert unavail_res.observations == []
+
+    # 4. API failure -> unavailable with error limitation preserved
+    def failing_request(url):
+        raise localisation._DataError("api_error", "UniProt returned HTTP 503.", url)
+
+    monkeypatch.setattr(localisation, "_request_json", failing_request)
+    err_res = localisation.run_localisation(query)
+    assert err_res.status == "unavailable"
+    assert any("HTTP 503" in lim for lim in err_res.limitations)
+

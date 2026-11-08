@@ -17,13 +17,124 @@ No results are invented or substituted when a request fails.
 from __future__ import annotations
 
 import argparse
+from dataclasses import dataclass
 from datetime import datetime, timezone
 from http.client import HTTPException
 import json
 import re
+from typing import Any, Literal, Optional, Union
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
 from urllib.request import Request, urlopen
+
+try:
+    from contract import (
+        LayerName,
+        LayerResult,
+        LayerStatus,
+        Observation,
+        SourceRecord,
+        SpeciesId,
+    )
+except ImportError:
+    try:
+        from Backend.contract import (
+            LayerName,
+            LayerResult,
+            LayerStatus,
+            Observation,
+            SourceRecord,
+            SpeciesId,
+        )
+    except ImportError:
+        from pydantic import BaseModel, ConfigDict, Field
+        from pydantic.alias_generators import to_camel
+
+        SpeciesId = Literal[
+            "mus_musculus",
+            "rattus_norvegicus",
+            "macaca_mulatta",
+            "macaca_fascicularis",
+            "canis_lupus_familiaris",
+            "sus_scrofa",
+            "oryctolagus_cuniculus",
+            "cavia_porcellus",
+            "danio_rerio",
+        ]
+        LayerName = Literal[
+            "sequence", "localisation", "cell_expression", "tissue_expression"
+        ]
+        LayerStatus = Literal["ok", "incomplete", "unavailable"]
+
+        class _CamelModel(BaseModel):
+            model_config = ConfigDict(
+                alias_generator=to_camel, populate_by_name=True
+            )
+
+        class SourceRecord(BaseModel):
+            """A citation: where a piece of evidence came from."""
+
+            id: str
+            source: str
+            url: Optional[str] = None
+
+        class Observation(_CamelModel):
+            """One measured fact inside a layer (field name + display value)."""
+
+            field: str
+            value: str
+            source_record_id: Optional[str] = None
+
+        class LayerResult(BaseModel):
+            """What every layer returns. snake_case on the wire, per the contract."""
+
+            gene: Optional[str] = None
+            species: SpeciesId
+            layer: LayerName
+            status: LayerStatus
+            observations: list[Observation] = Field(default_factory=list)
+            source_records: list[SourceRecord] = Field(default_factory=list)
+            limitations: list[str] = Field(default_factory=list)
+            data_version: Optional[str] = None
+
+            model_config = ConfigDict(serialize_by_alias=True)
+
+
+try:
+    from tools.resolver import ResolvedQuery
+except ImportError:
+    try:
+        from Backend.tools.resolver import ResolvedQuery
+    except ImportError:
+
+        @dataclass(frozen=True)
+        class ResolvedQuery:
+            """Everything a layer may need, resolved once and shared by all layers."""
+
+            species: SpeciesId
+            sequence: str = ""
+            sequence_label: Optional[str] = None
+            gene: Optional[str] = None
+
+
+try:
+    from tools.base import unavailable as _base_unavailable
+except ImportError:
+    try:
+        from Backend.tools.base import unavailable as _base_unavailable
+    except ImportError:
+
+        def _base_unavailable(
+            layer: LayerName, query: ResolvedQuery, reason: str
+        ) -> LayerResult:
+            return LayerResult(
+                gene=query.gene,
+                species=query.species,
+                layer=layer,
+                status="unavailable",
+                limitations=[reason],
+            )
+
 
 
 API_ROOT = "https://rest.uniprot.org/uniprotkb"
@@ -282,7 +393,305 @@ def _compare(proteins: dict) -> dict:
     return comparison
 
 
-def run_localisation(gene: str, species: str) -> dict:
+_MISSING = object()
+
+_STATUS_TO_LAYER_STATUS: dict[str, LayerStatus] = {
+    "complete": "ok",
+    "partial": "incomplete",
+    "unavailable": "unavailable",
+    "error": "unavailable",
+}
+
+
+def _slugify_token(text: str) -> str:
+    slug = re.sub(r"[^a-z0-9]+", "_", text.strip().lower()).strip("_")
+    return slug or "term"
+
+
+def _format_evidence_list(evidence_items: list[dict[str, Any]]) -> str:
+    if not evidence_items:
+        return "none"
+    parts: list[str] = []
+    for ev in evidence_items:
+        code = ev.get("evidenceCode") or "unknown_code"
+        src = ev.get("source")
+        ident = ev.get("id")
+        if src and ident:
+            parts.append(f"{code}/{src}:{ident}")
+        elif src:
+            parts.append(f"{code}/{src}")
+        else:
+            parts.append(str(code))
+    return ", ".join(parts)
+
+
+def _format_location_entry(loc: dict[str, Any]) -> str:
+    loc_id = loc.get("id") or "no-id"
+    details = [
+        f"id={loc_id}",
+        f"support={loc.get('evidence_support', 'missing')}",
+        f"evidence={_format_evidence_list(loc.get('evidence', []))}",
+    ]
+    if loc.get("molecule"):
+        details.append(f"molecule={loc['molecule']}")
+    if isinstance(loc.get("topology"), dict) and loc["topology"].get("name"):
+        details.append(f"topology={loc['topology']['name']}")
+    if isinstance(loc.get("orientation"), dict) and loc["orientation"].get("name"):
+        details.append(f"orientation={loc['orientation']['name']}")
+    return f"{loc['name']} ({'; '.join(details)})"
+
+
+def to_layer_result(
+    raw: dict[str, Any],
+    query: Optional[ResolvedQuery] = None,
+) -> LayerResult:
+    """Convert the 6-field localisation dict into a canonical ``LayerResult``."""
+    measurements = raw.get("measurements") or {}
+    proteins = measurements.get("proteins") or {"human": None, "animal": None}
+    errors = measurements.get("errors") or []
+    comparison = measurements.get("comparison") or {}
+
+    gene_val: Optional[str] = measurements.get("gene") or (
+        query.gene if query is not None else None
+    )
+    species_val: SpeciesId = (
+        measurements.get("species")
+        or (query.species if query is not None else "mus_musculus")
+    )
+    layer_status: LayerStatus = _STATUS_TO_LAYER_STATUS.get(
+        str(raw.get("status", "unavailable")), "unavailable"
+    )
+
+    # Build deduplicated SourceRecord list from protein records and evidence citations
+    source_records: list[SourceRecord] = []
+    seen_source_ids: set[str] = set()
+    releases: list[str] = []
+
+    for src in raw.get("sources") or []:
+        rel = src.get("release")
+        if isinstance(rel, str) and rel and rel not in releases:
+            releases.append(rel)
+        if src.get("kind") == "protein_record":
+            acc = str(src["id"])
+            if acc not in seen_source_ids:
+                seen_source_ids.add(acc)
+                side_protein = next(
+                    (p for p in proteins.values() if p and p.get("accession") == acc),
+                    None,
+                )
+                sci_name = (
+                    side_protein.get("scientific_name")
+                    if isinstance(side_protein, dict)
+                    else None
+                )
+                reviewed_label = (
+                    "reviewed (Swiss-Prot)"
+                    if isinstance(side_protein, dict) and side_protein.get("reviewed")
+                    else "unreviewed (TrEMBL)"
+                )
+                version_str = (
+                    f", version={src.get('entry_version')}"
+                    if src.get("entry_version") is not None
+                    else ""
+                )
+                release_str = f", release={rel}" if rel else ""
+                source_records.append(
+                    SourceRecord(
+                        id=acc,
+                        source=(
+                            f"UniProtKB {reviewed_label} {acc} "
+                            f"({sci_name or 'taxon ' + str(src.get('taxon_id'))}"
+                            f"{version_str}{release_str})"
+                        ),
+                        url=src.get("url"),
+                    )
+                )
+
+    for side in ("human", "animal"):
+        protein = proteins.get(side)
+        if not isinstance(protein, dict):
+            continue
+        for loc in protein.get("locations") or []:
+            for ev in loc.get("evidence") or []:
+                ev_src = ev.get("source")
+                ev_id = ev.get("id")
+                ev_code = ev.get("evidenceCode") or "evidence"
+                if isinstance(ev_src, str) and isinstance(ev_id, str) and ev_id:
+                    rec_id = f"{ev_src}:{ev_id}"
+                    if rec_id not in seen_source_ids:
+                        seen_source_ids.add(rec_id)
+                        source_records.append(
+                            SourceRecord(
+                                id=rec_id,
+                                source=f"{ev_src} {ev_id} (UniProt {protein['accession']} {ev_code})",
+                                url=ev.get("url"),
+                            )
+                        )
+
+    observations: list[Observation] = []
+    used_fields: set[str] = set()
+
+    def _unique_field(base_field: str) -> str:
+        candidate = base_field
+        idx = 2
+        while candidate in used_fields:
+            candidate = f"{base_field}_{idx}"
+            idx += 1
+        used_fields.add(candidate)
+        return candidate
+
+    # 1. Per-species protein metadata, subcellular locations, and notes
+    for side in ("human", "animal"):
+        protein = proteins.get(side)
+        if not isinstance(protein, dict):
+            continue
+        acc = protein["accession"]
+        observations.append(
+            Observation(
+                field=_unique_field(f"{side}_protein"),
+                value=(
+                    f"{acc} ({protein.get('scientific_name') or side}; "
+                    f"taxon_id={protein['taxon_id']}; "
+                    f"reviewed={protein['reviewed']}; "
+                    f"entry_version={protein.get('entry_version')})"
+                ),
+                source_record_id=acc,
+            )
+        )
+        locs = protein.get("locations") or []
+        if locs:
+            locs_formatted = "; ".join(_format_location_entry(loc) for loc in locs)
+        else:
+            locs_formatted = (
+                f"No structured SUBCELLULAR LOCATION annotations in UniProt record {acc}; "
+                "localisation is unannotated/unknown (does not establish biological absence)"
+            )
+        observations.append(
+            Observation(
+                field=_unique_field(f"{side}_subcellular_locations"),
+                value=locs_formatted,
+                source_record_id=acc,
+            )
+        )
+        notes = protein.get("notes") or []
+        if notes:
+            notes_formatted = "; ".join(
+                f"{n.get('text', '')} (evidence={_format_evidence_list(n.get('evidence', []))})"
+                for n in notes
+                if n.get("text")
+            )
+            if notes_formatted:
+                observations.append(
+                    Observation(
+                        field=_unique_field(f"{side}_location_notes"),
+                        value=notes_formatted,
+                        source_record_id=acc,
+                    )
+                )
+
+    # 2. Convert legacy observations into canonical Observation objects
+    for obs in raw.get("observations") or []:
+        obs_type = obs.get("type") or "observation"
+        loc_id = obs.get("location_id")
+        src_ids = [
+            str(sid) for sid in (obs.get("source_ids") or []) if str(sid) in seen_source_ids
+        ]
+        if not src_ids:
+            continue
+
+        if obs_type == "overlapping_annotation":
+            token = _slugify_token(loc_id or obs.get("statement", "location"))
+            observations.append(
+                Observation(
+                    field=_unique_field(f"overlapping_location_{token}"),
+                    value=(
+                        f"{obs['statement']} "
+                        f"(location_id={loc_id}; sources={', '.join(src_ids)})"
+                    ),
+                    source_record_id=src_ids[0],
+                )
+            )
+        elif obs_type == "annotation_difference":
+            token = _slugify_token(loc_id or obs.get("statement", "location"))
+            ev_support = obs.get("evidence_support") or {}
+            # Cite the specific protein record carrying the positive annotation
+            annotated_side = next(iter(ev_support.keys()), None)
+            cited_acc = src_ids[0]
+            if (
+                annotated_side in proteins
+                and isinstance(proteins[annotated_side], dict)
+                and proteins[annotated_side]["accession"] in seen_source_ids
+            ):
+                cited_acc = proteins[annotated_side]["accession"]
+            support_summary = ", ".join(
+                f"{side}={','.join(codes)}" for side, codes in sorted(ev_support.items())
+            )
+            observations.append(
+                Observation(
+                    field=_unique_field(f"annotation_difference_{token}"),
+                    value=(
+                        f"{obs['statement']} "
+                        f"(location_id={loc_id}; evidence_support: {support_summary})"
+                    ),
+                    source_record_id=cited_acc,
+                )
+            )
+        elif obs_type == "incomplete_evidence":
+            observations.append(
+                Observation(
+                    field=_unique_field("evidence_completeness"),
+                    value=str(obs["statement"]),
+                    source_record_id=src_ids[0],
+                )
+            )
+
+    # 3. Overall comparison summary
+    primary_protein = proteins.get("human") or proteins.get("animal")
+    if isinstance(primary_protein, dict) and comparison:
+        observations.append(
+            Observation(
+                field=_unique_field("comparison_summary"),
+                value=(
+                    f"comparison_status={comparison.get('status')}; "
+                    f"overlapping_locations={len(comparison.get('overlapping_locations', []))}; "
+                    f"human_only_annotations={len(comparison.get('human_only_annotations', []))}; "
+                    f"animal_only_annotations={len(comparison.get('animal_only_annotations', []))}; "
+                    f"supported_annotation_differences={len(comparison.get('supported_annotation_differences', []))}; "
+                    f"biological_difference_supported={comparison.get('biological_difference_supported', False)} "
+                    "(missing annotations never establish biological absence)"
+                ),
+                source_record_id=primary_protein["accession"],
+            )
+        )
+
+    # Preserve all scientific limitations and append any top-level error messages
+    limitations = list(raw.get("limitations") or [])
+    for err in errors:
+        msg = err.get("message")
+        side = err.get("side")
+        formatted_err = f"{side}: {msg}" if side else str(msg)
+        if msg and formatted_err not in limitations and str(msg) not in limitations:
+            limitations.append(formatted_err)
+
+    data_version: Optional[str] = None
+    if releases:
+        data_version = f"UniProtKB release {', '.join(releases)}"
+    elif source_records:
+        data_version = "UniProtKB REST API"
+
+    return LayerResult(
+        gene=gene_val,
+        species=species_val,
+        layer="localisation",
+        status=layer_status,
+        observations=observations,
+        source_records=source_records,
+        limitations=limitations,
+        data_version=data_version,
+    )
+
+
+def _run_localisation_dict(gene: str, species: str) -> dict:
     """Return the six-field shared contract for a human-versus-animal comparison.
 
     Invalid input and expected remote failures are returned as structured errors.
@@ -378,12 +787,72 @@ def run_localisation(gene: str, species: str) -> dict:
     return result
 
 
+def run_localisation_layer(
+    query: Union[ResolvedQuery, str, None],
+    species: Optional[SpeciesId] = None,
+) -> LayerResult:
+    """Always return a canonical ``LayerResult`` from either ``ResolvedQuery`` or ``(gene, species)``."""
+    if hasattr(query, "species") and hasattr(query, "gene"):
+        resolved: ResolvedQuery = query  # type: ignore[assignment]
+    else:
+        target_species: SpeciesId = species or "mus_musculus"
+        gene_str: Optional[str] = (
+            query.strip() if isinstance(query, str) and query.strip() else None
+        )
+        resolved = ResolvedQuery(
+            species=target_species,
+            sequence="",
+            sequence_label=gene_str,
+            gene=gene_str,
+        )
+
+    if resolved.gene is None or not str(resolved.gene).strip():
+        return _base_unavailable(
+            "localisation",
+            resolved,
+            "Needs a resolved gene identifier; none was supplied.",
+        )
+
+    raw = _run_localisation_dict(str(resolved.gene), str(resolved.species))
+    return to_layer_result(raw, resolved)
+
+
+def run_localisation(
+    gene: Union[ResolvedQuery, str, None],
+    species: Any = _MISSING,
+) -> Union[LayerResult, dict]:
+    """Run UniProt subcellular localisation comparison.
+
+    - When called by the canonical ASRA pipeline with a single ``ResolvedQuery``
+      (``run_localisation(query: ResolvedQuery) -> LayerResult``), returns a
+      validated ``LayerResult`` with ``status`` mapped to ``ok | incomplete | unavailable``
+      and traceable ``Observation`` / ``SourceRecord`` objects.
+    - When called with two arguments ``run_localisation(gene, species) -> dict``,
+      returns the six-field standalone dictionary contract.
+    """
+    if species is _MISSING and (
+        hasattr(gene, "species") and hasattr(gene, "gene")
+    ):
+        return run_localisation_layer(gene)  # type: ignore[arg-type]
+    return _run_localisation_dict(gene, species)  # type: ignore[arg-type]
+
+
 def _main() -> int:
     """Manual live-API smoke test; JSON is printed even when an API call fails."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("gene", help="Gene symbol, for example SLC29A1")
     parser.add_argument("species", help="Animal species, for example mouse or mus_musculus")
+    parser.add_argument(
+        "--layer-result",
+        action="store_true",
+        help="Emit the canonical pipeline LayerResult JSON schema instead of the standalone 6-field dict.",
+    )
     args = parser.parse_args()
+    if args.layer_result:
+        layer_res = run_localisation_layer(args.gene, args.species)
+        payload = layer_res.model_dump(mode="json", by_alias=True)
+        print(json.dumps(payload, indent=2, ensure_ascii=False))
+        return 1 if layer_res.status == "unavailable" else 0
     result = run_localisation(args.gene, args.species)
     print(json.dumps(result, indent=2, ensure_ascii=False))
     return 1 if result["status"] in {"error", "unavailable"} else 0
