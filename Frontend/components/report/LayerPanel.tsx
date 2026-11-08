@@ -10,13 +10,14 @@
  * (Field | Human | <species>), with rows whose values differ marked. The
  * gene-based sequence layer (JSON observations) gets its own readable view,
  * and an ambiguous orthologue lists its candidates. Hand-entered fixture
- * evidence and recorded benchmark runs are badged so they are never mistaken
- * for a fresh live retrieval.
+ * evidence, recorded benchmark runs and pinned snapshots are badged (and
+ * explained under the title) so they are never mistaken for a fresh live
+ * retrieval.
  */
 
 import { Badge } from "@/components/ui/Badge";
 import { StatusBadge } from "@/components/ui/StatusBadge";
-import { FIXTURE_DATA_VERSION, LAYER_META } from "@/lib/layers";
+import { LAYER_META, layerProvenance, PROVENANCE_INFO } from "@/lib/layers";
 import { pairObservations } from "@/lib/observations";
 import { parseAmbiguousCandidates, parseSequenceEvidence } from "@/lib/sequenceEvidence";
 import type { LayerResult } from "@/lib/types";
@@ -33,7 +34,8 @@ export function LayerPanel({ layer, speciesName }: LayerPanelProps) {
   const meta = LAYER_META[layer.layer];
   const unavailable = layer.status === "unavailable";
   const partial = layer.status === "incomplete";
-  const isRecorded = Boolean(layer.data_version?.includes("(recorded run)"));
+  // Fixture / recorded / pinned evidence is badged; fresh live retrieval is not.
+  const provenance = layerProvenance(layer);
   // Gene-based sequence evidence (null for every other layer / legacy result).
   const evidence = parseSequenceEvidence(layer);
   // Candidate orthologues when Ensembl couldn't give a unique one.
@@ -60,10 +62,13 @@ export function LayerPanel({ layer, speciesName }: LayerPanelProps) {
         <div>
           <h3 className="text-sm font-semibold">{meta.title}</h3>
           <p className="text-xs text-muted">{meta.source}</p>
+          {/* Say in words what the badge means: this is not fresh data. */}
+          {provenance !== "live" && (
+            <p className="mt-0.5 text-xs text-warn">Uses {PROVENANCE_INFO[provenance].note}.</p>
+          )}
         </div>
         <div className="flex flex-wrap justify-end gap-1.5">
-          {layer.data_version === FIXTURE_DATA_VERSION && <Badge tone="warn">Demo fixture</Badge>}
-          {isRecorded && <Badge tone="warn">Recorded data</Badge>}
+          {provenance !== "live" && <Badge tone="warn">{PROVENANCE_INFO[provenance].badge}</Badge>}
           <StatusBadge status={layer.status} />
         </div>
       </header>

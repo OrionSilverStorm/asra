@@ -9,6 +9,7 @@
 
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { PROVENANCE_INFO, snapshotLayers } from "@/lib/layers";
 import { getSpecies } from "@/lib/species";
 import type { Report } from "@/lib/types";
 import { DownloadButtons } from "./DownloadButtons";
@@ -49,9 +50,11 @@ export function ReportHeader({ report, onReset }: ReportHeaderProps) {
   // Short, readable entry ID from the report UUID, e.g. "ASRA-3f2a9c1b".
   const entryId = `ASRA-${report.id.replace(/-/g, "").slice(0, 8)}`;
 
-  const hasRecordedEvidence = report.layers.some(
-    (layer) => layer.data_version?.includes("(recorded run)"),
-  );
+  // Layers served from a recorded run or pinned snapshot rather than fetched live.
+  const snapshots = snapshotLayers(report);
+  const snapshotKinds = new Set(snapshots.map((s) => s.kind));
+  // e.g. "Includes recorded run + pinned snapshot"
+  const snapshotLabel = `Includes ${[...snapshotKinds].map((k) => PROVENANCE_INFO[k].badge.toLowerCase()).join(" + ")}`;
 
   // Metadata rows; the sequence row only appears if a FASTA header was pasted.
   const rows: { label: string; value: string; className?: string }[] = [
@@ -75,8 +78,8 @@ export function ReportHeader({ report, onReset }: ReportHeaderProps) {
               <Badge tone="warn">Mock data · backend not connected</Badge>
             ) : report.origin === "fixture" ? (
               <Badge tone="warn">Demo fixture data · not a live retrieval</Badge>
-            ) : hasRecordedEvidence ? (
-              <Badge tone="warn">Live + recorded evidence</Badge>
+            ) : snapshots.length > 0 ? (
+              <Badge tone="warn">{snapshotLabel} · not fully live</Badge>
             ) : (
               <Badge tone="ok">Live</Badge>
             )}

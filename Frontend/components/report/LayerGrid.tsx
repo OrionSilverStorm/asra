@@ -24,12 +24,14 @@ interface LayerGridProps {
 export function LayerGrid({ layers, speciesName }: LayerGridProps) {
   // Only "ok" counts as complete; incomplete layers are not.
   const ready = layers.filter((l) => l.status === "ok").length;
+  // Partial layers are shown separately from unavailable ones.
+  const partial = layers.filter((l) => l.status === "incomplete").length;
   return (
     <Card>
       <CardHeader
         eyebrow="Evidence"
         title="Comparison layers"
-        actions={<span className="font-mono text-xs text-muted">{ready}/{layers.length} complete</span>}
+        actions={<span className="font-mono text-xs text-muted">{ready}/{layers.length} complete{partial > 0 && ` · ${partial} partial`}</span>}
       />
       <CardBody className="flex flex-col gap-4">
         {/* Availability track: label + status above a solid status bar. */}

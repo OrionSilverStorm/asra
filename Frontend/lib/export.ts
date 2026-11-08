@@ -14,7 +14,7 @@
  */
 
 import { CAVEAT_TEXT } from "./caveat";
-import { LAYER_META } from "./layers";
+import { LAYER_META, layerProvenance, PROVENANCE_INFO, snapshotLayers } from "./layers";
 import { parseSequenceEvidence, pct, type SequenceEvidence } from "./sequenceEvidence";
 import { getSpecies } from "./species";
 import type { Concern, LayerStatus, Report } from "./types";
@@ -105,16 +105,15 @@ export function reportToMarkdown(report: Report): string {
   if (report.origin === "fixture") {
     push("> **Demo fixture data.** At least one layer used hand-entered demo evidence, not a live retrieval.", "");
   }
-  const recordedLayers = report.layers
-    .filter((layer) => layer.data_version?.includes("(recorded run)"))
-    .map((layer) => LAYER_META[layer.layer].title.toLowerCase());
-  if (recordedLayers.length > 0) {
-    const names = recordedLayers.join(", ");
-    const nounVerb = recordedLayers.length === 1 ? "layer uses" : "layers use";
-    push(
-      `> **Recorded evidence.** The ${names} ${nounVerb} a previously recorded benchmark run, not a new live retrieval.`,
-      "",
-    );
+  // One banner per kind of non-live evidence, naming the layers affected.
+  for (const kind of ["recorded", "pinned"] as const) {
+    const names = snapshotLayers(report)
+      .filter((s) => s.kind === kind)
+      .map((s) => LAYER_META[s.layer.layer].title.toLowerCase());
+    if (names.length > 0) {
+      const verb = names.length === 1 ? "layer uses" : "layers use";
+      push(`> **${PROVENANCE_INFO[kind].badge}.** The ${names.join(", ")} ${verb} ${PROVENANCE_INFO[kind].note}.`, "");
+    }
   }
   push(
     `- **Species:** ${species.commonName} (*${species.scientificName}*)`,
@@ -140,6 +139,12 @@ export function reportToMarkdown(report: Report): string {
   for (const layer of report.layers) {
     const meta = LAYER_META[layer.layer];
     push(`### ${meta.title} — ${STATUS_LABEL[layer.status]}`, "", `Source: ${meta.source}`, "");
+    // Fixture / recorded / pinned layers say so in their own section too.
+    const provenance = layerProvenance(layer);
+    if (provenance !== "live") {
+      push(`> **${PROVENANCE_INFO[provenance].badge}:** ${PROVENANCE_INFO[provenance].note}.`, "");
+    }
+    if (layer.data_version) push(`Data version: ${layer.data_version}`, "");
     // Gene-based sequence evidence gets a readable summary instead of JSON rows.
     const evidence = parseSequenceEvidence(layer);
     if (evidence) {
