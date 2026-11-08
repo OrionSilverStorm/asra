@@ -1,5 +1,7 @@
 # ASRA — Evaluation results
 
+**All runs were made against commit `3bbf30e`, before the role4 fixes landed.**
+
 All runs live against `/assess` (`Backend/pipeline/`), 2026-11-08. Raw responses in
 `tests/frozen/`. Scored against criteria committed in `tests/test_cases.md` before any
 result existed (commit 36d537d).
