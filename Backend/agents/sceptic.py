@@ -50,6 +50,15 @@ _ABSENCE_RE = re.compile(
     re.IGNORECASE,
 )
 
+# Localisation fields that only record "annotated here, not annotated there".
+_ANNOTATION_ONLY_FIELDS = {"localisation.human_only_compartments", "localisation.animal_only_compartments"}
+
+# Claim wording that reports a missing database annotation (e.g. "not annotated for mouse").
+_NOT_ANNOTATED_RE = re.compile(
+    r"\b(?:not|never|un|no|lacks?|lacking|without|missing)\s*-?\s*(?:\w+\s+){0,4}?annotat",
+    re.IGNORECASE,
+)
+
 # Regex matching RNA-to-protein conflation
 _RNA_PROTEIN_RE = re.compile(
     r"\b(protein\s+abundance|protein\s+expression|protein\s+levels|transporter\s+protein\s+capacity)\b",
@@ -106,6 +115,16 @@ def _check_missing_annotation_absence(
             f"'{layer.layer}'. A missing annotation is not evidence of biological absence."
         )
     return None
+
+
+def rests_on_missing_annotation(f: Finding) -> bool:
+    """True if the finding's only basis is that one species lacks a database annotation.
+
+    That is a difference between records, not between biologies, so it must
+    not trigger an experiment recommendation (the finding itself may stay,
+    flagged, so the gap is still visible).
+    """
+    return f.cited_field in _ANNOTATION_ONLY_FIELDS or bool(_NOT_ANNOTATED_RE.search(f.claim))
 
 
 def _check_incompatible_cell_populations(

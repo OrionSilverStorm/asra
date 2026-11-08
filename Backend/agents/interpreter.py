@@ -27,6 +27,18 @@ log = logging.getLogger("asra.agents")
 PROMPT = (Path(__file__).parent / "prompts" / "interpreter.md").read_text(encoding="utf-8")
 
 
+# Report limitations for the two ways the model can be missing. Neither is a
+# scientific result: "no findings" below is not the same as "no differences".
+NOT_CONFIGURED = (
+    "The AI interpretation step did not run because no Gemini API key is configured, "
+    "so no findings were generated. This does not mean no cross-species differences exist."
+)
+API_FAILED = (
+    "The AI interpretation step failed ({kind}; for example API quota, timeout or network error), "
+    "so no findings were generated. This does not mean no cross-species differences exist."
+)
+
+
 class FindingDraft(BaseModel):
     """What the model may return: a Finding minus fields we control (id, sceptic note)."""
 
@@ -47,6 +59,9 @@ class Draft:
     findings: list[Finding] = field(default_factory=list)
     # Finding id -> suggested follow-up experiment.
     experiments: dict[str, str] = field(default_factory=dict)
+    # Report-ready explanation when the model did not run or failed; "" when it
+    # ran (even if it returned no findings). Never carries keys or raw errors.
+    failure: str = ""
 
 
 def _build_prompt(evidence: list[LayerResult], feedback: Optional[list[str]]) -> str:
@@ -62,14 +77,18 @@ def _build_prompt(evidence: list[LayerResult], feedback: Optional[list[str]]) ->
 
 def interpret(evidence: list[LayerResult], feedback: Optional[list[str]] = None) -> Draft:
     """Draft findings from evidence; `feedback` is the Sceptic's notes on a revision pass."""
-    # Nothing to interpret, or no model configured: make no claims.
-    if not evidence or not llm.available():
+    # Nothing to interpret: no claims, and nothing failed.
+    if not evidence:
         return Draft()
+    # No model configured: make no claims, and say why.
+    if not llm.available():
+        return Draft(failure=NOT_CONFIGURED)
     try:
         drafts = llm.ask_json(_build_prompt(evidence, feedback), FindingDraft, agent="interpreter")
-    except Exception:  # network/quota/parse errors must not sink the report
+    except Exception as exc:  # network/quota/parse errors must not sink the report
         log.exception("Interpreter call failed")
-        return Draft()
+        # Exception type only: messages can echo request details.
+        return Draft(failure=API_FAILED.format(kind=type(exc).__name__))
     # Assign stable IDs ourselves; the model never chooses them.
     out = Draft()
     for i, d in enumerate(drafts, start=1):
