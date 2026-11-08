@@ -155,7 +155,7 @@ in the evaluation table.
 
 | Claim | Source | Year | Strength | Known before the failure? |
 |---|---|---|---|---|
-| GAPDH is highly conserved between human and mouse and ubiquitously expressed | Ensembl orthologue record + UniProt entry — **record the accessions and the release version you used** | — | Strong | n/a |
+| GAPDH is highly conserved between human and mouse and ubiquitously expressed | Human UniProt accession `P04406`; localisation layer reported `UniProt 2026_04`. The Ensembl release is **not supplied by the resolver**, so `data_version` for the sequence layer is `null` — see issue 2 in `evaluation_results.md`. | — | Strong | n/a |
 
 **Notes / caveats**
 
@@ -206,7 +206,7 @@ must not rank it highly.
 
 ---
 
-## Scoring sheet (fill after runs — leave blank until then)
+## Scoring sheet (results are in `evaluation_results.md`)
 
 | Case | Sequence-only caught it? | Did extra layers add evidence? | Did the Sceptic catch the unsupported claim? | Verdict |
 |---|---|---|---|---|
@@ -221,5 +221,5 @@ must not rank it highly.
 returning `status: ok` with `data_version: null` would pass silently. **Check this
 manually when scoring.**
 
-**Headline for the write-up:** in ___ of 4 cases the additional layers surfaced evidence
+**Headline for the write-up:** in 4 of 4 cases the additional layers surfaced evidence
 that sequence identity alone did not capture.
