@@ -1,0 +1,16 @@
+{
+  "Q99808": {
+    "url": "https://rest.uniprot.org/uniprotkb/Q99808.json",
+    "retrieved_at": "Sat, 07 Nov 2026 19:00:02 GMT",
+    "release": "2026_04",
+    "release_date": "04-November-2026",
+    "response_sha256": "e96bdde7656c7db1b0c9f2d82f29594641a7611022fb44c3cf4c2f57818fa5f6"
+  },
+  "Q9JIM1": {
+    "url": "https://rest.uniprot.org/uniprotkb/Q9JIM1.json",
+    "retrieved_at": "Sat, 07 Nov 2026 19:00:07 GMT",
+    "release": "2026_04",
+    "release_date": "04-November-2026",
+    "response_sha256": "8f7337103be2b661a6aca28ffe18d32f0e24e4fd109a89fb3c5e8d7926849094"
+  }
+}

@@ -191,6 +191,15 @@ def run_sequence(gene: str | ResolvedQuery, species: str | None = None, *, funct
             limitations=["Human orthologue not fetched for the sequence-only request; gene-based alignment requires a human gene symbol."],
         )
     resolved = resolve_orthologue(gene, species)
+    output = _sequence_evidence(resolved)
+    if functional:
+        from tools.sequence_functional import add_functional_analysis
+        return add_functional_analysis(output)
+    return output
+
+
+def _sequence_evidence(resolved: dict) -> dict:
+    """Build the unchanged evidence schema and recompute all alignment metrics."""
     result = align_proteins(resolved["source"]["sequence"], resolved["target"]["sequence"])
     output = {
         "gene": resolved["gene"], "species": resolved["species"],
@@ -216,7 +225,4 @@ def run_sequence(gene: str | ResolvedQuery, species: str | None = None, *, funct
             "Ensembl release is not supplied by the resolver; data_version identifies the source with release explicitly unknown. Retrieval time is recorded.",
         ],
     }
-    if functional:
-        from tools.sequence_functional import add_functional_analysis
-        return add_functional_analysis(output)
     return output
