@@ -87,17 +87,6 @@ const CYP3A4 =
   "KKNKDNIDPYIYTPFGSGPRNCIGMRFALMNMKLALIRVLQNFSFKPCKETQIPLKLSLG" +
   "GLLQPEKPVVLKVESRDGTVSGA";
 
-/** UniProt Q96SW2, human cereblon (CRBN), 442 aa. */
-const CRBN =
-  "MAGEGDQQDAAHNMGNHLPLLPAESEEEDEMEVEDQDSKEAKKPNIINFDTSLPTSHTYL" +
-  "GADMEEFHGRTLHDDDSCQVIPVLPQVMMILIPGQTLPLQLFHPQEVSMVRNLIQKDRTF" +
-  "AVLAYSNVQEREAQFGTTAEIYAYREEQDFGIEIVKVKAIGRQRFKVLELRTQSDGIQQA" +
-  "KVQILPECVLPSTMSAVQLESLNKCQIFPSKPVSREDQCSYKWWQKYQKRKFHCANLTSW" +
-  "PRWLYSLYDAETLMDRIKKQLREWDENLKDDSLPSNPIDFSYRVAACLPIDDVLRIQLLK" +
-  "IGSAIQRLRCELDIMNKCTSLCCKQCQETEITTKNEIFSLSLCGPMAAYVNPHGYVHETL" +
-  "TVYKACNLNLIGRPSTEHSWFPGYAWTVAQCKICASHIGWKFTATKKDMSPQKFWGLTRS" +
-  "ALLPTIPDTEDEISPDKVILCL";
-
 /** UniProt Q07869, human PPARα, 468 aa. */
 const PPARA =
   "MVDTESPLCPLSPLEAGDLESPLSEEFLQEMGNIQEISQSIGEDSSGSFGFTEYQYLGSC" +
@@ -134,18 +123,6 @@ export const CASE_STUDIES: CaseStudy[] = [
     header:
       ">sp|P10747|CD28_HUMAN T-cell-specific surface glycoprotein CD28 OS=Homo sapiens OX=9606 GN=CD28 PE=1 SV=1",
     sequence: CD28,
-  },
-  {
-    // Added case. Rabbit is the sensitive species and the rodents are not, so a
-    // human/rabbit difference is NOT the explanation for the human harm: this
-    // doubles as a test of whether the Sceptic pushes back on that framing.
-    id: "thalidomide",
-    label: "Thalidomide · CRBN · rabbit",
-    group: "Animals said safe — humans were harmed",
-    species: "oryctolagus_cuniculus",
-    gene: "CRBN",
-    header: ">sp|Q96SW2|CRBN_HUMAN Protein cereblon OS=Homo sapiens OX=9606 GN=CRBN PE=1 SV=1",
-    sequence: CRBN,
   },
   {
     // Added case, and the inverse direction: the animal over-predicted harm.
