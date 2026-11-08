@@ -83,7 +83,8 @@ Also unresolved: localisation reported multiple matching UniProt accessions
 | 1 | **Network fragility.** Four runs, four different external failures: UniProt timeout, Ensembl timeout, Ensembl HTTP 500, plus one legitimate ambiguous-orthology stop. A different layer dropped each time. | **High — affects the live demo** | Runs 1–4 |
 | 2 | **`sequence` returns `status: ok` with `data_version: null`**, reproducibly. The resolver doesn't supply the Ensembl release. Limitation text explains it honestly. | Medium | All runs |
 | 3 | **CD28 cell layer is a recorded replay — a documented design decision, not a platform limitation.** Since the role4 fixes, a recorded benchmark is the preferred path whenever one exists, even with `cellxgene_census` installed; a live scan requires explicit `ASRA_LIVE_CENSUS=1`. Rationale is latency: the live TileDB-SOMA scan of CD28/`macaca_mulatta` took 408s against the frontend's 150s timeout, versus <1 ms for the replay. Labelled in `data_version` as `(recorded run)` and in the layer's limitations. Still not evidence obtained at query time. | Medium | `02_cd28.json`, `02_cd28_rerun.json`, `docs/role4_overnight_validation.md` |
-| 4 | **GAPDH recommends bench work on a conserved gene** off a missing annotation. The Sceptic flags the claim; the recommendation survives. | Medium | `03_gapdh.json` |
+| 4 | ~~**GAPDH recommends bench work on a conserved gene** off a missing annotation. The Sceptic flags the claim; the recommendation survives.~~ **Closed** by `f75f5cd`. The Sceptic now **rejects** rather than downgrades claims resting on missing annotations, via a deterministic rule (`_ANNOTATION_ONLY_FIELDS` / `rests_on_missing_annotation` in `agents/sceptic.py`) that runs **without an LLM** — so it holds even with no Gemini key. GAPDH on the current HEAD returns **0 findings**, and the subcellular-fractionation/western-blot recommendation is gone; only the deterministic "obtain sequence data" suggestion remains. The run log shows the Interpreter still proposed the claim and the deterministic pass rejected it, triggering one revision that returned `[]`. | ~~Medium~~ Closed | `f75f5cd`, `03_gapdh_rerun.json` |
+| 12 | **`pytest` is broken on main.** `Backend/tests/test_cell_census.py` and `test_cellxgene_discovery.py` each carry a duplicated `from __future__ import annotations`, which is a `SyntaxError`. Collection errors interrupt pytest, so this blocks the whole suite: all 316 otherwise-passing tests (plus 14 deliberately skipped live-API checks) never run. Anyone cloning the repo and running `pytest` sees a collection error. | **High** | `README.md` "Known issues" |
 | 5 | ~~**Unresolved UniProt accession ambiguity** for macaque CD28 (A0A5F7ZKV3, Q0PDN4).~~ **Closed.** Now resolved to `A0A5F7ZKV3` via a verified Ensembl one-to-one orthologue (`ENSMMUG00000057214` / `ENSMMUP00000065245`), stated in the layer's limitations, with the caveat that only an unreviewed UniProt record could be resolved. The human record `P10747` is also retrieved now, so compartments are actually compared. | ~~Low~~ Closed | `02_cd28_rerun.json` |
 | 6 | **`functional_analysis` is a single 171 KB observation** in the SLC29A1 report. | Low — rendering | `01_slc29a1.json` |
 | 7 | ~~**`/assess/agent-pipeline` accepts evidence in the request body.** Anyone passing it `MOCK_EVIDENCE` gets a flawless report that proves nothing. Never demo this endpoint.~~ **Closed** by `b26bcbc` ("remove obsolete mock runner and evidence injection endpoint"): `Backend/api/main.py` deleted in full, taking `MOCK_EVIDENCE` with it, and the endpoint removed from `api/routes.py` — 202 deletions. The parallel mock stack no longer exists. | ~~**High — reputational**~~ Closed | `b26bcbc` |
@@ -116,6 +117,26 @@ external error** — the first time that has happened.
 
 Not scored in the table above: it is the demo target, not one of the four committed
 benchmark cases. See issue 11 for the isoform problem it exposed.
+
+### GAPDH re-run on `73c2ad7`: Gemini failures are now distinguishable
+
+`tests/frozen/03_gapdh_rerun.json`. Beyond closing issue 4, `f75f5cd` makes a failed AI
+step distinguishable from genuinely absent evidence. Verified empirically by running the
+same request twice, once with an invalid `GEMINI_API_KEY`:
+
+- **Invalid key** — 0 findings **plus** an explicit report limitation: *"The AI
+  interpretation step failed (ClientError; for example API quota, timeout or network
+  error), so no findings were generated. This does not mean no cross-species differences
+  exist."*
+- **Valid key** — 0 findings and **no such limitation**, because the model answered and
+  had nothing to claim.
+
+Both reports read `findings: 0`, but they are now textually distinguishable. Only the
+exception *type* is exposed, never the key or the raw message.
+
+Also observed: the sequence layer failed here on **ambiguous orthology** (`GAPDH to
+mus_musculus is not a unique one-to-one orthologue`, 3 relationships) rather than the
+earlier `HTTP 500` — two different causes in the same layer across two runs.
 
 No misleading safety claims were produced. No wrong orthologue was silently selected.
 No recorded data was presented as live without a label.
