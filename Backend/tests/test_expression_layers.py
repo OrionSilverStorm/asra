@@ -118,6 +118,108 @@ def test_non_mouse_replays_recorded_census_run_with_literature(monkeypatch):
     assert _cited(result)
 
 
+def test_census_routing_prefers_recorded_benchmark_even_when_census_installed(monkeypatch):
+    monkeypatch.setattr(cell_expression.importlib.util, "find_spec", lambda name: object())
+    monkeypatch.setattr(cell_expression, "run_census_expression",
+                        lambda q: (_ for _ in ()).throw(AssertionError("live SOMA scan should not run")))
+    result = cell_expression.run_cell_expression(_query("CD28", "macaca_mulatta"))
+    assert "(recorded run)" in result.data_version and "Replayed" in result.limitations[0]
+    assert any(o.field == "human_cd28_detection_fraction" for o in result.observations)
+    assert _cited(result)
+
+
+def test_no_unexpected_live_census_scan(monkeypatch):
+    monkeypatch.delenv("ASRA_LIVE_CENSUS", raising=False)
+    monkeypatch.setattr(
+        cell_expression.importlib.util,
+        "find_spec",
+        lambda name: object(),
+    )
+    monkeypatch.setattr(
+        cell_expression,
+        "run_census_expression",
+        lambda q: (_ for _ in ()).throw(
+            AssertionError("Unexpected live Census scan")
+        ),
+    )
+
+    result = cell_expression._census(
+        _query("CRBN", "oryctolagus_cuniculus")
+    )
+
+    assert result is None
+
+
+def test_opt_in_live_census_scan_when_enabled(monkeypatch):
+    monkeypatch.setenv("ASRA_LIVE_CENSUS", "1")
+    monkeypatch.setattr(
+        cell_expression.importlib.util,
+        "find_spec",
+        lambda name: object(),
+    )
+    fake_live = LayerResult(
+        gene="CRBN",
+        species="oryctolagus_cuniculus",
+        layer="cell_expression",
+        status="incomplete",
+        observations=[],
+        source_records=[],
+        limitations=["Simulated opt-in live Census result."],
+        data_version="CELLxGENE Census 2025-11-08",
+    )
+    called_with = []
+    monkeypatch.setattr(
+        cell_expression,
+        "run_census_expression",
+        lambda q: (called_with.append((q.gene, q.species)) or fake_live),
+    )
+
+    result = cell_expression._census(
+        _query("CRBN", "oryctolagus_cuniculus")
+    )
+
+    assert called_with == [("CRBN", "oryctolagus_cuniculus")]
+    assert result == fake_live
+
+
+def test_wmg_omits_denominator_when_total_count_does_not_match_reported_pc(monkeypatch):
+    # Live SLC29A1 WMG v2 response values:
+    # - human pancreas / progenitor cell: n=128, pc=0.28893905191873587 (128/443 measured), total_count=876
+    # - human liver / mononuclear phagocyte: n=1622, pc=0.07507521407081694 (1622/21605), total_count=21605
+    # - mouse liver / mononuclear phagocyte: n=1231, pc=0.39941596365996105 (1231/3082 measured), total_count=3159
+    data = {
+        "NCBITaxon:9606": {
+            ("UBERON:0001264", "CL:0011026"): {
+                "tissue": "pancreas", "cell_type": "progenitor cell",
+                "fraction": 0.28893905191873587, "expressing": 128, "cells": 876,
+            },
+            ("UBERON:0002107", "CL:0000113"): {
+                "tissue": "liver", "cell_type": "mononuclear phagocyte",
+                "fraction": 0.07507521407081694, "expressing": 1622, "cells": 21605,
+            },
+        },
+        "NCBITaxon:10090": {
+            ("UBERON:0002107", "CL:0000113"): {
+                "tissue": "liver", "cell_type": "mononuclear phagocyte",
+                "fraction": 0.39941596365996105, "expressing": 1231, "cells": 3159,
+            },
+        },
+    }
+    monkeypatch.setattr(cell_expression, "_human_gene_id", lambda symbol: "ENSG00000112759")
+    monkeypatch.setattr(cell_expression, "_indexed", lambda taxon, gene_id: True)
+    monkeypatch.setattr(cell_expression, "_query", lambda taxon, gene_id: data[taxon])
+    monkeypatch.setattr(cell_expression, "_snapshot", lambda: "1762972271")
+    monkeypatch.setattr(cell_expression, "orthologue_gene_id", lambda gene, species: ("ENSMUSG00000023942", None))
+
+    result = cell_expression.run_cell_expression(_query("SLC29A1", "mus_musculus"))
+    obs = {o.field: o.value for o in result.observations}
+    assert "pancreas / progenitor cell: 28.89% (128 expressing cells)" in obs["human_top_populations"]
+    assert "876" not in obs["human_top_populations"]
+    assert "human 7.51% (1,622 expressing of 21,605 cells)" in obs["detection_UBERON0002107_CL0000113"]
+    assert "mouse 39.94% (1,231 expressing cells)" in obs["detection_UBERON0002107_CL0000113"]
+    assert "3,159" not in obs["detection_UBERON0002107_CL0000113"]
+
+
 def test_macaque_literature_is_not_attached_to_other_species(wmg, monkeypatch):
     monkeypatch.setattr(cell_expression.importlib.util, "find_spec", lambda name: None)
     result = cell_expression.run_cell_expression(_query("CD28", "sus_scrofa"))
