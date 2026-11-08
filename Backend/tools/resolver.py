@@ -99,6 +99,11 @@ class OrthologueResolutionError(RuntimeError):
 class EnsemblAPIError(OrthologueResolutionError):
     """A timeout, transport failure or unsuccessful HTTP response."""
 
+    def __init__(self, message, *, transient=None, retry_after=None):
+        super().__init__(message)
+        self.transient = transient
+        self.retry_after = retry_after
+
 
 class InvalidEnsemblResponseError(OrthologueResolutionError):
     """The response is malformed or does not match the requested species."""
@@ -193,13 +198,18 @@ def resolve_orthologue(gene: str, species: str) -> dict:
         )
         response.raise_for_status()
     except httpx.TimeoutException as exc:
-        raise EnsemblAPIError(f"Ensembl timed out resolving {gene} to {species}.") from exc
+        raise EnsemblAPIError(f"Ensembl timed out resolving {gene} to {species}.", transient=True) from exc
     except httpx.HTTPStatusError as exc:
         raise EnsemblAPIError(
-            f"Ensembl HTTP {exc.response.status_code} resolving {gene} to {species}."
+            f"Ensembl HTTP {exc.response.status_code} resolving {gene} to {species}.",
+            transient=exc.response.status_code == 429 or 500 <= exc.response.status_code < 600,
+            retry_after=exc.response.headers.get("Retry-After"),
         ) from exc
     except httpx.RequestError as exc:
-        raise EnsemblAPIError(f"Ensembl request failed for {gene} to {species}: {exc}") from exc
+        raise EnsemblAPIError(
+            f"Ensembl request failed for {gene} to {species}: {exc}",
+            transient=isinstance(exc, (httpx.NetworkError, httpx.RemoteProtocolError, httpx.ProxyError)),
+        ) from exc
 
     try:
         payload = response.json()
