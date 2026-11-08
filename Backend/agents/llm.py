@@ -58,7 +58,8 @@ def ask_json(prompt: str, schema: type[T], agent: str) -> Optional[T]:
       and raises so the caller (Interpreter) can catch it and return [] without
       inventing findings.
     - If response parsing encounters formatting anomalies, attempts robust JSON
-      fallback before failing.
+      fallback, then raises if the reply is still unusable. A valid empty list
+      ("no findings") is returned as [] and is not an error.
     """
     # Deferred import to prevent circular imports with pipeline package
     from pipeline.run_log import log_event
@@ -117,4 +118,6 @@ def ask_json(prompt: str, schema: type[T], agent: str) -> Optional[T]:
         except Exception as parse_exc:
             log.warning("Fallback JSON parsing failed for %s: %s", agent, parse_exc)
 
-    return []
+    # Nothing usable came back (empty or unparseable). Raise rather than return
+    # [], which callers would read as "the model found nothing".
+    raise ValueError(f"Gemini returned no usable JSON for {agent}")
