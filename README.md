@@ -4,7 +4,7 @@
 
 *UCL Agentverse 2026 — Biotech Track*
 
-*WARNING: BE AWARE THE ENSEMBL DATABASE IS CURRENTLY DOWN, SO ALL LAYERS COULD GIVE INCOMPLETE STATUS'S (AS OF 8/11/2026)*
+<mark>*WARNING: BE AWARE THE ENSEMBL DATABASE IS CURRENTLY DOWN, SO ALL LAYERS COULD GIVE INCOMPLETE STATUS'S (AS OF 8/11/2026)*<mark>
 
 **ASRA is an evidence-grounded AI investigator for preclinical translation.** It helps
 researchers examine where animal evidence may not reliably transfer to humans, by combining
