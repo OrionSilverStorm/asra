@@ -60,7 +60,7 @@ type TextFormat = Exclude<ExportFormat, "pdf">;
 /** Human-readable labels, mirroring the on-screen badges. */
 const STATUS_LABEL: Record<LayerStatus, string> = {
   ok: "Complete",
-  incomplete: "Incomplete",
+  incomplete: "Partial data",
   unavailable: "Unavailable",
 };
 const CONCERN_LABEL: Record<Concern, string> = {
@@ -104,6 +104,17 @@ export function reportToMarkdown(report: Report): string {
   }
   if (report.origin === "fixture") {
     push("> **Demo fixture data.** At least one layer used hand-entered demo evidence, not a live retrieval.", "");
+  }
+  const recordedLayers = report.layers
+    .filter((layer) => layer.data_version?.includes("(recorded run)"))
+    .map((layer) => LAYER_META[layer.layer].title.toLowerCase());
+  if (recordedLayers.length > 0) {
+    const names = recordedLayers.join(", ");
+    const nounVerb = recordedLayers.length === 1 ? "layer uses" : "layers use";
+    push(
+      `> **Recorded evidence.** The ${names} ${nounVerb} a previously recorded benchmark run, not a new live retrieval.`,
+      "",
+    );
   }
   push(
     `- **Species:** ${species.commonName} (*${species.scientificName}*)`,

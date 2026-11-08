@@ -49,6 +49,10 @@ export function ReportHeader({ report, onReset }: ReportHeaderProps) {
   // Short, readable entry ID from the report UUID, e.g. "ASRA-3f2a9c1b".
   const entryId = `ASRA-${report.id.replace(/-/g, "").slice(0, 8)}`;
 
+  const hasRecordedEvidence = report.layers.some(
+    (layer) => layer.data_version?.includes("(recorded run)"),
+  );
+
   // Metadata rows; the sequence row only appears if a FASTA header was pasted.
   const rows: { label: string; value: string; className?: string }[] = [
     { label: "Species", value: species.scientificName, className: "italic" },
@@ -66,11 +70,13 @@ export function ReportHeader({ report, onReset }: ReportHeaderProps) {
           {/* Entry ID + origin. Mock must be impossible to mistake for real results. */}
           <div className="mb-1.5 flex flex-wrap items-center gap-2">
             <span className="rounded-sm bg-accent-soft px-1.5 py-0.5 font-mono text-xs font-medium text-accent">{entryId}</span>
-            {/* Fixture reports must never read as a live retrieval. */}
+            {/* Fixture and recorded benchmark runs must never read as a purely live retrieval. */}
             {report.origin === "mock" ? (
               <Badge tone="warn">Mock data · backend not connected</Badge>
             ) : report.origin === "fixture" ? (
               <Badge tone="warn">Demo fixture data · not a live retrieval</Badge>
+            ) : hasRecordedEvidence ? (
+              <Badge tone="warn">Live + recorded evidence</Badge>
             ) : (
               <Badge tone="ok">Live</Badge>
             )}

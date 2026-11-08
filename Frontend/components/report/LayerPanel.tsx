@@ -2,14 +2,16 @@
  * LayerPanel: one evidence layer (sequence, localisation, ...).
  *
  * Key rule from the design doc: a missing layer must be visibly marked, never
- * left blank or shown as if it had data. So any status other than "ok"
- * renders as a grey, dashed-border panel.
+ * left blank or shown as if it had data. "unavailable" renders as a grey,
+ * dashed-border panel, while "incomplete" (partial data) keeps the readable
+ * surface background with a subtle amber border.
  *
  * Observations that come as human_/animal_ pairs are shown side by side
  * (Field | Human | <species>), with rows whose values differ marked. The
  * gene-based sequence layer (JSON observations) gets its own readable view,
  * and an ambiguous orthologue lists its candidates. Hand-entered fixture
- * evidence is badged so it is never mistaken for a live retrieval.
+ * evidence and recorded benchmark runs are badged so they are never mistaken
+ * for a fresh live retrieval.
  */
 
 import { Badge } from "@/components/ui/Badge";
@@ -29,8 +31,9 @@ interface LayerPanelProps {
 
 export function LayerPanel({ layer, speciesName }: LayerPanelProps) {
   const meta = LAYER_META[layer.layer];
-  // incomplete / unavailable -> grey "missing data" styling
-  const muted = layer.status !== "ok";
+  const unavailable = layer.status === "unavailable";
+  const partial = layer.status === "incomplete";
+  const isRecorded = Boolean(layer.data_version?.includes("(recorded run)"));
   // Gene-based sequence evidence (null for every other layer / legacy result).
   const evidence = parseSequenceEvidence(layer);
   // Candidate orthologues when Ensembl couldn't give a unique one.
@@ -42,8 +45,14 @@ export function LayerPanel({ layer, speciesName }: LayerPanelProps) {
   return (
     <article
       // The sequence evidence view needs the full row width.
-      className={`flex flex-col gap-3 rounded border p-4 ${evidence ? "md:col-span-2" : ""} ${
-        muted ? "border-dashed border-na/50 bg-na-soft" : "border-rule bg-surface"
+      className={`flex flex-col gap-3 rounded border p-4 ${
+        evidence ? "md:col-span-2" : ""
+      } ${
+        unavailable
+          ? "border-dashed border-na/50 bg-na-soft"
+          : partial
+            ? "border-warn/50 bg-surface"
+            : "border-rule bg-surface"
       }`}
     >
       {/* Title, data source and status badge */}
@@ -54,6 +63,7 @@ export function LayerPanel({ layer, speciesName }: LayerPanelProps) {
         </div>
         <div className="flex flex-wrap justify-end gap-1.5">
           {layer.data_version === FIXTURE_DATA_VERSION && <Badge tone="warn">Demo fixture</Badge>}
+          {isRecorded && <Badge tone="warn">Recorded data</Badge>}
           <StatusBadge status={layer.status} />
         </div>
       </header>

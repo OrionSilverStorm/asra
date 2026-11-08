@@ -12,7 +12,7 @@ import { Badge, type BadgeTone } from "./Badge";
  */
 export const STATUS: Record<LayerStatus, { tone: BadgeTone; label: string; fill: string }> = {
   ok: { tone: "ok", label: "Complete", fill: "bg-ok" },
-  incomplete: { tone: "warn", label: "Incomplete", fill: "bg-warn" },
+  incomplete: { tone: "warn", label: "Partial data", fill: "bg-warn" },
   unavailable: { tone: "na", label: "Unavailable", fill: "bg-na" },
 };
 
