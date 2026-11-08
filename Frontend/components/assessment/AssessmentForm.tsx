@@ -12,8 +12,10 @@
 
 import { useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
+import { Select } from "@/components/ui/Select";
 import { Spinner } from "@/components/ui/Spinner";
-import { EXAMPLE_FASTA, parseSequence, validateSequence } from "@/lib/sequence";
+import { CASE_GROUPS, CASE_STUDIES, caseFasta, findCase } from "@/lib/caseStudies";
+import { parseSequence, validateSequence } from "@/lib/sequence";
 import { isSpeciesId } from "@/lib/species";
 import type { AssessmentRequest } from "@/lib/types";
 import { SequenceInput } from "./SequenceInput";
@@ -25,9 +27,6 @@ interface AssessmentFormProps {
   /** True while the parent is waiting on a response; disables inputs. */
   submitting: boolean;
 }
-
-/** Species pre-selected by "Load example": mouse, the usual first model. */
-const EXAMPLE_SPECIES = "mus_musculus";
 
 /** One optional message per field; null/undefined = no error. */
 interface Errors {
@@ -86,19 +85,33 @@ export function AssessmentForm({ onSubmit, submitting }: AssessmentFormProps) {
 
       {/* Action row, separated from the inputs by a rule. */}
       <div className="flex flex-wrap items-center gap-3 border-t border-rule pt-4">
-        {/* Example query link, as on cBioPortal: fills both fields at once. */}
-        <button
-          type="button"
+        {/* Benchmark cases: one pick fills both fields. Value is kept at "" so
+            re-selecting the case already loaded still fires onChange. */}
+        <Select
+          aria-label="Load a benchmark case"
+          value=""
           disabled={submitting}
-          onClick={() => {
-            setSpecies(EXAMPLE_SPECIES);
-            setSequence(EXAMPLE_FASTA);
+          onChange={(e) => {
+            const chosen = findCase(e.target.value);
+            if (!chosen) return; // the placeholder option
+            setSpecies(chosen.species);
+            setSequence(caseFasta(chosen));
             setErrors({});
           }}
-          className="mr-auto text-sm text-accent hover:underline disabled:opacity-50"
+          className="mr-auto w-auto"
         >
-          Load example (mouse · human ENT1/SLC29A1)
-        </button>
+          <option value="">Load a benchmark case…</option>
+          {/* One <optgroup> per group, as SpeciesSelect does. */}
+          {CASE_GROUPS.map((group) => (
+            <optgroup key={group} label={group}>
+              {CASE_STUDIES.filter((c) => c.group === group).map((c) => (
+                <option key={c.id} value={c.id}>
+                  {c.label}
+                </option>
+              ))}
+            </optgroup>
+          ))}
+        </Select>
         {/* Clear: disabled when there is nothing to clear. */}
         <Button
           variant="ghost"

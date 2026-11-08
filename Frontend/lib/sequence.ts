@@ -29,7 +29,8 @@ export const MIN_SEQUENCE_LENGTH = 10;
  * Example input: human ENT1 (SLC29A1, UniProt Q99808, 456 aa), the ASRA
  * benchmark case. Its header carries GN=, so the backend resolves the gene
  * and runs the full orthologue comparison. Shared by the sequence box
- * placeholder and the form's "Load example" link, so it's defined once.
+ * placeholder, so it's defined once. lib/caseStudies.ts imports both for its
+ * first dropdown entry rather than re-pasting the residues.
  */
 export const EXAMPLE_HEADER =
   ">sp|Q99808|S29A1_HUMAN Equilibrative nucleoside transporter 1 OS=Homo sapiens OX=9606 GN=SLC29A1 PE=1 SV=3";
@@ -39,7 +40,6 @@ export const EXAMPLE_SEQUENCE =
   "YFITACAVIILTIICYLGLPRLEFYRYYQQLKLEGPGEQETKLDLISKGEEPRAGKEESGVSVSNSQPTNESHSIKAILKNISVLAFSVCFIFTITIGMFPAV" +
   "TVEVKSSIAGSSTWERYFIPVSCFLTFNIFDWLGRSLTAVFMWPGKDSRWLPSLVLARLVFVPLLLLCNIKPRRYLTVVFEHDAWFIFFMAAFAFSNGYLASLC" +
   "MCFGPKKVKPAEAETAGAIMAFFLCLGLALGAVFSFLFRAIV";
-export const EXAMPLE_FASTA = `${EXAMPLE_HEADER}\n${EXAMPLE_SEQUENCE}`;
 
 /** HGNC-style human symbol (mirrors Backend/tools/resolver.py `_SYMBOL`). */
 const SYMBOL = /^[A-Z][A-Z0-9-]{0,19}$/;
