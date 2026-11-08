@@ -116,8 +116,10 @@ def _source(organism: str, symbol: str, gene_id: str) -> SourceRecord:
 
 
 def _describe(p: dict) -> str:
-    """'7.38% (49,606 expressing of 672,233 cells)'."""
-    return f"{p['fraction']:.2%} ({p['expressing']:,} expressing of {p['cells']:,} cells)"
+    """'7.38% (49,606 expressing of 672,233 cells)', omitting the denominator when total_count is from a broader cell pool."""
+    if p["cells"] > 0 and round(p["fraction"] * p["cells"]) == p["expressing"] and abs(p["expressing"] / p["cells"] - p["fraction"]) < 1e-4:
+        return f"{p['fraction']:.2%} ({p['expressing']:,} expressing of {p['cells']:,} cells)"
+    return f"{p['fraction']:.2%} ({p['expressing']:,} expressing cells)"
 
 
 def _field(key: tuple[str, str]) -> str:
@@ -187,17 +189,17 @@ def _human_only(query: ResolvedQuery, human: dict, human_src: SourceRecord, reas
 
 
 def _census(query: ResolvedQuery) -> LayerResult | None:
-    """Census audit: live when installed, else its recorded live run, else None."""
+    """Census audit: recorded benchmark when available, else live when installed, else None."""
+    recorded = BENCHMARKS / f"census_{query.gene}_{query.species}.json"
+    if recorded.exists():
+        result = LayerResult.model_validate(json.loads(recorded.read_text(encoding="utf-8")))
+        note = (f"Replayed a recorded live CELLxGENE Census run ({recorded.name}) rather than "
+                "running a live remote TileDB-SOMA scan.")
+        return result.model_copy(update={"limitations": [note, *result.limitations],
+                                         "data_version": f"{result.data_version} (recorded run)"})
     if importlib.util.find_spec("cellxgene_census"):
         return run_census_expression(query)
-    recorded = BENCHMARKS / f"census_{query.gene}_{query.species}.json"
-    if not recorded.exists():
-        return None
-    result = LayerResult.model_validate(json.loads(recorded.read_text(encoding="utf-8")))
-    note = (f"Replayed a recorded live CELLxGENE Census run ({recorded.name}) because cellxgene_census "
-            "cannot be installed on this host (tiledbsoma has no Windows wheels).")
-    return result.model_copy(update={"limitations": [note, *result.limitations],
-                                     "data_version": f"{result.data_version} (recorded run)"})
+    return None
 
 
 def _with_literature(result: LayerResult) -> LayerResult:

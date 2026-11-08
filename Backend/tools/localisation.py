@@ -34,7 +34,7 @@ from contract import LayerResult, Observation, SourceRecord
 from tools.base import unavailable
 from tools.fixtures import fixture
 from tools.literature import literature
-from tools.resolver import ResolvedQuery
+from tools.resolver import OrthologueResolutionError, ResolvedQuery, resolve_orthologue
 
 
 API_ROOT = "https://rest.uniprot.org/uniprotkb"
@@ -128,6 +128,85 @@ def _validate_record(record: dict, gene: str, taxon: int, url: str, accession: s
         names.extend(synonym.get("value", "") for synonym in _objects(item.get("synonyms", []), "gene synonyms"))
     if not any(isinstance(name, str) and name.casefold() == gene.casefold() for name in names):
         raise _DataError("record_mismatch", f"Accession {found} does not match gene {gene}.", url)
+
+
+def _same_ensembl_id(expected: str, returned: object) -> bool:
+    """Match an unversioned Ensembl ID from homology against a versioned UniProt xref."""
+    return isinstance(returned, str) and (
+        expected == returned or ("." not in expected and expected == returned.split(".")[0])
+    )
+
+
+def _validate_ensembl_record(
+    record: dict, protein_id: str, gene_id: str, taxon: int, url: str, accession: str | None = None
+) -> None:
+    """Verify primary accession, taxonomy ID, and Ensembl protein/gene cross-reference."""
+    found = record.get("primaryAccession")
+    if not isinstance(found, str) or not _ACCESSION.fullmatch(found):
+        raise _DataError("invalid_response", "UniProt record has no valid primary accession.", url)
+    if accession is not None and found != accession:
+        raise _DataError("record_mismatch", f"Requested {accession}, received {found}.", url)
+    organism = record.get("organism")
+    if not isinstance(organism, dict) or organism.get("taxonId") != taxon:
+        raise _DataError("record_mismatch", f"Accession {found} does not match requested taxon {taxon}.", url)
+    xrefs = _objects(record.get("uniProtKBCrossReferences", []), "uniProtKBCrossReferences")
+    matched = False
+    for ref in xrefs:
+        if ref.get("database") != "Ensembl":
+            continue
+        props = {
+            p.get("key"): p.get("value")
+            for p in _objects(ref.get("properties", []), "Ensembl xref properties")
+        }
+        if _same_ensembl_id(protein_id, props.get("ProteinId")) and _same_ensembl_id(gene_id, props.get("GeneId")):
+            matched = True
+            break
+    if not matched:
+        raise _DataError(
+            "record_mismatch",
+            f"Accession {found} has no verified Ensembl cross-reference for {gene_id} / {protein_id}.",
+            url,
+        )
+
+
+def _resolve_via_orthologue(
+    gene: str, species: str, taxon: int, sources: list[dict], limitations: list[str]
+) -> tuple[dict, dict, str]:
+    """Resolve a unique animal UniProt record via its verified 1-to-1 Ensembl orthologue protein ID."""
+    orth = resolve_orthologue(gene, species)
+    target = orth["target"]
+    protein_id = target["protein_id"].split(".")[0]
+    gene_id = target["gene_id"].split(".")[0]
+    query = f"xref:ensembl-{protein_id} AND organism_id:{taxon}"
+    url = API_ROOT + "/search?" + urlencode({
+        "query": query, "format": "json", "size": 100,
+        "fields": "accession,gene_names,organism_id,reviewed,xref_ensembl",
+    })
+    payload, headers = _request_json(url)
+    results = _objects(payload.get("results"), "search results")
+    sources.append({"id": f"ensembl:{gene_id}", "database": "Ensembl", "url": orth["source_url"],
+                    "kind": "orthology_resolution", "gene_id": gene_id, "protein_id": protein_id})
+    sources.append({"id": f"search:{taxon}:ensembl:{protein_id}", "database": "UniProt", "url": url,
+                    "kind": "resolution_search", "release": headers.get("x-uniprot-release")})
+    if 'rel="next"' in headers.get("link", ""):
+        raise _DataError("ambiguous_record", "UniProt Ensembl xref search has additional pages; resolution is ambiguous.", url)
+    candidates = {}
+    for record in results:
+        _validate_ensembl_record(record, protein_id, gene_id, taxon, url)
+        candidates[record["primaryAccession"]] = record
+    if not candidates:
+        raise _DataError("record_not_found", f"No UniProt record cross-referencing Ensembl {protein_id} in taxon {taxon}.", url)
+    if len(candidates) != 1:
+        raise _DataError("ambiguous_record", "Multiple UniProt accessions for Ensembl " + protein_id + ": " + ", ".join(sorted(candidates)), url)
+    accession = next(iter(candidates))
+    record_url = f"{API_ROOT}/{accession}.json"
+    record, headers = _request_json(record_url)
+    _validate_ensembl_record(record, protein_id, gene_id, taxon, record_url, accession)
+    limitations.append(
+        f"animal ({accession}): resolved via verified Ensembl one-to-one orthologue {gene_id} / {protein_id} "
+        f"because exact UniProt gene-symbol lookup did not resolve a unique record."
+    )
+    return record, headers, url
 
 
 def _resolve(gene: str, taxon: int, sources: list[dict]) -> tuple[dict, dict, str]:
@@ -319,7 +398,21 @@ def compare_localisation(gene: str, species: str) -> dict:
         )
     for side, taxon in (("human", 9606), ("animal", _SPECIES[species][0])):
         try:
-            record, headers, search_url = _resolve(gene, taxon, result["sources"])
+            try:
+                record, headers, search_url = _resolve(gene, taxon, result["sources"])
+            except _DataError as primary_exc:
+                if (
+                    side != "animal"
+                    or proteins["human"] is None
+                    or primary_exc.kind not in {"record_not_found", "ambiguous_record"}
+                ):
+                    raise
+                try:
+                    record, headers, search_url = _resolve_via_orthologue(
+                        gene, species, taxon, result["sources"], result["limitations"]
+                    )
+                except (_DataError, OrthologueResolutionError, ValueError):
+                    raise primary_exc
             try:
                 protein = _protein(record, headers, search_url)
             except _DataError as exc:
@@ -421,6 +514,10 @@ def to_layer_result(detail: dict, query: ResolvedQuery) -> LayerResult:
     """Map the detailed comparison onto the universal LayerResult."""
     proteins = detail["measurements"]["proteins"]
     comparison = detail["measurements"].get("comparison", {})
+    orth_src = next(
+        (s for s in detail.get("sources", []) if isinstance(s, dict) and s.get("kind") == "orthology_resolution"),
+        None,
+    )
     observations, sources = [], []
     for side in ("human", "animal"):
         protein = proteins.get(side)
@@ -428,11 +525,21 @@ def to_layer_result(detail: dict, query: ResolvedQuery) -> LayerResult:
             continue  # a failed side is reported in limitations, never as empty data
         rid = _record_id(protein)
         review = "reviewed" if protein["reviewed"] else "unreviewed"
+        orth_note = (
+            f", resolved via Ensembl orthologue {orth_src['gene_id']} / {orth_src['protein_id']}"
+            if side == "animal" and orth_src
+            else ""
+        )
         sources.append(SourceRecord(id=rid, url=protein["source_url"],
                                     source=f"UniProt {protein['accession']} ({protein['scientific_name']}, "
-                                           f"{review}, entry v{protein['entry_version']})"))
+                                           f"{review}, entry v{protein['entry_version']}{orth_note})"))
+        compartments = (
+            _names(protein["locations"])
+            if protein["locations"]
+            else "No structured SUBCELLULAR LOCATION annotation (localisation unknown)"
+        )
         observations += [
-            Observation(field=f"{side}_compartments", value=_names(protein["locations"]), source_record_id=rid),
+            Observation(field=f"{side}_compartments", value=compartments, source_record_id=rid),
             Observation(field=f"{side}_evidence", value=_evidence_summary(protein), source_record_id=rid),
         ]
     # Overlap/difference lists exist only when both sides were comparable.
