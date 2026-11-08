@@ -15,10 +15,7 @@ and this file.
 
 ## Demo
 
-<video src="https://github.com/OrionSilverStorm/asra/raw/master/docs/asra-demo.mp4" controls width="100%"></video>
-
-▶ **[Watch the demo](docs/asra-demo.mp4)** — if the player above doesn't load in your
-Markdown viewer, the file is committed at [`docs/asra-demo.mp4`](docs/asra-demo.mp4).
+https://github.com/user-attachments/assets/51f0b54e-d7d4-4606-847a-a11d294f5edf
 
 ---
 
