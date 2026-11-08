@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Role 3 Milestone 3: verified UniProt features and alignment observations.
 
 No gene-name/fuzzy sequence matching or automatic annotation transfer. UniProt

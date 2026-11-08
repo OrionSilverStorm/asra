@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Reusable CELLxGENE Census metadata discovery for cross-species CD28 feasibility.
 
 Run from the repository root:
@@ -10,8 +11,6 @@ expression atlases. It verifies organism availability, species-specific gene
 identifiers, dataset provenance, cell-type ontology granularity, assay and
 normalisation layers, and dataset-level gene measurement presence.
 """
-
-from __future__ import annotations
 
 import argparse
 from collections import defaultdict

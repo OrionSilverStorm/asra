@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Pipeline entry for the sequence layer: `(ResolvedQuery) -> LayerResult`.
 
 Wraps Role 3's engine at the orchestration boundary without changing it

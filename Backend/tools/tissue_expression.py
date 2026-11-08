@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Layer 4, tissue expression: GTEx (human) beside Bgee calls (animal).
 
 - Human: GTEx v8 median TPM per tissue site (open-access summary data only).

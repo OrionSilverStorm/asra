@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Shared helpers for the four layer tools.
 
 Every layer function has the same signature, `(context) -> LayerResult`, so the

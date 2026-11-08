@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Mocked UniProt tests; the live smoke test is deliberately run separately."""
 
 from copy import deepcopy

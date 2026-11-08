@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Focused Role 3 annotation identity, coordinates, partial evidence and replay."""
 
 from copy import deepcopy

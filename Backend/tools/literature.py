@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Curated literature evidence that databases do not encode.
 
 The design doc asks for published findings to sit beside database results as

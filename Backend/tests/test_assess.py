@@ -1,3 +1,4 @@
+from __future__ import annotations
 """End-to-end tests for the HTTP API and the contract it returns."""
 
 from fastapi.testclient import TestClient

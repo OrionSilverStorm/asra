@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Layer 2, subcellular localisation: human vs animal UniProt annotations.
 
 Run from Backend/: python -m tools.localisation SLC29A1 mouse
@@ -19,8 +20,6 @@ Only the standard library is required. Searches are bounded and ambiguous matche
 are rejected. Each selected accession is fetched again and its gene/taxon checked.
 No results are invented or substituted when a request fails.
 """
-
-from __future__ import annotations
 
 import argparse
 from datetime import datetime, timezone

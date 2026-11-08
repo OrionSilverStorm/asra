@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Offline SLC29A1 Milestone 3 demonstration: python -m tools.sequence_demo.
 
 Uses raw UniProt responses/release headers and the Ensembl protein identities

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Role 3 adapter must preserve evidence and fail on schema changes."""
 from copy import deepcopy
 import json

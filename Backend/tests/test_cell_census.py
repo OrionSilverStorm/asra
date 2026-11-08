@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Unit tests for Backend.tools.cell_expression (mocked SOMA fixtures)."""
 
 from __future__ import annotations

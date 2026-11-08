@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Prompt compaction keeps every citation target while shrinking sequence evidence."""
 
 import json

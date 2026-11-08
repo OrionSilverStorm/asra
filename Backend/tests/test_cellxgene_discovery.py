@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Mocked tests for CELLxGENE Census metadata discovery (`cellxgene_discovery.py`)."""
 
 from __future__ import annotations

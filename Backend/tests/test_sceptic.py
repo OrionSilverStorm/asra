@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Sceptic tests: the deterministic checks, then the Gemini pass (mocked)."""
 
 import pytest

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Offline tests for the three Role 4 pipeline layers (no network).
 
 Each test replaces the HTTP helpers with small fakes and checks the contract

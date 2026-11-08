@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Hand-entered demo evidence, so the agents have something to read before the
 live integrations land.
 

@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Report origin: any fixture-backed layer makes the report "fixture", never "live"."""
 
 from agents import AgentOutput

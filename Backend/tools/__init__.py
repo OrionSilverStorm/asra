@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Layer tools: pure Python, no LLM.
 
 `LAYERS` is the registry the pipeline iterates over, in display order. To add

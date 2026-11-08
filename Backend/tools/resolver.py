@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Resolve human gene symbols to Ensembl animal orthologues.
 
 The existing sequence-only pipeline adapter remains separate: a submitted

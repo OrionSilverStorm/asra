@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Resolver tests use synthetic API fixtures; live verification is opt-in."""
 
 from copy import deepcopy

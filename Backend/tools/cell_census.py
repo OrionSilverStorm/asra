@@ -1,3 +1,4 @@
+from __future__ import annotations
 """CELLxGENE Census deep audit for the cell-type expression layer.
 
 Used by tools/cell_expression.py for species the CELLxGENE Discover API does
@@ -28,9 +29,6 @@ grounded in the pinned CELLxGENE Census release ``2025-11-08``:
 6. Returns an inconclusive cross-species comparison (``status="incomplete"``)
    with traceable ``SourceRecord`` citations and explicit scientific limitations.
 """
-
-from __future__ import annotations
-
 import argparse
 from collections import defaultdict
 import json

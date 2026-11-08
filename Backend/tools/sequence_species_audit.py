@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Role 3 live frontend compatibility audit and reproducible HTTP replay.
 
 Run from Backend: python -m tools.sequence_species_audit --live --output PATH.

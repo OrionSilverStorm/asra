@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Interpreter tests with Gemini mocked out, so they run without an API key."""
 
 from agents import interpreter, llm

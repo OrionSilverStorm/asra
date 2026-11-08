@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Sequence statistics computed directly from the submitted protein.
 
 Pure Python, no network. Mirrors Frontend/lib/sequence.ts `computeStats`

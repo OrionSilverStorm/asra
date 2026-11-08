@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Role 3 independent offline scientific audit; never changes the source tape.
 
 From Backend: python -m tools.sequence_validation --output /tmp/validation.json

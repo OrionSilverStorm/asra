@@ -1,3 +1,4 @@
+from __future__ import annotations
 """Role 3 explicit bridge to the shared string-valued LayerResult contract.
 
 Structured observations use JSON, retaining numeric types after json.loads.
