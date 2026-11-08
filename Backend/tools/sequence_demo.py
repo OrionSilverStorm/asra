@@ -42,7 +42,7 @@ def demonstration():
         **proteins, "orthology": {"type": "ortholog_one2one", "evidence": "Milestone 2 pinned pair; offline replay"},
         "source_records": [{"id": "ensembl_orthology", "source": "Milestone 2 pinned Ensembl protein pair",
                             "url": "https://rest.ensembl.org/homology/symbol/homo_sapiens/SLC29A1?target_species=mus_musculus&type=orthologues&sequence=protein&aligned=0&format=full"}],
-        "retrieved_at": manifest["Q99808"]["retrieved_at"], "data_version": None,
+        "retrieved_at": manifest["Q99808"]["retrieved_at"], "data_version": "Offline pinned Ensembl protein pair; source release unknown",
         "provenance": {"mode": "offline snapshot replay", "ensembl_release": "unknown",
                        "sequence_hashes": {label: record[-1] for label, record in PROTEINS.items()}},
         **align_proteins(proteins["human"]["sequence"], proteins["animal"]["sequence"]),
