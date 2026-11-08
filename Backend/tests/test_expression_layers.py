@@ -128,6 +128,60 @@ def test_census_routing_prefers_recorded_benchmark_even_when_census_installed(mo
     assert _cited(result)
 
 
+def test_no_unexpected_live_census_scan(monkeypatch):
+    monkeypatch.delenv("ASRA_LIVE_CENSUS", raising=False)
+    monkeypatch.setattr(
+        cell_expression.importlib.util,
+        "find_spec",
+        lambda name: object(),
+    )
+    monkeypatch.setattr(
+        cell_expression,
+        "run_census_expression",
+        lambda q: (_ for _ in ()).throw(
+            AssertionError("Unexpected live Census scan")
+        ),
+    )
+
+    result = cell_expression._census(
+        _query("CRBN", "oryctolagus_cuniculus")
+    )
+
+    assert result is None
+
+
+def test_opt_in_live_census_scan_when_enabled(monkeypatch):
+    monkeypatch.setenv("ASRA_LIVE_CENSUS", "1")
+    monkeypatch.setattr(
+        cell_expression.importlib.util,
+        "find_spec",
+        lambda name: object(),
+    )
+    fake_live = LayerResult(
+        gene="CRBN",
+        species="oryctolagus_cuniculus",
+        layer="cell_expression",
+        status="incomplete",
+        observations=[],
+        source_records=[],
+        limitations=["Simulated opt-in live Census result."],
+        data_version="CELLxGENE Census 2025-11-08",
+    )
+    called_with = []
+    monkeypatch.setattr(
+        cell_expression,
+        "run_census_expression",
+        lambda q: (called_with.append((q.gene, q.species)) or fake_live),
+    )
+
+    result = cell_expression._census(
+        _query("CRBN", "oryctolagus_cuniculus")
+    )
+
+    assert called_with == [("CRBN", "oryctolagus_cuniculus")]
+    assert result == fake_live
+
+
 def test_wmg_omits_denominator_when_total_count_does_not_match_reported_pc(monkeypatch):
     # Live SLC29A1 WMG v2 response values:
     # - human pancreas / progenitor cell: n=128, pc=0.28893905191873587 (128/443 measured), total_count=876

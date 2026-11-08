@@ -7,10 +7,11 @@ Sources, chosen per comparison species:
   match is an ontology match, never a fuzzy label match. Always `incomplete`:
   Discover aggregates cannot name the datasets/assays behind each value.
 - Other species (e.g. macaque, which Discover does not index): the CELLxGENE
-  Census audit in tools/cell_census.py, run live when `cellxgene_census` is
-  installed, else replayed from its recorded live run in data/benchmarks/.
-  Without either, only the human side is reported and the layer is
-  `incomplete`.
+  Census audit in tools/cell_census.py, replayed from its recorded live run in
+  data/benchmarks/ when available, or run live only when explicitly opted in via
+  `ASRA_LIVE_CENSUS=1` and `cellxgene_census` is installed (avoiding multi-minute
+  remote SOMA scans during interactive requests). Without either, only the human
+  side is reported and the layer is `incomplete`.
 
 Python computes every value here; the curated literature from
 tools/literature.py is appended as separate, labelled evidence.
@@ -18,6 +19,7 @@ tools/literature.py is appended as separate, labelled evidence.
 
 import importlib.util
 import json
+import os
 from functools import lru_cache
 from pathlib import Path
 from statistics import median
@@ -189,7 +191,7 @@ def _human_only(query: ResolvedQuery, human: dict, human_src: SourceRecord, reas
 
 
 def _census(query: ResolvedQuery) -> LayerResult | None:
-    """Census audit: recorded benchmark when available, else live when installed, else None."""
+    """Census audit: recorded benchmark when available, else opt-in live scan when installed, else None."""
     recorded = BENCHMARKS / f"census_{query.gene}_{query.species}.json"
     if recorded.exists():
         result = LayerResult.model_validate(json.loads(recorded.read_text(encoding="utf-8")))
@@ -197,7 +199,11 @@ def _census(query: ResolvedQuery) -> LayerResult | None:
                 "running a live remote TileDB-SOMA scan.")
         return result.model_copy(update={"limitations": [note, *result.limitations],
                                          "data_version": f"{result.data_version} (recorded run)"})
-    if importlib.util.find_spec("cellxgene_census"):
+    live_census_enabled = os.getenv(
+        "ASRA_LIVE_CENSUS", ""
+    ).strip().lower() in {"1", "true", "yes"}
+
+    if live_census_enabled and importlib.util.find_spec("cellxgene_census"):
         return run_census_expression(query)
     return None
 
