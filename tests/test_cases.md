@@ -155,7 +155,7 @@ in the evaluation table.
 
 | Claim | Source | Year | Strength | Known before the failure? |
 |---|---|---|---|---|
-| GAPDH is highly conserved between human and mouse and ubiquitously expressed | Ensembl orthologue record + UniProt entry — **record the accessions and the release version you used** | — | Strong | n/a |
+| GAPDH is highly conserved between human and mouse and ubiquitously expressed | Human UniProt accession `P04406`; localisation layer reported `UniProt 2026_04`. The Ensembl release is **not supplied by the resolver**, so `data_version` for the sequence layer is `null` — see issue 2 in `evaluation_results.md`. | — | Strong | n/a |
 
 **Notes / caveats**
 
@@ -206,18 +206,22 @@ must not rank it highly.
 
 ---
 
-## Scoring sheet (fill after runs — leave blank until then)
+## Scoring sheet (results are in `evaluation_results.md`)
 
 | Case | Sequence-only caught it? | Did extra layers add evidence? | Did the Sceptic catch the unsupported claim? | Verdict |
 |---|---|---|---|---|
-| Fialuridine / SLC29A1 | | | | |
-| TGN1412 / CD28 | | | | |
-| GAPDH control | | | | |
-| Missing data | | | | |
+| Fialuridine / SLC29A1 | No | **Yes** — localisation returned Q99808 (entry v215) with experimental evidence for the human compartments | Yes — downgraded 2 of 3 findings | **Pass** |
+| TGN1412 / CD28 | No | Yes — 15 observations, 7 source records, but from a **recorded** Census run, not live | Yes — noted the finding rests on curated literature, not primary single-cell concordance | **Partial** |
+| GAPDH control | No (layer failed) | Yes — see `evaluation_results.md` | Yes — flagged that missing mouse annotation isn't biological absence | **Partial** |
+| Missing data (CYP3A4) | No — refused, correctly | **Yes** — named the one-to-many orthology and propagated it as an explicit limitation to all three other layers | Yes — downgraded the single finding, noting it doesn't assess the individual Cyp3a paralogues | **Pass** |
+
+**Completed results: see `evaluation_results.md` in the repo root** — full reasoning per
+case, the issues found, and the re-runs on later commits. Verdicts above were scored
+against commit `3bbf30e`.
 
 **Check on every case:** `data_version` is nullable and nothing enforces it, so a layer
 returning `status: ok` with `data_version: null` would pass silently. **Check this
 manually when scoring.**
 
-**Headline for the write-up:** in ___ of 4 cases the additional layers surfaced evidence
+**Headline for the write-up:** in 4 of 4 cases the additional layers surfaced evidence
 that sequence identity alone did not capture.
