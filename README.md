@@ -21,6 +21,29 @@ wording is deliberate and consistent across the report, the UI and this file.
 
 ---
 
+## The website
+
+**1 · Ask the question.** Pick a comparison species and paste a protein sequence, raw or as a
+FASTA record. The four evidence layers and their sources are named up front, and a benchmark
+case can be loaded instead of pasting.
+
+![ASRA query form: species select, sequence input and benchmark case loader](docs/screenshot-query.png)
+
+**2 · Read the evidence.** The report opens on *At a glance* — how many layers returned
+complete data, how many findings there are and how many the Sceptic qualified, plus the
+source-record count. The badge beside the entry ID states the data origin, so a demo fixture
+can never be mistaken for a live retrieval. JSON, Markdown and PDF export from here.
+
+![ASRA report header: Live badge, export buttons, at-a-glance counts and sequence composition](docs/screenshot-report.png)
+
+**3 · See what was claimed, and what was pushed back on.** Each finding shows its concern
+level, the mechanism, the Sceptic's note, and the exact `field` and `source` it rests on. The
+matrix on the right maps every finding to the layer that supports it.
+
+![ASRA findings: concern levels, Sceptic notes and the cited field and source for each claim](docs/screenshot-findings.png)
+
+---
+
 ## Demo
 
 https://github.com/user-attachments/assets/51f0b54e-d7d4-4606-847a-a11d294f5edf
@@ -293,7 +316,7 @@ Frontend/
   lib/                 types.ts, sequence.ts, api/, export.ts, caseStudies.ts
 tests/                 scientific acceptance criteria, frozen case outputs, precache list
 evaluation_results.md  the four cases, run live and scored
-docs/asra-demo.mp4     committed copy of the demo video
+docs/                  the screenshots and demo video used above
 ```
 
 ## Data sources
